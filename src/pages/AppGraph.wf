@@ -1,0 +1,7 @@
+Page AppGraph (path: "/app/graph", title: "Infrastructure", description: "The path a request takes through Halyard.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Infrastructure", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

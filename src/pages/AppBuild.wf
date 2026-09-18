@@ -1,0 +1,7 @@
+Page AppBuild (path: "/app/builds/:hash", title: "Build", description: "One build: its pipeline, diff, artifacts and attestation.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Build", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

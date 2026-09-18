@@ -1,0 +1,7 @@
+Page Overlays (path: "/ui", title: "Interface inventory", description: "Every overlay, alert and waiting state in one place.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Interface inventory", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

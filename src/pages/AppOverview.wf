@@ -1,0 +1,7 @@
+Page AppOverview (path: "/app", title: "Overview", description: "The live release, the last 24 hours and the health of every region.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Overview", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

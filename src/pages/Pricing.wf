@@ -1,0 +1,7 @@
+Page Pricing (path: "/pricing", title: "Pricing", description: "Pay for requests, not for seats. Every plan gets all 19 regions, atomic deploys and rollback by hash.") {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Pricing", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

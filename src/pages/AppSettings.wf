@@ -1,0 +1,7 @@
+Page AppSettings (path: "/app/settings", title: "Settings", description: "Project settings, domains, environment, team and the danger zone.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Settings", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

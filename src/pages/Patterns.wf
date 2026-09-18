@@ -1,0 +1,68 @@
+Page Patterns (path: "/patterns", title: "Design reference", description: "The Fluant Ink tokens, type scale and components.", noindex) {
+    state pct = 40
+    state on = true
+
+    Container {
+        style { padding: "64px 24px"  max-width: "1280px" }
+
+        Heading("Smoke test", h1) {
+            style { font-family: "var(--font-display)"  font-size: "72px"  line-height: "0.94"  letter-spacing: "-0.025em"  font-weight: "600" }
+        }
+        Text("Theme tokens, structural mode, fonts, hover, data attributes, reactive style, children.") {
+            style { color: "var(--text-secondary)"  font-size: "18px"  line-height: "1.6"  max-width: "62ch" }
+        }
+
+        Row(gap: sm, align: center) {
+            style { margin-top: "24px" }
+            Button("Publish changes", data-variant: "primary") {
+                style {
+                    height: "38px"  padding: "0 16px"  border-radius: "var(--radius-md)"  border: "1px solid transparent"
+                    font: "600 14px/1.2 var(--font-sans)"  background: "var(--brand)"  color: "var(--on-brand)"  cursor: "pointer"
+                    transition: "background var(--d-instant) var(--ease-standard), box-shadow var(--d-base) var(--ease-standard)"
+                    hover { background: "var(--brand-hover)"  box-shadow: "var(--glow-brand)" }
+                    active { transform: "translateY(1px)" }
+                }
+                pct = pct + 10
+            }
+            Button("Toggle", aria-pressed: on, data-variant: "secondary") {
+                style {
+                    height: "38px"  padding: "0 16px"  border-radius: "var(--radius-md)"  border: "1px solid var(--line-strong)"
+                    font: "600 14px/1.2 var(--font-sans)"  background: "var(--surface-raised)"  color: "var(--text-primary)"  cursor: "pointer"
+                    hover { background: "var(--surface-hover)"  border-color: "var(--border-control)" }
+                }
+                on = !on
+            }
+            Icon("check") { style { color: "var(--text-success)" } }
+            Text("pressed: {on} · {pct}%") { style { font-family: "var(--font-mono)"  font-size: "12px"  color: "var(--text-tertiary)" } }
+        }
+
+        Stack(gap: xs) {
+            style { margin-top: "24px"  max-width: "320px" }
+            Container {
+                style { height: "6px"  border-radius: "var(--radius-pill)"  background: "var(--surface-inset)"  overflow: "hidden"  width: "100%"  padding: "0" }
+                Container {
+                    style { height: "100%"  width: "{pct}%"  background: "var(--brand)"  border-radius: "var(--radius-pill)"  transition: "width var(--d-slow) var(--ease-standard)"  padding: "0"  margin: "0" }
+                }
+            }
+        }
+
+        SmokePanel(title: "A slot") {
+            Text("This text came from the caller's block; pct is {pct}.") { style { color: "var(--text-secondary)"  font-size: "14px" } }
+        }
+
+        Table(caption: "Example rows") {
+            style { margin-top: "24px"  width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)" }
+            Thead { Trow { Tcell("Build") Tcell("Status") } }
+            Tbody {
+                Trow(aria-selected: on) {
+                    style { hover { background: "var(--surface-hover)" } }
+                    Tcell("8f2c41") { style { font-family: "var(--font-mono)"  color: "var(--text-brand)"  padding: "12px"  border-bottom: "1px solid var(--line-hairline)" } }
+                    Tcell("Ready") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  color: "var(--text-secondary)" } }
+                }
+            }
+        }
+
+        Link(to: "/", active: "exact") { Text("Home") }
+        Link(to: "/patterns") { Text("Patterns (current)") }
+    }
+}

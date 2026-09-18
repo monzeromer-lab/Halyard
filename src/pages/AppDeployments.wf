@@ -1,0 +1,7 @@
+Page AppDeployments (path: "/app/deployments", title: "Deployments", description: "Every deployment of storefront-edge, newest first.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Deployments", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

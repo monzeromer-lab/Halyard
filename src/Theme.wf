@@ -1,0 +1,121 @@
+// Fluant Ink — every token from design/artboards/Patterns.dc.html :root, plus
+// the baseline names the structural stylesheet still reads (focus ring, overlay
+// fills, fonts, radii). Reference from any style block as "var(--surface-raised)".
+Theme FluantInk {
+    // Surfaces
+    token surface-canvas: "#0b0c0e"
+    token surface-sunken: "#060708"
+    token surface-raised: "#131519"
+    token surface-overlay: "#1a1d23"
+    token surface-inset: "#101318"
+    token surface-hover: "#1f232a"
+    token surface-active: "#262b33"
+    token surface-disabled: "#15181d"
+    token surface-scrim: "rgba(4,5,7,0.74)"
+
+    // Lines
+    token line-hairline: "#1c2026"
+    token line-default: "#2a2f37"
+    token line-strong: "#3d444f"
+    token border-control: "#6b7482"
+    token focus-ring: "#ff9a6b"
+
+    // Text
+    token text-primary: "#f4f1ec"
+    token text-secondary: "#b9bec7"
+    token text-tertiary: "#949ba7"
+    token text-disabled: "#5d646f"
+    token text-inverse: "#0b0c0e"
+    token text-brand: "#ff8a5c"
+    token text-accent: "#58e8bf"
+    token text-brass: "#e6c979"
+
+    // Brand, accent, brass
+    token brand: "#ff6a2b"
+    token brand-hover: "#ff804a"
+    token brand-soft: "#2a1409"
+    token on-brand: "#180a03"
+    token accent: "#35e0b0"
+    token accent-hover: "#5aeac3"
+    token accent-soft: "#07221c"
+    token on-accent: "#04130f"
+    token brass: "#d9b45a"
+    token brass-soft: "#241c0c"
+    token on-brass: "#1a1405"
+
+    // Status
+    token success: "#3ad07f"
+    token success-soft: "#06231a"
+    token text-success: "#66dd9f"
+    token on-success: "#04170f"
+    token warning: "#f5b53c"
+    token warning-soft: "#241a06"
+    token text-warning: "#f7c869"
+    token on-warning: "#1c1301"
+    token danger: "#ff5d5d"
+    token danger-soft: "#2a0d0f"
+    token text-danger: "#ff8585"
+    token on-danger: "#1e0505"
+    token info: "#48b6ef"
+    token info-soft: "#06202c"
+    token text-info: "#79ccf5"
+    token on-info: "#03151e"
+
+    // Data series, drawn in order, never reordered
+    token viz-1: "#ff6a2b"
+    token viz-2: "#35e0b0"
+    token viz-3: "#d9b45a"
+    token viz-4: "#48b6ef"
+    token viz-5: "#ff8fc0"
+    token viz-6: "#a9d84a"
+    token viz-7: "#9b8cff"
+    token viz-8: "#c98a62"
+
+    // Type
+    token font-display: "\"Fraunces\", \"Iowan Old Style\", \"Palatino Linotype\", Georgia, serif"
+    token font-sans: "\"Manrope\", \"Segoe UI\", system-ui, -apple-system, sans-serif"
+    token font-mono: "\"JetBrains Mono\", ui-monospace, \"SFMono-Regular\", Menlo, monospace"
+
+    // Radius
+    token radius-xs: "3px"
+    token radius-sm: "6px"
+    token radius-md: "10px"
+    token radius-lg: "16px"
+    token radius-xl: "24px"
+    token radius-2xl: "36px"
+    token radius-pill: "999px"
+
+    // Depth — hairlines and glow, not soft shadows
+    token shadow-sm: "0 2px 8px rgba(0,0,0,.55)"
+    token shadow-md: "0 10px 24px rgba(0,0,0,.55)"
+    token shadow-lg: "0 24px 60px rgba(0,0,0,.65)"
+    token shadow-xl: "0 48px 120px rgba(0,0,0,.7)"
+    token glow-brand: "0 0 0 1px rgba(255,106,43,.5), 0 12px 40px rgba(255,106,43,.28)"
+    token glow-accent: "0 0 0 1px rgba(53,224,176,.45), 0 12px 40px rgba(53,224,176,.24)"
+
+    // Motion
+    token ease-standard: "cubic-bezier(0.2,0,0,1)"
+    token ease-entrance: "cubic-bezier(0.16,1,0.3,1)"
+    token ease-exit: "cubic-bezier(0.7,0,0.84,0)"
+    token ease-spring: "cubic-bezier(0.34,1.56,0.64,1)"
+    token ease-anticipate: "cubic-bezier(0.68,-0.4,0.27,1.4)"
+    token d-instant: "80ms"
+    token d-fast: "140ms"
+    token d-base: "220ms"
+    token d-slow: "380ms"
+    token d-slower: "620ms"
+    token d-cine: "1100ms"
+
+    // Baseline names the structural sheet reads. `color-primary` paints only
+    // the :focus-visible ring here (no `primary` modifier is used anywhere),
+    // so it carries the design's focus-ring value; A13 reports it against a
+    // white button label that never exists — accepted, see NOTES.md.
+    token color-primary: "#ff9a6b"
+    token color-background: "#0b0c0e"
+    token color-surface: "#1a1d23"
+    token color-text: "#f4f1ec"
+    token color-text-muted: "#949ba7"
+    token color-border: "#2a2f37"
+    token font-family: "\"Manrope\", \"Segoe UI\", system-ui, -apple-system, sans-serif"
+    token font-family-mono: "\"JetBrains Mono\", ui-monospace, \"SFMono-Regular\", Menlo, monospace"
+}

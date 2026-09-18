@@ -1,0 +1,7 @@
+Page Changelog (path: "/changelog", title: "Changelog", description: "Every change to the Halyard runtime, newest first, with the breaking ones marked.") {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Changelog", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

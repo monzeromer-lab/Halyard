@@ -1,0 +1,7 @@
+Page AppExplorer (path: "/app/explorer", title: "Explorer", description: "Query traces, logs and builds.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Explorer", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

@@ -1,0 +1,4 @@
+/* The two things no element-level style block can say. Everything else is .wf source. */
+html { background: #0b0c0e; }
+::selection { background: rgba(255, 106, 43, 0.34); }
+body { -webkit-font-smoothing: antialiased; }

@@ -1,30 +1,34 @@
+// One router, two layouts: every page brings its own chrome — SiteNav/SiteFooter
+// on the marketing pages, AppShell on the product pages — so the root only
+// paints the canvas.
 App {
-    use AuthStore
+    Stack {
+        style {
+            background: "var(--surface-canvas)"
+            color: "var(--text-primary)"
+            font-family: "var(--font-sans)"
+            min-height: "100vh"
+        }
 
-    Navbar {
-        Navbar.Brand {
-            Text("halyard", heading)
+        Router {
+            Route(path: "/", page: Home)
+            Route(path: "/pricing", page: Pricing)
+            Route(path: "/docs", page: Docs)
+            Route(path: "/changelog", page: Changelog)
+            Route(path: "/status", page: Status)
+            Route(path: "/app", page: AppOverview)
+            Route(path: "/app/deployments", page: AppDeployments)
+            Route(path: "/app/observability", page: AppObservability)
+            Route(path: "/app/logs", page: AppLogs)
+            Route(path: "/app/builds/:hash", page: AppBuild)
+            Route(path: "/app/settings", page: AppSettings)
+            Route(path: "/app/explorer", page: AppExplorer)
+            Route(path: "/app/graph", page: AppGraph)
+            Route(path: "/app/editor", page: AppEditor)
+            Route(path: "/new", page: Onboarding)
+            Route(path: "/ui", page: Overlays)
+            Route(path: "/patterns", page: Patterns)
+            Route(path: "*", page: NotFound)
         }
-        Navbar.Links {
-            Link(to: "/") { Text("Dashboard") }
-            Link(to: "/tasks") { Text("Tasks") }
-            Link(to: "/settings") { Text("Settings") }
-        }
-        Navbar.Actions {
-            if AuthStore.isLoggedIn {
-                Avatar(initials: "U", primary)
-                Link(to: "/profile") { Text("Profile") }
-                Button("Logout", small) { AuthStore.logout() }
-            } else {
-                Button("Login", primary, small) { AuthStore.login("user@demo.com", "demo") }
-            }
-        }
-    }
-
-    Router {
-        Route(path: "/", page: Home)
-        Route(path: "/tasks", page: Tasks)
-        Route(path: "/settings", page: Settings)
-        Route(path: "/profile", page: Profile)
     }
 }

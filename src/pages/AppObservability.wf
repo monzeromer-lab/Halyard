@@ -1,0 +1,7 @@
+Page AppObservability (path: "/app/observability", title: "Observability", description: "Response time, status classes and traffic by route.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Observability", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

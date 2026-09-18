@@ -1,0 +1,7 @@
+Page Onboarding (path: "/new", title: "New project", description: "Connect a repository and ship the first build.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("New project", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

@@ -1,19 +1,30 @@
 {
-  "name": "halyard",
+  "name": "Halyard",
   "version": "1.0.0",
   "author": "",
-  "theme": {},
+  "theme": {
+    "name": "FluantInk",
+    "builtin": "structural"
+  },
   "build": {
     "output": "./build",
     "minify": true,
-    "ssg": false
+    "ssg": true,
+    "csp": false
   },
   "dev": {
     "port": 3000
   },
   "meta": {
-    "title": "halyard",
-    "description": "Built with WebFluent",
-    "lang": "en"
+    "title": "Halyard",
+    "site_url": "https://halyard.example.com",
+    "site_name": "Halyard",
+    "description": "An edge runtime that treats a deploy as a routing change.",
+    "lang": "en",
+    "sitemap": true,
+    "fonts": [
+      "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap"
+    ],
+    "stylesheets": ["/base.css"]
   }
 }

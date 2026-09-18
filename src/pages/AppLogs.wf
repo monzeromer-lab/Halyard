@@ -1,0 +1,7 @@
+Page AppLogs (path: "/app/logs", title: "Logs", description: "Request logs from every region, with a trace for each line.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Logs", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

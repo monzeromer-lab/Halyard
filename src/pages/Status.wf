@@ -1,0 +1,7 @@
+Page Status (path: "/status", title: "Halyard status", description: "Live status of the edge runtime, builds, edge KV, queues and the dashboard, across 19 regions.") {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Halyard status", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

@@ -1,0 +1,7 @@
+Page AppEditor (path: "/app/editor", title: "Routing rules editor", description: "The routing rules that ship with the build.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Routing rules editor", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

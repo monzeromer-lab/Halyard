@@ -1,0 +1,7 @@
+Page Docs (path: "/docs", title: "Routing rules", description: "A routing rule decides which build or function answers a request. Rules live in your repository.") {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Routing rules", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

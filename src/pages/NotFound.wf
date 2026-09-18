@@ -1,0 +1,7 @@
+Page NotFound (path: "*", title: "Not found", description: "No build claims this path.", noindex) {
+    Container {
+        style { padding: "64px 24px" }
+        Heading("Not found", h1)
+        Text("Coming in a later milestone.", muted)
+    }
+}

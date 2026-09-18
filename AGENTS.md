@@ -85,6 +85,44 @@ UserCard(name: "Monzer", role: "Developer")
 - Optional props: `avatar?: String`
 - Default values: `active: Bool = true`
 
+#### Slots
+
+A component takes a block from its caller and places it with the `children`
+keyword. The block is compiled in the caller's scope, so it reads the caller's
+state and loop bindings; the component only decides where it lands.
+
+```wf
+Component Panel (title: String) {
+    Card {
+        Heading(title, h3)
+        children
+    }
+}
+
+Panel(title: "Keys") {
+    Text("Rotate every 90 days.")
+    Button("Generate", primary) { generate() }
+}
+```
+
+Call user components with **named arguments**.
+
+### Attributes
+
+Any named argument a built-in does not recognise becomes an HTML attribute on
+its root element, and a hyphenated name is allowed, so ARIA state and data
+attributes are written where the design wants them:
+
+```wf
+Button("Errors", aria-pressed: showErrors, data-tone: "danger") { showErrors = !showErrors }
+Trow(aria-selected: isSelected) { ... }
+Badge("Ready", data-tone: "success")
+```
+
+A value that reads state follows it. `aria-*` keeps a `false` value as the
+string `"false"` (a real ARIA state); any other attribute given `false` is
+omitted.
+
 ### App (Router + Layout)
 
 The Router can be placed at any nesting depth inside the App. The codegen recursively finds it.
@@ -334,10 +372,10 @@ Link(to: "/about") { Text("About") } // Declarative
 | Component | Usage |
 |-----------|-------|
 | `Container` | `Container { ... }` — centered max-width wrapper |
-| `Row` | `Row(gap: md, align: center, justify: between) { ... }` — horizontal flex |
+| `Row` | `Row(gap: md, align: center, justify: between) { ... }` — horizontal flex. `gap`: xs sm md lg xl · `align`: start center end stretch baseline · `justify`: start center end between around evenly |
 | `Column` | `Column(span: 6) { ... }` — 12-column grid child |
-| `Grid` | `Grid(columns: 3, gap: md) { ... }` — CSS grid |
-| `Stack` | `Stack(gap: md) { ... }` — vertical flex |
+| `Grid` | `Grid(columns: 3, gap: md) { ... }` — CSS grid; takes the same `gap`/`align`/`justify` as `Row` |
+| `Stack` | `Stack(gap: md) { ... }` — vertical flex; takes the same `gap`/`align`/`justify` as `Row` |
 | `Spacer` | `Spacer()` or `Spacer(sm)` `Spacer(xl)` — vertical space |
 | `Divider` | `Divider()` — horizontal line |
 
@@ -347,7 +385,7 @@ Link(to: "/about") { Text("About") } // Declarative
 |-----------|-------|
 | `Navbar` | `Navbar { Navbar.Brand { ... } Navbar.Links { ... } Navbar.Actions { ... } }` |
 | `Sidebar` | `Sidebar { Sidebar.Header { ... } Sidebar.Item(to: "/", icon: "home") { ... } Sidebar.Divider() }` |
-| `Link` | `Link(to: "/path") { Text("Label") }` |
+| `Link` | `Link(to: "/path") { Text("Label") }` — the link whose `to` matches the current route carries `.active` and `aria-current="page"`; `active: "prefix"` also matches routes beneath it |
 | `Tabs` | `Tabs { TabPage("Tab 1") { ... } TabPage("Tab 2") { ... } }` |
 | `Breadcrumb` | `Breadcrumb { Breadcrumb.Item(to: "/") { Text("Home") } Breadcrumb.Item { Text("Current") } }` |
 | `Menu` | `Menu(trigger: "Options") { Menu.Item { ... } }` |
@@ -357,7 +395,7 @@ Link(to: "/about") { Text("About") } // Declarative
 | Component | Usage |
 |-----------|-------|
 | `Card` | `Card(elevated) { Card.Header { ... } Card.Body { ... } Card.Footer { ... } }` |
-| `Table` | `Table { Thead { Trow { Tcell("Col") } } Tbody { Trow { Tcell("Val") } } }` |
+| `Table` | `Table(caption: "Deployments") { Thead { Trow { Tcell("Col") } } Tbody { Trow { Tcell("Val") } } }` — cells inside `Thead` are `<th scope="col">`; `caption` is the table's accessible name, rendered visually hidden |
 | `List` | `List { Text("Item 1") Text("Item 2") }` — `List(ordered)` for numbered |
 | `Badge` | `Badge("Label", primary)` — variants: primary, success, danger, warning, info |
 | `Tag` | `Tag("JavaScript")` |
@@ -441,6 +479,9 @@ Sidebar {
 ```
 
 Sub-components: `Sidebar.Header`, `Sidebar.Item`, `Sidebar.Divider`
+
+A `Sidebar.Item` whose `to` matches the current route is marked `.active` +
+`aria-current="page"`, like a `Link`; `active: "prefix"` matches sub-routes.
 
 #### Breadcrumb
 
@@ -622,6 +663,9 @@ Card {
 
 Style properties use CSS names (hyphenated). Values are strings or numbers. All CSS property names work, including `transition`, `animation`, `filter`, etc.
 
+A value that reads state follows it: `style { width: "{pct}%" }` or
+`style { background: tone }` repaints whenever `pct` or `tone` changes.
+
 ### Style support in PDF and Slides
 
 The PDF and Slides backends honor the same set of style properties on `Slide` (slides only) and on layout containers (`Container`, `Column`, `Stack`, `Grid`, `Card`, `Section`). Anything else emits a `warning[pdf]:` or `warning[slides]: unsupported style property '<name>' on <Component>` (deduped per build).
@@ -671,7 +715,36 @@ Heading("Title", h1) {
 }
 ```
 
-`@media` queries are emitted as scoped CSS `<style>` elements. Each element gets a unique class to ensure the query only applies to that element.
+A `@media` block is compiled into `styles.css` under a class named by its
+content, and the element carries the class — so a hundred identical cards
+share one rule, and the static paint has it before JavaScript runs. Values
+inside it take design-token keywords like any other style value.
+
+### Pseudo-states
+
+What an inline style cannot say — how an element looks while hovered,
+focused, pressed or disabled — is a nested block in the same `style { }`:
+
+```wf
+Button("Publish changes") {
+    style {
+        background: "var(--brand)"
+        color: "var(--on-brand)"
+        hover { background: "var(--brand-hover)" }
+        active { transform: "translateY(1px)" }
+        focus { outline: "2px solid var(--focus-ring)"  outline-offset: "2px" }
+        disabled { opacity: 0.45 }
+    }
+}
+Input(text, placeholder: "shop.example.com") {
+    style { placeholder { color: "var(--text-tertiary)" } }
+}
+```
+
+States: `hover`, `focus` (compiled to `:focus-visible` — the keyboard focus
+ring, not a ring on every click), `active`, `disabled`, `placeholder`,
+`focus-within`. These are stylesheet rules, so their values must be known at
+build time: literals and token keywords, not state.
 
 ### Themes
 
@@ -687,11 +760,27 @@ Theme Brand {
 ```
 
 Every token you do not name keeps its baseline value, so a theme is only as
-large as the difference you want. Declare one and it is used automatically;
+large as the difference you want. A theme may also declare tokens of its own
+(`token surface-raised: "#131519"`, `token viz-1: "#ff6a2b"`); every token
+becomes a custom property on `:root`, usable from any style block as
+`"var(--surface-raised)"`. Declare one and it is used automatically;
 declare several and pick one with `"theme": { "name": "Brand" }`.
 
 Four starting points ship in `examples/themes/` — copy one into `src/` and edit
 it. They are ordinary source files, not engine settings.
+
+The baseline names system fonts on purpose. A theme that names a web font
+lists where to fetch it, and every page links it ahead of `styles.css` with a
+`preconnect` to its origin:
+
+```json
+{ "meta": { "fonts": ["https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap"] } }
+```
+
+`meta.stylesheets` links extra stylesheets the same way — a file in `public/`
+by site-relative path, or a URL. It is for the few things no element-level
+`style { }` can say (`html { background }`, `::selection`), not for component
+styling, which belongs in `.wf` source.
 
 For values a machine supplies (a deploy pipeline injecting a brand colour),
 `theme.tokens` in `webfluent.app.json` still applies, on top of the theme:
@@ -735,7 +824,10 @@ emitted: Google ignores both.
 ## Security headers
 
 `"build": { "csp": true }` emits a strict `Content-Security-Policy` meta tag and a
-`_headers` file for hosts that read one. The generated output already satisfies
+`_headers` file for hosts that read one. The policy is widened by exactly the
+origins `meta.fonts` and `meta.stylesheets` declare (`style-src`, and
+`font-src` for the files a font stylesheet references), so a declared font is
+never blocked by the policy that ships beside it. The generated output already satisfies
 `script-src 'self'` with no `unsafe-inline` — the compiler writes external files
 and binds events with `addEventListener` rather than inline `on*` attributes. It
 is off by default because a site that later embeds a third-party script would
@@ -966,7 +1058,10 @@ Code("function() \{ return 42; \}", block)
 
 ## Compiler diagnostics
 
-All are warnings; none fails a build.
+All are warnings; none fails a build. `wf build` prints every one of them,
+with the file and line it came from. A reference to nothing — an undeclared
+component, a `Route` to a page that is not declared, two pages or two
+components with one name — is an error and stops the build.
 
 | Rule | What it means |
 |---|---|
@@ -1027,7 +1122,9 @@ The heading-outline rules (`A11`, `A12`) do not apply to `Presentation` or
         "title": "",
         "description": "",
         "favicon": "",
-        "lang": "en"
+        "lang": "en",
+        "fonts": [],
+        "stylesheets": []
     },
     "i18n": {
         "defaultLocale": "en",
@@ -1146,7 +1243,7 @@ Page Invoice (path: "/", title: "Invoice") {
 10. **No semicolons needed**: statements are newline-separated
 11. **`return` in actions**: `return expr` returns a value from store actions
 11. **Style blocks support all CSS properties**: including `transition`, `animation`, `filter` — no conflicts with language keywords
-12. **`@media` inside style blocks**: responsive styles are scoped to the element — `@media (max-width: 768px) { display: "none" }`
+12. **`@media` and pseudo-states inside style blocks**: `@media (max-width: 768px) { display: "none" }` and `hover { … }` compile to stylesheet rules scoped to the element
 13. **Router nests anywhere**: `Router` can be inside `Row`, `Container`, `Stack`, or any layout wrapper at any depth
 14. **Browser globals are not prefixed**: `localStorage`, `window`, `console`, `JSON`, `Math`, `Date`, `setTimeout`, `fetch`, `Promise`, etc. compile as-is
 15. **Both `!=` and `!==`**: both inequality operators are supported (both compile to `!==` in JS)
