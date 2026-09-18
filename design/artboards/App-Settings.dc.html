@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — storefront-edge</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.rail-a{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:var(--radius-sm);
+color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+transition:background 140ms var(--ease-standard),color 140ms var(--ease-standard)}
+.rail-a:hover{background:var(--surface-hover);color:var(--text-primary)}
+.rail-a[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.rail-a[aria-current="page"] .bar{opacity:1}
+.bar{position:absolute;left:-10px;width:2px;height:16px;background:var(--brand);border-radius:2px;
+opacity:0}
+.crumb:hover{color:var(--text-primary)}
+
+.sub{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:9px 12px;
+border-radius:var(--radius-sm);cursor:pointer;text-align:left;font:600 13px/1.2 var(--font-sans);
+color:var(--text-tertiary);transition:background 140ms var(--ease-standard)}
+.sub:hover{background:var(--surface-hover);color:var(--text-primary)}
+.sub[aria-current="true"]{background:var(--surface-active);color:var(--text-primary)}
+.row{display:flex;gap:28px;padding:20px 0;border-bottom:1px solid var(--line-hairline)}
+.row:last-child{border-bottom:0}
+.row-l{width:260px;flex:none}
+.row-c{flex-grow:1;min-width:0;max-width:520px}
+.radio{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--line-default);
+border-radius:var(--radius-sm);cursor:pointer;background:none;text-align:left;width:100%;
+transition:border-color 140ms var(--ease-standard),background 140ms var(--ease-standard)}
+.radio:hover{border-color:var(--line-strong)}
+.radio[aria-checked="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.dot-o{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-control);flex:none;
+margin-top:2px;display:inline-flex;align-items:center;justify-content:center}
+.radio[aria-checked="true"] .dot-o{border-color:var(--brand)}
+.dot-i{width:8px;height:8px;border-radius:50%;background:var(--brand);opacity:0}
+.radio[aria-checked="true"] .dot-i{opacity:1}
+</style>
+</helmet>
+<div style="width: 1440px; height: 980px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex;">
+<aside style="width: 236px; height: 980px; flex: none; background: var(--surface-sunken); border-right: 1px solid var(--line-hairline); display: flex; flex-direction: column; padding: 16px 12px;">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 9px; padding: 4px 8px 16px; color: var(--text-primary);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 16px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<button type="button" style="display: flex; align-items: center; gap: 10px; width: 100%; height: 44px; padding: 0 10px; margin-bottom: 18px; background: var(--surface-inset); border: 1px solid var(--line-default); border-radius: var(--radius-sm); cursor: pointer; text-align: left;"><span style="width: 24px; height: 24px; border-radius: 6px; background: var(--brand-soft); color: var(--text-brand); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-mono); flex: none;">HL</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 13px/1.2 var(--font-sans); color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">storefront-edge</span><span style="display: block; font: 400 11px/1.2 var(--font-mono); color: var(--text-tertiary);">hl-2201 &middot; production</span></span><span style="color: var(--text-tertiary); display: inline-flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+<p class="fl-overline" style="padding: 0 10px 8px;">PROJECT</p>
+<nav aria-label="Project" style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px;">
+<a class="rail-a" href="App-Overview.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"></path><path d="m3 13 9 5 9-5"></path></svg></span>Overview</a>
+<a class="rail-a" href="App-Deployments.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15c-1.5 1.5-2 6-2 6s4.5-.5 6-2"></path><path d="M9 13 5.5 12.5 4 11l5-3 4-4a7 7 0 0 1 7-1 7 7 0 0 1-1 7l-4 4-3 5-1.5-1.5L11 15Z"></path><circle cx="14.5" cy="9.5" r="1.4"></circle></svg></span>Deployments</a>
+<a class="rail-a" href="App-Observability.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></span>Observability</a>
+<a class="rail-a" href="App-Logs.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M13 17h6"></path></svg></span>Logs</a>
+<a class="rail-a" href="App-BuildDetail.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="M12 12v9M12 12 4 7.5M12 12l8-4.5"></path></svg></span>Builds</a>
+<a class="rail-a" href="Explorer.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span>Explorer</a>
+<a class="rail-a" href="App-Settings.dc.html" aria-current="page" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"></path></svg></span>Settings</a>
+</nav>
+<p class="fl-overline" style="padding: 0 10px 8px;">TOOLS</p>
+<nav aria-label="Tools" style="display: flex; flex-direction: column; gap: 2px;">
+<a class="rail-a" href="Editor.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="9" r="2.5"></circle><path d="M6 8.5v7M18 11.5c0 3-4 2.5-6 4.5"></path></svg></span>Routing rules</a>
+<a class="rail-a" href="Graph.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></span>Infrastructure</a>
+<a class="rail-a" href="Status.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h13l-2.5 4L18 12H5"></path></svg></span>Status page</a>
+</nav>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+<a href="Status.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm); background: var(--surface-inset);"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none;"></span><span style="font-size: 12px; color: var(--text-secondary);">19/19 regions healthy</span></a>
+<div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px;"><span style="width: 28px; height: 28px; border-radius: 50%; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-sans); color: var(--text-secondary); flex: none;">YN</span><span style="flex-grow: 1; min-width: 0; font: 600 12px/1.3 var(--font-sans); color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">[YOUR NAME]</span><span style="color: var(--text-tertiary); display: inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></span></div>
+</div></aside>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 28px; border-bottom: 1px solid var(--line-hairline); background: var(--surface-canvas);">
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 13px; flex-grow: 1;">
+<a class="crumb" href="App-Overview.dc.html" style="color: var(--text-tertiary);">storefront-edge</a>
+<span style="color: var(--line-strong); display: inline-flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span>
+<span aria-current="page" style="color: var(--text-primary); font-weight: 600;">Settings</span>
+</nav>
+<a href="Overlays.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="gap: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><span class="fl-kbd">⌘K</span></a>
+<button type="button" class="fl-icon-btn" aria-label="Notifications" style="width: 32px; height: 32px; min-width: 32px; position: relative;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"></path><path d="M10 19a2 2 0 0 0 4 0"></path></svg><span style="position: absolute; top: 5px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand);"></span></button>
+<span style="width: 28px; height: 28px; border-radius: 50%; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-sans); color: var(--text-secondary);">YN</span>
+</header>
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+<aside style="width: 232px; flex: none; border-right: 1px solid var(--line-hairline); padding: 20px 12px;">
+<p class="fl-overline" style="padding: 0 12px 10px;">PROJECT SETTINGS</p>
+<nav aria-label="Settings sections" style="display: flex; flex-direction: column; gap: 2px;">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<button type="button" class="sub" aria-current="{{ t.on }}" onClick="{{ t.pick }}" style="color: {{ t.color }};"><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span>{{ t.label }}</button>
+</sc-for>
+</nav>
+<hr class="fl-rule" style="margin: 18px 0;">
+<p style="margin: 0; padding: 0 12px; font-size: 12px; line-height: 1.6; color: var(--text-tertiary);">Organisation-wide settings, including SSO and the audit log, live one level up.</p>
+</aside>
+<div style="flex-grow: 1; min-width: 0; overflow: auto; padding: 28px 36px 40px;">
+<sc-if value="{{ isGeneral }}" hint-placeholder-val="{{ true }}">
+<section aria-label="General settings">
+<h2 style="margin: 0 0 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">General</h2>
+<p style="margin: 0 0 8px; font-size: 14px; color: var(--text-tertiary); max-width: 72ch;">Everything here is stored on the project, not on the build. Changing it takes effect on the next deploy.</p>
+<div class="row"><div class="row-l"><p style="margin: 0 0 4px; font: 700 14px/1.3 var(--font-sans); color: var(--text-primary);">Project name</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-tertiary);">Shown in the dashboard and used for preview URLs.</p></div><div class="row-c"><label class="fl-label" for="s-name">Name</label><input class="fl-input" id="s-name" value="{{ name }}" onChange="{{ setName }}" aria-invalid="{{ nameBad }}" aria-describedby="s-name-help"><p class="fl-help" id="s-name-help" style="color: {{ nameHelpColor }};">{{ nameHelp }}</p></div></div>
+<div class="row"><div class="row-l"><p style="margin: 0 0 4px; font: 700 14px/1.3 var(--font-sans); color: var(--text-primary);">Framework preset</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-tertiary);">Detected from the repository. Override it only if detection is wrong.</p></div><div class="row-c"><label class="fl-label" for="s-fw">Preset</label><select class="fl-input" id="s-fw"><option>Detected: Next.js 15</option><option>Astro</option><option>SvelteKit</option><option>Remix</option><option>No framework</option></select><p class="fl-help">Changing this clears the build cache once.</p></div></div>
+<div class="row"><div class="row-l"><p style="margin: 0 0 4px; font: 700 14px/1.3 var(--font-sans); color: var(--text-primary);">Root directory</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-tertiary);">The folder inside the repository that Halyard builds.</p></div><div class="row-c"><label class="fl-label" for="s-root">Path</label><input class="fl-input fl-mono" id="s-root" value="apps/storefront" style="font-size: 13px;"></div></div>
+<div class="row"><div class="row-l"><p style="margin: 0 0 4px; font: 700 14px/1.3 var(--font-sans); color: var(--text-primary);">Build behaviour</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-tertiary);">Two switches that change every future build.</p></div><div class="row-c"><div style="display: flex; flex-direction: column; gap: 14px;"><sc-for list="{{switches}}" as="sw" hint-placeholder-count="2"><div style="display: flex; gap: 14px; align-items: flex-start;"><button type="button" class="fl-switch" role="switch" aria-checked="{{ sw.on }}" aria-labelledby="{{ sw.id }}" onClick="{{ sw.toggle }}"><span class="fl-switch__knob"></span></button><span style="flex-grow: 1;"><span id="{{ sw.id }}" style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">{{ sw.label }}</span><span style="display: block; margin-top: 3px; font-size: 13px; line-height: 1.5; color: var(--text-tertiary);">{{ sw.help }}</span></span></div></sc-for></div></div></div>
+<div class="row"><div class="row-l"><p style="margin: 0 0 4px; font: 700 14px/1.3 var(--font-sans); color: var(--text-primary);">Deploy approvals</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-tertiary);">Who has to approve before traffic moves to a new build.</p></div><div class="row-c"><div role="radiogroup" aria-label="Deploy approvals" style="display: flex; flex-direction: column; gap: 10px;"><sc-for list="{{approvals}}" as="a" hint-placeholder-count="3"><button type="button" class="radio" role="radio" aria-checked="{{ a.on }}" onClick="{{ a.pick }}"><span class="dot-o"><span class="dot-i"></span></span><span><span style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">{{ a.label }}</span><span style="display: block; margin-top: 3px; font-size: 13px; line-height: 1.5; color: var(--text-tertiary);">{{ a.help }}</span></span></button></sc-for></div></div></div>
+<div style="display: flex; gap: 10px; padding-top: 22px;"><button type="button" class="fl-btn" data-variant="primary" onClick="{{ save }}">{{ saveLabel }}</button><button type="button" class="fl-btn" data-variant="ghost">Discard changes</button></div>
+</section></sc-if>
+<sc-if value="{{ isDomains }}" hint-placeholder-val="{{ true }}">
+<section aria-label="Domains">
+<h2 style="margin: 0 0 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Domains</h2>
+<p style="margin: 0 0 20px; font-size: 14px; color: var(--text-tertiary); max-width: 72ch;">Certificates are issued and renewed automatically. A domain starts serving as soon as its record resolves.</p>
+<form style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 24px; max-width: 620px;" onSubmit="{{ noSubmit }}">
+<span style="flex-grow: 1;"><label class="fl-label" for="s-domain">Add a domain</label><input class="fl-input" id="s-domain" placeholder="shop.example.com" value="{{ domain }}" onChange="{{ setDomain }}" aria-invalid="{{ domainBad }}" aria-describedby="s-domain-help"></span>
+<button type="submit" class="fl-btn" data-variant="primary" onClick="{{ addDomain }}">Add domain</button>
+</form>
+<p class="fl-error" id="s-domain-help" style="margin: -18px 0 22px; color: {{ domainHelpColor }};">{{ domainHelp }}</p>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-md); overflow: hidden;">
+<table class="fl-table"><caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Domains attached to this project</caption><thead><tr><th scope="col">Domain</th><th scope="col">Role</th><th scope="col">Environment</th><th scope="col">Certificate</th><th scope="col" style="width: 56px;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Actions</span></th></tr></thead><tbody>
+<tr><td class="fl-mono" style="color: var(--text-primary); font-size: 13px;">storefront.example.com</td><td><span class="fl-badge" data-tone="success">Primary</span></td><td><span class="fl-badge" data-variant="outline">production</span></td><td style="font-size: 13px;">Valid until 12 Dec</td><td style="text-align: right;"><button type="button" class="fl-icon-btn" aria-label="Actions for storefront.example.com" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></button></td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary); font-size: 13px;">www.example.com</td><td><span class="fl-badge" data-tone="info">Redirect</span></td><td><span class="fl-badge" data-variant="outline">production</span></td><td style="font-size: 13px;">Redirects to storefront.example.com</td><td style="text-align: right;"><button type="button" class="fl-icon-btn" aria-label="Actions for www.example.com" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></button></td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary); font-size: 13px;">preview.example.com</td><td><span class="fl-badge" data-tone="success">Wildcard</span></td><td><span class="fl-badge" data-variant="outline">preview</span></td><td style="font-size: 13px;">Valid until 12 Dec</td><td style="text-align: right;"><button type="button" class="fl-icon-btn" aria-label="Actions for preview.example.com" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></button></td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary); font-size: 13px;">shop.example.dev</td><td><span class="fl-badge" data-tone="warning">Pending</span></td><td><span class="fl-badge" data-variant="outline">preview</span></td><td style="font-size: 13px;">Add a CNAME to cname.halyard.dev</td><td style="text-align: right;"><button type="button" class="fl-icon-btn" aria-label="Actions for shop.example.dev" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></button></td></tr>
+</tbody></table></div></section></sc-if>
+<sc-if value="{{ isEnv }}" hint-placeholder-val="{{ true }}">
+<section aria-label="Environment variables">
+<div style="display: flex; align-items: flex-end; gap: 16px; margin-bottom: 8px;">
+<div style="flex-grow: 1;"><h2 style="margin: 0 0 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Environment</h2><p style="margin: 0; font-size: 14px; color: var(--text-tertiary); max-width: 72ch;">Secrets are encrypted at rest and decrypted in the region that serves the request. They are never written to a build log.</p></div>
+<button type="button" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M4 19h16"></path></svg>Import .env</button>
+<button type="button" class="fl-btn" data-variant="primary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add variable</button>
+</div>
+<div style="margin: 20px 0; padding: 14px 16px; background: var(--info-soft); border: 1px solid var(--info); border-radius: var(--radius-md); display: flex; gap: 12px;"><span style="color: var(--info); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.9v.1"></path></svg></span><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">Three of these are referenced by a build that is live right now. Changing one does not restart that build — the next deploy picks it up.</p></div>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-md); overflow: hidden;">
+<table class="fl-table"><caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Environment variables and which environments they apply to</caption><thead><tr><th scope="col" style="width: 30%;">Key</th><th scope="col">Value</th><th scope="col" style="width: 15%;">Applies to</th><th scope="col" style="width: 96px;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Actions</span></th></tr></thead><tbody>
+<sc-for list="{{vars}}" as="v" hint-placeholder-count="6">
+<tr><td class="fl-mono" style="color: var(--text-primary); font-size: 13px;"><span style="display: inline-flex; align-items: center; gap: 8px;"><span style="color: {{ v.lockColor }}; display: inline-flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2"></rect><path d="M8 10V7.5a4 4 0 0 1 8 0V10"></path></svg></span>{{ v.key }}</span></td><td class="fl-mono" style="font-size: 12.5px; color: var(--text-secondary); word-break: break-all;">{{ v.shown }}</td><td><span class="fl-badge" data-variant="outline">{{ v.scope }}</span></td><td style="text-align: right; white-space: nowrap;"><button type="button" class="fl-icon-btn" aria-label="{{ v.revealLabel }}" aria-pressed="{{ v.revealed }}" onClick="{{ v.toggle }}" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg></button><button type="button" class="fl-icon-btn" aria-label="{{ v.deleteLabel }}" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"></path></svg></button></td></tr>
+</sc-for>
+</tbody></table></div></section></sc-if>
+<sc-if value="{{ isTeam }}" hint-placeholder-val="{{ true }}">
+<section aria-label="Team">
+<h2 style="margin: 0 0 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Team</h2>
+<p style="margin: 0 0 22px; font-size: 14px; color: var(--text-tertiary); max-width: 72ch;">Viewers are free and can open every read-only view, including the status page and traces.</p>
+<form style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 26px; max-width: 680px;" onSubmit="{{ noSubmit }}">
+<span style="flex-grow: 1;"><label class="fl-label" for="s-invite">Invite by email</label><input class="fl-input" id="s-invite" type="email" placeholder="name@company.com"></span>
+<span style="width: 160px; flex: none;"><label class="fl-label" for="s-role">Role</label><select class="fl-input" id="s-role"><option>Developer</option><option>Admin</option><option>Viewer</option></select></span>
+<button type="submit" class="fl-btn" data-variant="primary">Send invitation</button>
+</form>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><span style="width: 34px; height: 34px; border-radius: 50%; flex: none; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 12px/1 var(--font-sans); color: var(--text-secondary);">YN</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">[YOUR NAME]</span><span style="display: block; font-size: 12px; color: var(--text-tertiary);">you@company.com</span></span><select class="fl-input" aria-label="Role for [YOUR NAME]" style="width: 148px; height: 32px; font-size: 13px; flex: none;"><option>Owner</option><option>Owner</option><option>Admin</option><option>Developer</option><option>Viewer</option></select><button type="button" class="fl-icon-btn" aria-label="Remove [YOUR NAME]" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><span style="width: 34px; height: 34px; border-radius: 50%; flex: none; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 12px/1 var(--font-sans); color: var(--text-secondary);">AK</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">[TEAMMATE 1]</span><span style="display: block; font-size: 12px; color: var(--text-tertiary);">ak@company.com</span></span><select class="fl-input" aria-label="Role for [TEAMMATE 1]" style="width: 148px; height: 32px; font-size: 13px; flex: none;"><option>Admin</option><option>Owner</option><option>Admin</option><option>Developer</option><option>Viewer</option></select><button type="button" class="fl-icon-btn" aria-label="Remove [TEAMMATE 1]" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><span style="width: 34px; height: 34px; border-radius: 50%; flex: none; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 12px/1 var(--font-sans); color: var(--text-secondary);">MR</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">[TEAMMATE 2]</span><span style="display: block; font-size: 12px; color: var(--text-tertiary);">mr@company.com</span></span><select class="fl-input" aria-label="Role for [TEAMMATE 2]" style="width: 148px; height: 32px; font-size: 13px; flex: none;"><option>Developer</option><option>Owner</option><option>Admin</option><option>Developer</option><option>Viewer</option></select><button type="button" class="fl-icon-btn" aria-label="Remove [TEAMMATE 2]" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><span style="width: 34px; height: 34px; border-radius: 50%; flex: none; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 12px/1 var(--font-sans); color: var(--text-secondary);">JS</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 14px/1.3 var(--font-sans); color: var(--text-primary);">[TEAMMATE 3]</span><span style="display: block; font-size: 12px; color: var(--text-tertiary);">js@company.com</span></span><span class="fl-badge" data-tone="warning">Invitation pending</span><select class="fl-input" aria-label="Role for [TEAMMATE 3]" style="width: 148px; height: 32px; font-size: 13px; flex: none;"><option>Viewer</option><option>Owner</option><option>Admin</option><option>Developer</option><option>Viewer</option></select><button type="button" class="fl-icon-btn" aria-label="Remove [TEAMMATE 3]" style="width: 30px; height: 30px; min-width: 30px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+</div></section></sc-if>
+<sc-if value="{{ isDanger }}" hint-placeholder-val="{{ true }}">
+<section aria-label="Danger zone">
+<h2 style="margin: 0 0 6px; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Danger zone</h2>
+<p style="margin: 0 0 24px; font-size: 14px; color: var(--text-tertiary); max-width: 72ch;">Two of these cannot be undone. Both ask you to type the project name first, because a confirmation dialog on its own is not a decision.</p>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-md); padding: 20px 22px; margin-bottom: 16px; display: flex; gap: 24px; align-items: center;"><div style="flex-grow: 1;"><p style="margin: 0 0 5px; font: 700 16px/1.3 var(--font-sans);">Pause the project</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">Every domain starts answering 503 and builds stop. The artifacts, traces and settings stay exactly as they are. Reversible at any time.</p></div><button type="button" class="fl-btn" data-variant="secondary" style="flex: none;">Pause</button></div>
+<div style="border: 1px solid var(--danger); border-radius: var(--radius-md); background: var(--danger-soft); padding: 22px 24px;">
+<div style="display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px;"><span style="color: var(--danger); flex: none; display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div><p style="margin: 0 0 5px; font: 700 16px/1.3 var(--font-sans); color: var(--text-danger);">Delete storefront-edge</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">Removes 128 builds, 4 domains, every trace and the edge KV namespace. The project name becomes available to anyone immediately. There is no export afterwards.</p></div></div>
+<div style="display: flex; gap: 12px; align-items: flex-end; max-width: 620px;">
+<span style="flex-grow: 1;"><label class="fl-label" for="s-confirm">Type <code class="fl-mono" style="color: var(--text-primary);">storefront-edge</code> to confirm</label><input class="fl-input" id="s-confirm" value="{{ confirm }}" onChange="{{ setConfirm }}" placeholder="storefront-edge" autoComplete="off"></span>
+<button type="button" class="fl-btn" data-variant="danger" disabled="{{ cannotDelete }}" style="flex: none;">Delete this project</button>
+</div></div></section></sc-if>
+</div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":980}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: 'env', name: 'storefront-edge', saved: false,
+      switches: { cache: true, attest: true },
+      approval: 'two',
+      revealed: [], domain: '', domainMsg: '', domainBad: false, confirm: ''
+    };
+  }
+
+  renderVals() {
+    var self = this;
+    var TABS = [['general','General'],['domains','Domains'],['env','Environment'],['team','Team'],['danger','Danger zone']];
+    var VARS = [{k:'DATABASE_URL',v:'postgres://halyard:••••••@db.internal:5432/store',s:'All',secret:true},{k:'STRIPE_SECRET_KEY',v:'sk_live_••••••••••••4Kd9',s:'Production',secret:true},{k:'SESSION_SIGNING_KEY',v:'••••••••••••••••••••••••',s:'All',secret:true},{k:'NEXT_PUBLIC_CDN',v:'https://cdn.example.com',s:'All',secret:false},{k:'FEATURE_QUEUES',v:'true',s:'Preview',secret:false},{k:'LOG_LEVEL',v:'info',s:'All',secret:false}];
+
+    var tabs = TABS.map(function (t) {
+      var on = self.state.tab === t[0];
+      return { id: t[0], label: t[1], on: on ? 'true' : 'false',
+               color: t[0] === 'danger' ? '#ff8585' : (on ? '#f4f1ec' : '#949ba7'),
+               pick: function () { self.setState({ tab: t[0] }); } };
+    });
+
+    var SW = [
+      ['cache', 'Reuse the build cache', 'Unchanged steps are skipped. Turn this off only to prove a build is reproducible from nothing.'],
+      ['attest', 'Require a matching attestation', 'A build whose digest does not match a second independent run is refused rather than shipped.']
+    ];
+    var switches = SW.map(function (s) {
+      var on = !!self.state.switches[s[0]];
+      return { key: s[0], id: 'sw-' + s[0], label: s[1], help: s[2],
+               on: on ? 'true' : 'false',
+               toggle: function () {
+                 var next = { cache: self.state.switches.cache, attest: self.state.switches.attest };
+                 next[s[0]] = !on;
+                 self.setState({ switches: next, saved: false });
+               } };
+    });
+
+    var AP = [
+      ['none', 'No approval', 'Anyone who can deploy moves traffic. Fastest, and the right answer for a preview environment.'],
+      ['one', 'One approver', 'Any other member with deploy rights has to approve before traffic moves.'],
+      ['two', 'Two approvers, one an owner', 'What we run on this project. An owner has to be one of the two.']
+    ];
+    var approvals = AP.map(function (a) {
+      var on = self.state.approval === a[0];
+      return { key: a[0], label: a[1], help: a[2], on: on ? 'true' : 'false',
+               pick: function () { self.setState({ approval: a[0], saved: false }); } };
+    });
+
+    var vars = VARS.map(function (v) {
+      var open = self.state.revealed.indexOf(v.k) > -1;
+      return {
+        key: v.k, scope: v.s,
+        shown: v.secret && !open ? v.v : (v.secret ? 'sk_live_9f21c0b4d8e34Kd9' : v.v),
+        lockColor: v.secret ? '#e6c979' : '#5d646f',
+        revealed: open ? 'true' : 'false',
+        revealLabel: (open ? 'Hide' : 'Reveal') + ' the value of ' + v.k,
+        deleteLabel: 'Delete ' + v.k,
+        toggle: function () {
+          var next = self.state.revealed.slice();
+          var at = next.indexOf(v.k);
+          if (at > -1) { next.splice(at, 1); } else { next.push(v.k); }
+          self.setState({ revealed: next });
+        }
+      };
+    });
+
+    var nameOk = /^[a-z0-9][a-z0-9-]{1,38}$/.test(this.state.name);
+
+    return {
+      tabs: tabs, switches: switches, approvals: approvals, vars: vars,
+      isGeneral: this.state.tab === 'general',
+      isDomains: this.state.tab === 'domains',
+      isEnv: this.state.tab === 'env',
+      isTeam: this.state.tab === 'team',
+      isDanger: this.state.tab === 'danger',
+      name: this.state.name,
+      nameBad: nameOk ? 'false' : 'true',
+      nameHelp: nameOk
+        ? 'Lower case, digits and hyphens. Preview URLs become ' + this.state.name + '-<branch>.halyard.app.'
+        : 'Lower case letters, digits and hyphens only, between 2 and 39 characters.',
+      nameHelpColor: nameOk ? '#949ba7' : '#ff8585',
+      setName: function (e) { self.setState({ name: e.target.value, saved: false }); },
+      saveLabel: this.state.saved ? 'Saved' : 'Save changes',
+      save: function () { self.setState({ saved: true }); },
+      domain: this.state.domain,
+      domainBad: this.state.domainBad ? 'true' : 'false',
+      domainHelp: this.state.domainMsg,
+      domainHelpColor: this.state.domainBad ? '#ff8585' : '#66dd9f',
+      setDomain: function (e) { self.setState({ domain: e.target.value, domainMsg: '', domainBad: false }); },
+      addDomain: function (e) {
+        e.preventDefault();
+        var d = self.state.domain.trim();
+        var ok = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d);
+        self.setState({
+          domainBad: !ok,
+          domainMsg: ok
+            ? 'Add a CNAME for ' + d + ' pointing at cname.halyard.dev, then it starts serving.'
+            : 'That is not a hostname. Enter something like shop.example.com, with no scheme and no path.'
+        });
+      },
+      confirm: this.state.confirm,
+      setConfirm: function (e) { self.setState({ confirm: e.target.value }); },
+      cannotDelete: this.state.confirm !== 'storefront-edge',
+      noSubmit: function (e) { e.preventDefault(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Overlays — Halyard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+@keyframes scrimin{from{opacity:0}to{opacity:1}}
+@keyframes popin{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}
+to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes drawin{from{transform:translateX(100%)}to{transform:none}}
+@keyframes menuin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes toastin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes shimmer{from{background-position:-320px 0}to{background-position:320px 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scrim{position:absolute;inset:0;background:var(--surface-scrim);backdrop-filter:blur(6px);
+z-index:400;animation:scrimin 220ms var(--ease-standard) both;border:0;padding:0;width:100%;
+cursor:default}
+.centered{position:absolute;left:50%;top:50%;z-index:500;animation:popin 380ms var(--ease-entrance) both}
+.drawer{position:absolute;top:0;right:0;bottom:0;z-index:500;width:420px;
+animation:drawin 380ms var(--ease-entrance) both}
+.menu{position:absolute;z-index:600;animation:menuin 140ms var(--ease-entrance) both}
+.toast{animation:toastin 220ms var(--ease-entrance) both}
+.mi{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:9px 11px;
+border-radius:var(--radius-sm);color:var(--text-secondary);font:400 13px/1.2 var(--font-sans);
+cursor:pointer;text-align:left}
+.mi:hover,.mi[aria-selected="true"]{background:var(--surface-hover);color:var(--text-primary)}
+.mi[data-tone="danger"]{color:var(--text-danger)}
+.mi[data-tone="danger"]:hover{background:var(--danger-soft)}
+.skel{border-radius:4px;background:linear-gradient(90deg,#1a1d23 0%,#262b33 40%,#1a1d23 80%);
+background-size:320px 100%;animation:shimmer 1.4s linear infinite}
+.spinner{width:20px;height:20px;border-radius:50%;border:2px solid #2a2f37;border-top-color:#ff6a2b;
+animation:spin .8s linear infinite}
+.tip-host{position:relative;display:inline-flex}
+.tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+background:var(--surface-overlay);color:var(--text-primary);border:1px solid var(--line-strong);
+border-radius:var(--radius-sm);padding:7px 10px;font:400 12px/1.3 var(--font-sans);white-space:nowrap;
+opacity:0;pointer-events:none;transition:opacity 140ms var(--ease-standard);z-index:800}
+.tip-host:hover .tip,.tip-host:focus-within .tip{opacity:1}
+.launch{display:flex;align-items:center;gap:10px;width:100%;background:var(--surface-raised);
+border:1px solid var(--line-default);border-radius:var(--radius-sm);padding:11px 13px;cursor:pointer;
+text-align:left;font:600 13px/1.2 var(--font-sans);color:var(--text-secondary);
+transition:border-color 140ms var(--ease-standard),background 140ms var(--ease-standard)}
+.launch:hover{border-color:var(--brand);background:var(--surface-hover);color:var(--text-primary)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1000px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; position: relative; overflow: hidden;">
+<aside style="width: 300px; flex: none; border-right: 1px solid var(--line-hairline); background: var(--surface-sunken); padding: 32px 24px; display: flex; flex-direction: column; gap: 14px;">
+<div><h1 style="margin: 0 0 8px; font-size: 26px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 700;">Overlays</h1><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-tertiary);">Everything that floats above a page, in one board. Open one and it renders over this artboard with its own scrim, exactly as it would in the product.</p></div>
+<hr class="fl-rule" style="margin: 4px 0;">
+<sc-for list="{{launchers}}" as="l" hint-placeholder-count="5">
+<button type="button" class="launch" onClick="{{ l.open }}"><span style="flex-grow: 1;">{{ l.label }}</span><sc-if value="{{ l.hasKey }}" hint-placeholder-val="{{ true }}"><span class="fl-kbd">{{ l.hint }}</span></sc-if></button>
+</sc-for>
+<div style="margin-top: auto; padding: 14px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-radius: var(--radius-md);"><p style="margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-tertiary);">Each overlay traps focus, closes on its own scrim, and restores focus to whatever opened it. Only one at a time, by design.</p></div>
+</aside>
+<div style="flex-grow: 1; min-width: 0; padding: 32px 36px; display: flex; flex-direction: column; gap: 26px; overflow: auto;">
+<div>
+<p class="fl-overline" style="margin-bottom: 12px;">FEEDBACK, INLINE</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<div role="status" style="display: flex; gap: 12px; padding: 14px 16px; background: var(--info-soft); border: 1px solid var(--info); border-radius: var(--radius-md);"><span style="color: var(--info); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.9v.1"></path></svg></span><div style="flex-grow: 1; min-width: 0;"><p style="margin: 0 0 4px; font: 700 13px/1.3 var(--font-sans); color: var(--text-info);">A note</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">Preview deploys read production environment values unless you set preview-specific ones.</p></div><button type="button" class="fl-icon-btn" aria-label="Dismiss" style="width: 26px; height: 26px; min-width: 26px; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div role="status" style="display: flex; gap: 12px; padding: 14px 16px; background: var(--success-soft); border: 1px solid var(--success); border-radius: var(--radius-md);"><span style="color: var(--success); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span><div style="flex-grow: 1; min-width: 0;"><p style="margin: 0 0 4px; font: 700 13px/1.3 var(--font-sans); color: var(--text-success);">Attestation matched</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">This tree built twice on different machines with the same digest.</p></div><button type="button" class="fl-icon-btn" aria-label="Dismiss" style="width: 26px; height: 26px; min-width: 26px; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div role="status" style="display: flex; gap: 12px; padding: 14px 16px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-md);"><span style="color: var(--warning); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div style="flex-grow: 1; min-width: 0;"><p style="margin: 0 0 4px; font: 700 13px/1.3 var(--font-sans); color: var(--text-warning);">gru1 is degraded</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">p95 in gru1 crossed 200 ms for 5 minutes. Traffic is still being served.</p></div><button type="button" class="fl-icon-btn" aria-label="Dismiss" style="width: 26px; height: 26px; min-width: 26px; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div role="status" style="display: flex; gap: 12px; padding: 14px 16px; background: var(--danger-soft); border: 1px solid var(--danger); border-radius: var(--radius-md);"><span style="color: var(--danger); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div style="flex-grow: 1; min-width: 0;"><p style="margin: 0 0 4px; font: 700 13px/1.3 var(--font-sans); color: var(--text-danger);">Deploy refused: HL-4021</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">Weighted rules in group A sum to 99. Fix the weights and redeploy.</p></div><button type="button" class="fl-icon-btn" aria-label="Dismiss" style="width: 26px; height: 26px; min-width: 26px; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+</div></div>
+<div>
+<p class="fl-overline" style="margin-bottom: 12px;">WAITING STATES</p>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+<div class="fl-card" style="padding: 18px; display: flex; flex-direction: column; gap: 10px;"><p class="fl-overline">SKELETON</p><span class="skel" style="height: 13px; width: 78%;"></span><span class="skel" style="height: 13px; width: 94%;"></span><span class="skel" style="height: 13px; width: 62%;"></span><p style="margin: 4px 0 0; font-size: 12px; color: var(--text-tertiary);">Rows of the height the real rows will be, never a spinner over a table.</p></div>
+<div class="fl-card" style="padding: 18px; display: flex; flex-direction: column; gap: 12px;"><p class="fl-overline">PROGRESS</p><div style="display: flex; align-items: center; gap: 12px;"><span class="spinner" role="progressbar" aria-label="Building"></span><span style="font-size: 13px; color: var(--text-secondary);">Compiling 38 routes</span></div><div class="fl-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="Upload to regions"><span class="fl-progress__fill" style="width: 64%;"></span></div><p style="margin: 0; font-size: 12px; color: var(--text-tertiary);">12 of 19 regions acknowledged</p></div>
+<div class="fl-card" style="padding: 18px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start;"><p class="fl-overline">EMPTY STATE</p><span style="color: var(--text-disabled);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span><p style="margin: 0; font: 700 14px/1.3 var(--font-sans);">No queues yet</p><p style="margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-tertiary);">A queue appears here the first time a function publishes to one.</p><button type="button" class="fl-btn" data-variant="secondary" data-size="sm">Read the queue guide</button></div>
+</div></div>
+<div>
+<p class="fl-overline" style="margin-bottom: 12px;">TOOLTIP, ON HOVER OR FOCUS</p>
+<div style="display: flex; gap: 12px;">
+<span class="tip-host"><button type="button" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>Deploy</button><span class="tip" role="tooltip">Builds and ships the current branch</span></span>
+<span class="tip-host"><button type="button" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg>Roll back</button><span class="tip" role="tooltip">Routing change only, about 400 ms</span></span>
+<span class="tip-host"><button type="button" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M4 19h16"></path></svg>Drain</button><span class="tip" role="tooltip">Streams logs to your own sink</span></span>
+</div></div>
+<div>
+<p class="fl-overline" style="margin-bottom: 12px;">TOASTS</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+<sc-for list="{{toastButtons}}" as="t" hint-placeholder-count="4">
+<button type="button" class="fl-btn" data-variant="secondary" data-size="sm" onClick="{{ t.fire }}">{{ t.label }}</button>
+</sc-for>
+<button type="button" class="fl-btn" data-variant="ghost" data-size="sm" onClick="{{ clearToasts }}">Clear the stack</button>
+</div></div>
+</div>
+<sc-if value="{{ isPalette }}" hint-placeholder-val="{{ true }}">
+<button type="button" class="scrim" aria-label="Close the command palette" onClick="{{ close }}"></button>
+<div class="centered" role="dialog" aria-modal="true" aria-label="Command palette" style="width: 620px; margin-left: 0; background: var(--surface-overlay); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); box-shadow: 0 24px 60px rgba(0,0,0,.65); overflow: hidden;">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line-hairline);"><span style="color: var(--text-tertiary); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg></span><label class="fl-label" for="cp-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0;">Search commands</label><input id="cp-q" value="{{ paletteQuery }}" onChange="{{ setPaletteQuery }}" placeholder="Search commands, builds, domains" style="flex-grow: 1; background: none; border: 0; outline: none; color: var(--text-primary); font: 400 16px/1.2 var(--font-sans);"><span class="fl-kbd">esc</span></div>
+<div style="max-height: 360px; overflow: auto; padding: 8px;">
+<sc-for list="{{paletteGroups}}" as="g" hint-placeholder-count="3">
+<div style="margin-bottom: 6px;">
+<p class="fl-overline" style="padding: 8px 11px 6px;">{{ g.name }}</p>
+<sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+<button type="button" class="mi" role="option" aria-selected="{{ it.first }}" onClick="{{ close }}"><span style="color: var(--text-tertiary); display: inline-flex; flex: none;">•</span><span style="flex-grow: 1;">{{ it.label }}</span><span class="fl-kbd">{{ it.hint }}</span></button>
+</sc-for>
+</div>
+</sc-for>
+<sc-if value="{{ paletteEmpty }}" hint-placeholder-val="{{ true }}"><p style="margin: 0; padding: 36px 16px; text-align: center; font-size: 14px; color: var(--text-tertiary);">Nothing matches. Commands, build hashes and domain names are all searchable here.</p></sc-if>
+</div>
+<div style="display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);"><span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-tertiary);"><span class="fl-kbd">↑↓</span>move</span><span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-tertiary);"><span class="fl-kbd">↵</span>run</span><span style="flex-grow: 1;"></span><span class="fl-num" style="font-size: 12px; color: var(--text-tertiary);">{{ paletteCount }} results</span></div>
+</div></sc-if>
+<sc-if value="{{ isModal }}" hint-placeholder-val="{{ true }}">
+<button type="button" class="scrim" aria-label="Close the dialog" onClick="{{ close }}"></button>
+<div class="centered" role="dialog" aria-modal="true" aria-labelledby="md-t" aria-describedby="md-d" style="width: 520px; background: var(--surface-overlay); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); box-shadow: 0 24px 60px rgba(0,0,0,.65); overflow: hidden;">
+<div style="padding: 24px 26px 18px; display: flex; gap: 16px; align-items: flex-start;"><span style="width: 40px; height: 40px; border-radius: 50%; flex: none; background: var(--danger-soft); color: var(--danger); display: inline-flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div><h2 id="md-t" style="margin: 0 0 8px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Roll back to 7c91de?</h2><p id="md-d" style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">Traffic moves off 8f2c41 in about 400 milliseconds. Requests already in flight finish on the build they started on. The routing rules that shipped with 7c91de come back with it.</p></div></div>
+<div style="padding: 0 26px 20px;"><div style="display: flex; gap: 12px; padding: 13px 15px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-sm);"><span style="color: var(--warning); flex: none; display: inline-flex;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.9v.1"></path></svg></span><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">7c91de last ran four days ago and predates the cookie rule fix. The beta cohort will fall back to the default build.</p></div></div>
+<div style="display: flex; gap: 10px; justify-content: flex-end; padding: 16px 26px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);"><button type="button" class="fl-btn" data-variant="ghost" onClick="{{ close }}">Keep 8f2c41</button><button type="button" class="fl-btn" data-variant="danger" onClick="{{ close }}">Roll back now</button></div>
+</div></sc-if>
+<sc-if value="{{ isDrawer }}" hint-placeholder-val="{{ true }}">
+<button type="button" class="scrim" aria-label="Close the panel" onClick="{{ close }}"></button>
+<div class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-t" style="background: var(--surface-overlay); border-left: 1px solid var(--line-strong); box-shadow: -24px 0 60px rgba(0,0,0,.65); display: flex; flex-direction: column;">
+<div style="display: flex; align-items: center; gap: 12px; padding: 20px 22px; border-bottom: 1px solid var(--line-hairline);"><h2 id="dr-t" style="margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1;">Filter traces</h2><button type="button" class="fl-icon-btn" aria-label="Close" onClick="{{ close }}" style="width: 32px; height: 32px; min-width: 32px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button></div>
+<div style="flex-grow: 1; overflow: auto; padding: 22px; display: flex; flex-direction: column; gap: 22px;">
+<div><label class="fl-label" for="dr-range">Time range</label><select class="fl-input" id="dr-range"><option>Last 15 minutes</option><option>Last hour</option><option>Last 24 hours</option><option>Custom…</option></select></div>
+<div><p class="fl-label" style="margin-bottom: 10px;">Status class</p><div style="display: flex; flex-wrap: wrap; gap: 8px;"><sc-for list="{{drawerChips}}" as="c" hint-placeholder-count="4"><button type="button" class="fl-chip" aria-pressed="{{ c.on }}" onClick="{{ c.pick }}">{{ c.label }}</button></sc-for></div></div>
+<div><label class="fl-label" for="dr-region">Region</label><select class="fl-input" id="dr-region"><option>All 19 regions</option><option>fra1</option><option>iad1</option><option>gru1</option></select></div>
+<div><label class="fl-label" for="dr-min">Slower than</label><input class="fl-input fl-num" id="dr-min" value="500" style="width: 140px;"><p class="fl-help">Milliseconds. Leave empty to include everything.</p></div>
+<div><p class="fl-label" style="margin-bottom: 10px;">Only show</p><div style="display: flex; flex-direction: column; gap: 12px;"><sc-for list="{{drawerSwitches}}" as="s" hint-placeholder-count="3"><div style="display: flex; align-items: center; gap: 12px;"><button type="button" class="fl-switch" role="switch" aria-checked="{{ s.on }}" aria-labelledby="{{ s.id }}" onClick="{{ s.toggle }}"><span class="fl-switch__knob"></span></button><span id="{{ s.id }}" style="font-size: 14px; color: var(--text-secondary);">{{ s.label }}</span></div></sc-for></div></div>
+</div>
+<div style="display: flex; gap: 10px; padding: 16px 22px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);"><button type="button" class="fl-btn" data-variant="ghost" style="flex-grow: 1;" onClick="{{ close }}">Reset</button><button type="button" class="fl-btn" data-variant="primary" style="flex-grow: 1;" onClick="{{ close }}">Apply filters</button></div>
+</div></sc-if>
+<sc-if value="{{ isMenu }}" hint-placeholder-val="{{ true }}">
+<button type="button" class="scrim" aria-label="Close the menu" onClick="{{ close }}" style="background: transparent; backdrop-filter: none;"></button>
+<div class="menu" role="menu" aria-label="Build actions" style="left: 360px; top: 150px; width: 236px; background: var(--surface-overlay); border: 1px solid var(--line-default); border-radius: var(--radius-md); padding: 6px; box-shadow: 0 10px 24px rgba(0,0,0,.55);">
+<button type="button" class="mi" role="menuitem" onClick="{{ close }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"></path><path d="m20 4-9 9"></path><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span style="flex-grow: 1;">Open build</span></button>
+<button type="button" class="mi" role="menuitem" onClick="{{ close }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15c-1.5 1.5-2 6-2 6s4.5-.5 6-2"></path><path d="M9 13 5.5 12.5 4 11l5-3 4-4a7 7 0 0 1 7-1 7 7 0 0 1-1 7l-4 4-3 5-1.5-1.5L11 15Z"></path><circle cx="14.5" cy="9.5" r="1.4"></circle></svg><span style="flex-grow: 1;">Promote to production</span><span class="fl-kbd">⌘⇧P</span></button>
+<button type="button" class="mi" role="menuitem" onClick="{{ close }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a1 1 0 0 1 1-1h9"></path></svg><span style="flex-grow: 1;">Copy build hash</span><span class="fl-kbd">⌘C</span></button>
+<button type="button" class="mi" role="menuitem" onClick="{{ close }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M4 19h16"></path></svg><span style="flex-grow: 1;">Download artifacts</span></button>
+<hr class="fl-rule" style="margin: 5px 0;">
+<button type="button" class="mi" role="menuitem" data-tone="danger" onClick="{{ close }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"></path></svg>Delete deployment</button>
+</div></sc-if>
+<sc-if value="{{ isPopover }}" hint-placeholder-val="{{ true }}">
+<button type="button" class="scrim" aria-label="Close the popover" onClick="{{ close }}" style="background: transparent; backdrop-filter: none;"></button>
+<div class="menu" role="dialog" aria-labelledby="po-t" style="left: 360px; top: 210px; width: 320px; background: var(--surface-overlay); border: 1px solid var(--line-default); border-radius: var(--radius-md); padding: 18px; box-shadow: 0 10px 24px rgba(0,0,0,.55);">
+<p id="po-t" style="margin: 0 0 8px; font: 700 15px/1.3 var(--font-sans);">What is a cold start?</p>
+<p style="margin: 0 0 14px; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">The time to create a fresh isolate in a region that has not served this build recently. It is paid by one request in a few thousand, and it is included in the p95 you see.</p>
+<div style="display: flex; gap: 8px;"><a href="Docs.dc.html" class="fl-btn" data-variant="secondary" data-size="sm">Read more</a><button type="button" class="fl-btn" data-variant="ghost" data-size="sm" onClick="{{ close }}">Got it</button></div>
+</div></sc-if>
+<div role="region" aria-live="polite" aria-label="Notifications" style="position: absolute; right: 24px; bottom: 24px; z-index: 700; display: flex; flex-direction: column; gap: 10px; width: 356px; align-items: stretch;">
+<sc-for list="{{toasts}}" as="t" hint-placeholder-count="2">
+<div class="toast" style="display: flex; gap: 12px; padding: 14px 16px; background: var(--surface-overlay); border: 1px solid {{ t.border }}; border-radius: var(--radius-md); box-shadow: 0 10px 24px rgba(0,0,0,.55);">
+<span style="color: {{ t.color }}; flex: none; display: inline-flex; margin-top: 1px;"><span style="width: 9px; height: 9px; border-radius: 50%; background: {{ t.color }}; display: inline-block;"></span></span>
+<div style="flex-grow: 1; min-width: 0;"><p style="margin: 0 0 3px; font: 700 13px/1.3 var(--font-sans); color: var(--text-primary);">{{ t.title }}</p><p style="margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-secondary);">{{ t.body }}</p></div>
+<button type="button" class="fl-icon-btn" aria-label="{{ t.dismissLabel }}" onClick="{{ t.dismiss }}" style="width: 26px; height: 26px; min-width: 26px; flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 'palette', q: '', toasts: [
+      { id: 1, kind: 'success', title: 'Deploy finished', body: 'Build 8f2c41 is live in 19 regions.' }
+    ], next: 2, chips: ['5xx'], sw: { cold: true, errors: false, traced: true } };
+  }
+
+  renderVals() {
+    var self = this;
+    var GROUPS = [{name:'Go to',items:[{label:'Overview',hint:'G then O'},{label:'Deployments',hint:'G then D'},{label:'Logs',hint:'G then L'},{label:'Settings',hint:'G then S'}]},{name:'Actions',items:[{label:'Deploy the current branch',hint:'⌘ ⇧ D'},{label:'Roll back to the previous build',hint:''},{label:'Invite a team member',hint:''},{label:'Open the routing rules',hint:''}]},{name:'Recent',items:[{label:'Build 8f2c41',hint:''},{label:'Trace tr_140241118',hint:''},{label:'Domain storefront.example.com',hint:''}]}];
+    var LAUNCH = [['palette','Command palette','⌘K'],['modal','Modal',''],['drawer','Drawer',''],['menu','Dropdown menu',''],['popover','Popover','']];
+    var KINDS = [['success','Deploy finished','Build 8f2c41 is live in 19 regions.'],['info','Build queued','One build ahead of yours in the queue.'],['warning','Quota at 82%','You have used 1.64M of 2M requests this month.'],['danger','Deploy refused','Weighted rules in group A sum to 99, not 100.']];
+    var TONE = { success: ['#3ad07f', '#0f3a26'], info: ['#48b6ef', '#0d3346'],
+                 warning: ['#f5b53c', '#3c2c0c'], danger: ['#ff5d5d', '#46181a'] };
+
+    var q = this.state.q.toLowerCase();
+    var groups = [], count = 0;
+    GROUPS.forEach(function (g) {
+      var items = g.items.filter(function (it) {
+        return !q || it.label.toLowerCase().indexOf(q) > -1;
+      });
+      count += items.length;
+      if (items.length) {
+        groups.push({ key: g.name, name: g.name,
+                      items: items.map(function (it, n) {
+                        return { key: it.label, label: it.label, hint: it.hint,
+                                 first: 'false' };
+                      }) });
+      }
+    });
+    if (groups.length && groups[0].items.length) { groups[0].items[0].first = 'true'; }
+
+    var launchers = LAUNCH.map(function (l) {
+      return { key: l[0], label: l[1], hint: l[2], hasKey: !!l[2],
+               open: function () { self.setState({ open: l[0], q: '' }); } };
+    });
+
+    var toasts = this.state.toasts.map(function (t) {
+      return { key: t.id, title: t.title, body: t.body,
+               color: TONE[t.kind][0], border: TONE[t.kind][1],
+               dismissLabel: 'Dismiss: ' + t.title,
+               dismiss: function () {
+                 self.setState({ toasts: self.state.toasts.filter(function (x) {
+                   return x.id !== t.id;
+                 }) });
+               } };
+    });
+
+    var toastButtons = KINDS.map(function (k) {
+      return { key: k[0], label: k[1],
+               fire: function () {
+                 var next = self.state.toasts.slice(-3);
+                 next.push({ id: self.state.next, kind: k[0], title: k[1], body: k[2] });
+                 self.setState({ toasts: next, next: self.state.next + 1 });
+               } };
+    });
+
+    var drawerChips = ['2xx', '3xx', '4xx', '5xx'].map(function (c) {
+      var on = self.state.chips.indexOf(c) > -1;
+      return { key: c, label: c, on: on ? 'true' : 'false',
+               pick: function () {
+                 var next = self.state.chips.slice();
+                 var at = next.indexOf(c);
+                 if (at > -1) { next.splice(at, 1); } else { next.push(c); }
+                 self.setState({ chips: next });
+               } };
+    });
+
+    var SW = [['cold', 'Requests that paid a cold start'],
+              ['errors', 'Requests that threw'],
+              ['traced', 'Requests with a full trace']];
+    var drawerSwitches = SW.map(function (s) {
+      var on = !!self.state.sw[s[0]];
+      return { key: s[0], id: 'dsw-' + s[0], label: s[1], on: on ? 'true' : 'false',
+               toggle: function () {
+                 var next = { cold: self.state.sw.cold, errors: self.state.sw.errors,
+                              traced: self.state.sw.traced };
+                 next[s[0]] = !on;
+                 self.setState({ sw: next });
+               } };
+    });
+
+    return {
+      launchers: launchers,
+      isPalette: this.state.open === 'palette',
+      isModal: this.state.open === 'modal',
+      isDrawer: this.state.open === 'drawer',
+      isMenu: this.state.open === 'menu',
+      isPopover: this.state.open === 'popover',
+      close: function () { self.setState({ open: null }); },
+      paletteGroups: groups, paletteCount: count, paletteEmpty: count === 0,
+      paletteQuery: this.state.q,
+      setPaletteQuery: function (e) { self.setState({ q: e.target.value }); },
+      toasts: toasts, toastButtons: toastButtons,
+      clearToasts: function () { self.setState({ toasts: [] }); },
+      drawerChips: drawerChips, drawerSwitches: drawerSwitches
+    };
+  }
+}
+</script>
+</body>
+</html>

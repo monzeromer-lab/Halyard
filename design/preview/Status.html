@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halyard status — Halyard design preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.bar{width:7px;border-radius:2px;flex:none;transition:transform 140ms var(--ease-standard)}
+.bars:hover .bar{opacity:.55}
+.bars .bar:hover{opacity:1;transform:scaleY(1.14)}
+.comp:last-child{border-bottom:0}
+.upd:last-child{padding-bottom:0}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(58,208,127,.4)}70%{box-shadow:0 0 0 10px rgba(58,208,127,0)}
+100%{box-shadow:0 0 0 0 rgba(58,208,127,0)}}
+.live{animation:pulse 2.6s var(--ease-standard) infinite}
+</style>
+<style>
+body{display:flex;justify-content:center;padding:24px 0}
+</style>
+</head>
+<body>
+<div style="width: 1200px; height: 1760px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<header style="flex: none; height: 68px; display: flex; align-items: center; gap: 16px; padding: 0 64px; border-bottom: 1px solid var(--line-hairline);">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 18px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard status</span></a>
+<span style="flex-grow: 1;"></span>
+<a href="Article.dc.html" style="font: 600 13px/1 var(--font-sans); color: var(--text-secondary);">Changelog</a>
+<a href="Docs.dc.html" style="font: 600 13px/1 var(--font-sans); color: var(--text-secondary);">Docs</a>
+<a href="App-Overview.dc.html" class="fl-btn" data-variant="secondary" data-size="sm">Dashboard</a>
+</header>
+<section style="flex: none; padding: 48px 64px 32px;">
+<div style="display: flex; align-items: center; gap: 20px; padding: 26px 30px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-lg);">
+<span style="width: 48px; height: 48px; border-radius: 50%; flex: none; background: rgba(245,181,60,.16); color: var(--warning); display: inline-flex; align-items: center; justify-content: center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span>
+<div style="flex-grow: 1;">
+<h1 style="margin: 0 0 6px; font-size: 26px; line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; color: var(--text-warning);">One region is degraded, everything else is operational</h1>
+<p style="margin: 0; font-size: 14px; color: var(--text-secondary);">gru1 is answering slowly. Requests are being served in every region. Last checked 30 seconds ago.</p>
+</div>
+<div style="flex: none; text-align: right;"><p class="fl-overline" style="margin-bottom: 4px;">UPTIME, 90 DAYS</p><p class="fl-num" style="margin: 0; font-size: 28px; font-weight: 500; color: var(--text-primary);">99.975%</p></div>
+</div></section>
+<section style="flex: none; padding: 0 64px 44px;">
+<div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px;">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1;">Components</h2>
+<span style="font-size: 12px; color: var(--text-tertiary);">Each bar is one day. Hover for the detail.</span>
+</div>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-lg); background: var(--surface-raised); padding: 4px 24px;">
+<div class="comp" style="padding: 20px 0; border-bottom: 1px solid var(--line-hairline);">
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span style="flex-grow: 1; font: 700 15px/1.3 var(--font-sans); color: var(--text-primary);">Edge runtime</span><span class="fl-num" style="font-size: 13px; color: var(--text-tertiary);">100.000% uptime</span><span class="fl-badge" data-tone="success">Operational</span></div>
+<div class="bars" style="display: flex; gap: 3px; height: 32px; align-items: stretch;">
+<span class="bar" style="background: #3ad07f;" title="90 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="89 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="88 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="87 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="86 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="85 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="84 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="83 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="82 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="81 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="80 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="79 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="78 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="77 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="76 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="75 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="74 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="73 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="72 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="71 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="70 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="69 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="68 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="67 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="66 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="65 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="64 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="63 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="62 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="61 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="60 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="59 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="58 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="57 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="56 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="55 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="54 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="53 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="52 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="51 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="50 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="49 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="48 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="47 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="46 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="45 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="44 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="43 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="42 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="41 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="40 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="39 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="38 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="37 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="36 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="35 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="34 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="33 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="32 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="31 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="30 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="29 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="28 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="27 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="26 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="25 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="24 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="23 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="22 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="21 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="20 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="19 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="18 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="17 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="16 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="15 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="14 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="13 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="12 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="11 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="10 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="9 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="8 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="7 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="6 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="5 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="4 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="3 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="2 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="1 days ago — no incidents"></span>
+</div>
+<div style="display: flex; margin-top: 8px; font-size: 11px; color: var(--text-tertiary);"><span style="flex-grow: 1;">90 days ago</span><span>today</span></div>
+</div>
+<div class="comp" style="padding: 20px 0; border-bottom: 1px solid var(--line-hairline);">
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span style="flex-grow: 1; font: 700 15px/1.3 var(--font-sans); color: var(--text-primary);">Builds</span><span class="fl-num" style="font-size: 13px; color: var(--text-tertiary);">99.981% uptime</span><span class="fl-badge" data-tone="success">Operational</span></div>
+<div class="bars" style="display: flex; gap: 3px; height: 32px; align-items: stretch;">
+<span class="bar" style="background: #3ad07f;" title="90 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="89 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="88 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="87 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="86 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="85 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="84 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="83 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="82 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="81 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="80 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="79 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="78 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="77 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="76 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="75 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="74 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="73 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="72 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="71 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="70 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="69 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="68 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="67 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="66 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="65 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="64 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="63 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="62 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="61 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="60 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="59 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="58 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="57 days ago — no incidents"></span>
+<span class="bar" style="background: #f5b53c;" title="56 days ago — partially degraded"></span>
+<span class="bar" style="background: #f5b53c;" title="55 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="54 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="53 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="52 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="51 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="50 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="49 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="48 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="47 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="46 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="45 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="44 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="43 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="42 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="41 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="40 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="39 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="38 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="37 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="36 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="35 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="34 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="33 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="32 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="31 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="30 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="29 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="28 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="27 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="26 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="25 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="24 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="23 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="22 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="21 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="20 days ago — no incidents"></span>
+<span class="bar" style="background: #f5b53c;" title="19 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="18 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="17 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="16 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="15 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="14 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="13 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="12 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="11 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="10 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="9 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="8 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="7 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="6 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="5 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="4 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="3 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="2 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="1 days ago — no incidents"></span>
+</div>
+<div style="display: flex; margin-top: 8px; font-size: 11px; color: var(--text-tertiary);"><span style="flex-grow: 1;">90 days ago</span><span>today</span></div>
+</div>
+<div class="comp" style="padding: 20px 0; border-bottom: 1px solid var(--line-hairline);">
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span style="flex-grow: 1; font: 700 15px/1.3 var(--font-sans); color: var(--text-primary);">Edge KV</span><span class="fl-num" style="font-size: 13px; color: var(--text-tertiary);">99.997% uptime</span><span class="fl-badge" data-tone="success">Operational</span></div>
+<div class="bars" style="display: flex; gap: 3px; height: 32px; align-items: stretch;">
+<span class="bar" style="background: #3ad07f;" title="90 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="89 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="88 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="87 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="86 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="85 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="84 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="83 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="82 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="81 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="80 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="79 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="78 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="77 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="76 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="75 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="74 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="73 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="72 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="71 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="70 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="69 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="68 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="67 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="66 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="65 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="64 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="63 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="62 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="61 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="60 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="59 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="58 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="57 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="56 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="55 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="54 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="53 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="52 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="51 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="50 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="49 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="48 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="47 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="46 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="45 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="44 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="43 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="42 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="41 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="40 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="39 days ago — no incidents"></span>
+<span class="bar" style="background: #f5b53c;" title="38 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="37 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="36 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="35 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="34 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="33 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="32 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="31 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="30 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="29 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="28 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="27 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="26 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="25 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="24 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="23 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="22 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="21 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="20 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="19 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="18 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="17 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="16 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="15 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="14 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="13 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="12 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="11 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="10 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="9 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="8 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="7 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="6 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="5 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="4 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="3 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="2 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="1 days ago — no incidents"></span>
+</div>
+<div style="display: flex; margin-top: 8px; font-size: 11px; color: var(--text-tertiary);"><span style="flex-grow: 1;">90 days ago</span><span>today</span></div>
+</div>
+<div class="comp" style="padding: 20px 0; border-bottom: 1px solid var(--line-hairline);">
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span style="flex-grow: 1; font: 700 15px/1.3 var(--font-sans); color: var(--text-primary);">Queues</span><span class="fl-num" style="font-size: 13px; color: var(--text-tertiary);">99.902% uptime</span><span class="fl-badge" data-tone="success">Operational</span></div>
+<div class="bars" style="display: flex; gap: 3px; height: 32px; align-items: stretch;">
+<span class="bar" style="background: #3ad07f;" title="90 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="89 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="88 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="87 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="86 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="85 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="84 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="83 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="82 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="81 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="80 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="79 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="78 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="77 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="76 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="75 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="74 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="73 days ago — no incidents"></span>
+<span class="bar" style="background: #ff5d5d;" title="72 days ago — major outage"></span>
+<span class="bar" style="background: #f5b53c;" title="71 days ago — partially degraded"></span>
+<span class="bar" style="background: #f5b53c;" title="70 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="69 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="68 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="67 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="66 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="65 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="64 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="63 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="62 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="61 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="60 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="59 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="58 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="57 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="56 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="55 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="54 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="53 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="52 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="51 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="50 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="49 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="48 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="47 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="46 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="45 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="44 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="43 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="42 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="41 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="40 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="39 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="38 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="37 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="36 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="35 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="34 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="33 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="32 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="31 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="30 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="29 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="28 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="27 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="26 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="25 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="24 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="23 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="22 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="21 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="20 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="19 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="18 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="17 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="16 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="15 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="14 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="13 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="12 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="11 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="10 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="9 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="8 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="7 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="6 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="5 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="4 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="3 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="2 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="1 days ago — no incidents"></span>
+</div>
+<div style="display: flex; margin-top: 8px; font-size: 11px; color: var(--text-tertiary);"><span style="flex-grow: 1;">90 days ago</span><span>today</span></div>
+</div>
+<div class="comp" style="padding: 20px 0; border-bottom: 1px solid var(--line-hairline);">
+<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;"><span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span style="flex-grow: 1; font: 700 15px/1.3 var(--font-sans); color: var(--text-primary);">Dashboard and API</span><span class="fl-num" style="font-size: 13px; color: var(--text-tertiary);">99.994% uptime</span><span class="fl-badge" data-tone="success">Operational</span></div>
+<div class="bars" style="display: flex; gap: 3px; height: 32px; align-items: stretch;">
+<span class="bar" style="background: #3ad07f;" title="90 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="89 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="88 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="87 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="86 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="85 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="84 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="83 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="82 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="81 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="80 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="79 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="78 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="77 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="76 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="75 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="74 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="73 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="72 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="71 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="70 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="69 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="68 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="67 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="66 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="65 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="64 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="63 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="62 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="61 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="60 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="59 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="58 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="57 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="56 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="55 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="54 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="53 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="52 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="51 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="50 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="49 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="48 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="47 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="46 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="45 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="44 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="43 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="42 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="41 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="40 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="39 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="38 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="37 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="36 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="35 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="34 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="33 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="32 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="31 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="30 days ago — no incidents"></span>
+<span class="bar" style="background: #f5b53c;" title="29 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="28 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="27 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="26 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="25 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="24 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="23 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="22 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="21 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="20 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="19 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="18 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="17 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="16 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="15 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="14 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="13 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="12 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="11 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="10 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="9 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="8 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="7 days ago — no incidents"></span>
+<span class="bar" style="background: #f5b53c;" title="6 days ago — partially degraded"></span>
+<span class="bar" style="background: #3ad07f;" title="5 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="4 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="3 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="2 days ago — no incidents"></span>
+<span class="bar" style="background: #3ad07f;" title="1 days ago — no incidents"></span>
+</div>
+<div style="display: flex; margin-top: 8px; font-size: 11px; color: var(--text-tertiary);"><span style="flex-grow: 1;">90 days ago</span><span>today</span></div>
+</div>
+</div></section>
+<section style="flex: none; padding: 0 64px 44px;">
+<div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px;">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1;">Regions</h2>
+<span style="font-size: 12px; color: var(--text-tertiary);">p95 response, milliseconds, last 5 minutes</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;">
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">fra1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">34<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">iad1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">41<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">cdg1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">36<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">sfo1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">52<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #f5b53c;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">gru1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">148<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="warning" style="height: 19px; font-size: 11px;">Degraded</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">hnd1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">61<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">syd1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">74<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">bom1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">88<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">jnb1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">96<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">arn1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">44<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">dub1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">39<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">sin1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">67<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">yyz1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">45<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">icn1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">63<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">cpt1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">104<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">lhr1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">34<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">ams1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">35<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">nrt1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">59<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+<div style="padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><span style="width: 7px; height: 7px; border-radius: 50%; flex: none; background: #3ad07f;"></span><span class="fl-mono" style="flex-grow: 1; font-size: 13px; color: var(--text-primary);">pdx1</span></div><p class="fl-num" style="margin: 0 0 8px; font-size: 20px; font-weight: 500;">49<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-sans);"> ms</span></p><span class="fl-badge" data-tone="success" style="height: 19px; font-size: 11px;">Operational</span></div>
+</div></section>
+<section style="flex: none; padding: 0 64px 44px;">
+<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+<h2 style="margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1;">Incident history</h2>
+<div style="display: flex; gap: 8px;">
+
+<button type="button" class="fl-chip" aria-pressed="" onClick="">⟨label⟩<span class="fl-num" style="opacity: .7;">⟨count⟩</span></button>
+
+</div></div>
+<div style="display: flex; flex-direction: column; gap: 14px;">
+
+<article style="border: 1px solid ; border-radius: var(--radius-lg); background: var(--surface-raised); overflow: hidden;">
+<button type="button" style="display: flex; align-items: center; gap: 14px; width: 100%; background: none; border: 0; padding: 20px 24px; cursor: pointer; text-align: left;" aria-expanded="" onClick="">
+<span class="fl-badge" data-tone="" style="flex: none;">⟨state⟩</span>
+<span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 700 17px/1.3 var(--font-sans); color: var(--text-primary);">⟨title⟩</span><span style="display: block; margin-top: 4px; font-size: 12px; color: var(--text-tertiary);">⟨when⟩ &middot; ⟨count⟩ updates</span></span>
+<span style="color: var(--text-tertiary); display: inline-flex; flex: none; transform: ; transition: transform 220ms cubic-bezier(0.2,0,0,1);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+</button>
+
+<div style="padding: 0 24px 22px;">
+<hr class="fl-rule" style="margin-bottom: 18px;">
+
+<div class="upd" style="display: flex; gap: 16px; padding-bottom: 18px;"><span style="width: 116px; flex: none;"><span style="display: block; font: 700 13px/1.3 var(--font-sans); color: ;">⟨phase⟩</span><span class="fl-num" style="display: block; margin-top: 2px; font-size: 12px; color: var(--text-tertiary);">⟨time⟩ UTC</span></span><p style="margin: 0; flex-grow: 1; font-size: 14px; line-height: 1.6; color: var(--text-secondary); max-width: 72ch;">⟨body⟩</p></div>
+
+</div>
+</article>
+
+<div style="padding: 48px 24px; text-align: center; border: 1px dashed var(--line-default); border-radius: var(--radius-lg);"><p style="margin: 0 0 6px; font: 700 16px/1.3 var(--font-sans);">No incidents of that kind in 90 days</p><p style="margin: 0; font-size: 14px; color: var(--text-tertiary);">Change the filter to see the rest of the history.</p></div>
+</div></section>
+<section style="flex: none; padding: 0 64px 56px;">
+<div style="display: flex; gap: 48px; align-items: center; padding: 32px 36px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-lg);">
+<div style="flex-grow: 1;"><h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em;">Get told before you notice</h2><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">One email when an incident opens, one when it is resolved, and nothing in between unless the status changes.</p></div>
+<form style="flex: none; width: 400px;" onSubmit="">
+<label class="fl-label" for="st-email">Email</label>
+<div style="display: flex; gap: 10px;"><input class="fl-input" id="st-email" type="email" placeholder="you@company.com" value="" onChange="" aria-describedby="st-help"><button type="submit" class="fl-btn" data-variant="primary" style="flex: none;" onClick="">⟨subLabel⟩</button></div>
+<p class="fl-help" id="st-help" style="color: ;">⟨helpText⟩</p>
+</form>
+</div></section>
+<div style="flex-grow: 1;"></div>
+<footer style="flex: none; padding: 24px 64px 32px; border-top: 1px solid var(--line-hairline); display: flex; align-items: center; gap: 16px;">
+<span class="fl-badge live" data-tone="success"><span class="fl-dot"></span>Checks run every 30 seconds from 6 independent locations</span>
+<span style="flex-grow: 1;"></span>
+<a href="Docs.dc.html" style="font-size: 13px; color: var(--text-tertiary);">Status API</a>
+<a href="Main.dc.html" style="font-size: 13px; color: var(--text-tertiary);">Halyard</a>
+<span style="font-size: 12px; color: var(--text-tertiary);">© [YEAR] [YOUR COMPANY]</span>
+</footer>
+</div>
+</body>
+</html>

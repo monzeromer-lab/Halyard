@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halyard pricing — Halyard design preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.foot-l{color:var(--text-tertiary);font:400 14px/2 var(--font-sans);display:block}
+.foot-l:hover{color:var(--text-primary)}
+
+.slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;
+background:var(--surface-inset);border:1px solid var(--line-default);outline-offset:4px}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+background:var(--brand);border:2px solid var(--surface-canvas);cursor:pointer;
+box-shadow:0 0 0 1px rgba(255,106,43,.5)}
+.slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--brand);
+border:2px solid var(--surface-canvas);cursor:pointer}
+.cmp tbody tr:hover{background:var(--surface-hover)}
+.cmp th.grp{background:var(--surface-inset);color:var(--text-primary);font:700 12px/1.2 var(--font-sans);
+letter-spacing:.08em}
+.addon:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.addon{transition:border-color 220ms var(--ease-standard),transform 220ms var(--ease-standard)}
+</style>
+<style>
+body{display:flex;justify-content:center;padding:24px 0}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 2560px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<header style="position: sticky; top: 0; z-index: 100; height: 68px; flex: none; display: flex; align-items: center; gap: 40px; padding-left: 80px; padding-right: 80px; background: rgba(11,12,14,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--line-hairline);">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 19px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<nav aria-label="Primary" style="display: flex; align-items: center; gap: 28px; flex-grow: 1;">
+<a href="Main.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Product</a>
+<a href="Pricing.dc.html" aria-current="page" style="font: 600 14px/1 var(--font-sans); color: var(--text-brand);">Pricing</a>
+<a href="Docs.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Docs</a>
+<a href="Article.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Changelog</a>
+<a href="Status.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Status</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 12px;">
+<a href="Overlays.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="gap: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>Search<span class="fl-kbd">⌘K</span></a>
+<a href="App-Overview.dc.html" class="fl-btn" data-variant="ghost" data-size="sm">Sign in</a>
+<a href="Flow-Onboarding.dc.html" class="fl-btn" data-variant="primary" data-size="sm">Start building</a>
+</div></header>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-top: 80px; padding-bottom: 40px;">
+<p class="fl-overline" style="margin-bottom: 16px;">PRICING</p>
+<div style="display: flex; align-items: flex-end; gap: 48px;">
+<div style="flex-grow: 1;">
+<h1 style="margin: 0 0 16px; font-family: var(--font-display); font-size: 72px; line-height: 0.94; letter-spacing: -0.025em; font-weight: 600;">Pay for requests,<br>not for seats.</h1>
+<p style="margin: 0; max-width: 62ch; font-size: 18px; line-height: 1.6; color: var(--text-secondary);">Every plan gets all 19 regions, atomic deploys and rollback by hash. What changes is how much you can run through them and how long the traces are kept.</p>
+</div>
+<div style="flex: none; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+<div class="fl-seg" role="group" aria-label="Billing period">
+
+<button type="button" aria-pressed="" onClick="">⟨label⟩</button>
+
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-accent);">Annual billing takes 20% off the per-seat price.</p>
+</div></div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 72px;">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+
+<article class="fl-card" style="display: flex; flex-direction: column; gap: 20px; padding: 32px; border-color: ; box-shadow: ;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<h2 style="margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em;">⟨name⟩</h2>
+<span class="fl-badge" data-tone="brand">Most teams</span>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary); min-height: 42px;">⟨blurb⟩</p>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 44px; font-weight: 500; letter-spacing: -0.015em;">⟨price⟩</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">⟨per⟩</span>
+</div>
+<a href="Flow-Onboarding.dc.html" class="fl-btn" data-variant="">⟨ctaLabel⟩</a>
+<hr class="fl-rule">
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px;">
+
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none; display: inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>⟨text⟩</li>
+
+</ul></article>
+
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 88px;">
+<div style="background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-xl); display: flex; overflow: hidden;">
+<div style="flex-grow: 1; padding: 40px; display: flex; flex-direction: column; gap: 28px;">
+<div><p class="fl-overline" style="margin-bottom: 10px;">ESTIMATOR</p>
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.015em; font-weight: 600;">Move the sliders, watch the bill.</h2></div>
+
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; align-items: baseline; gap: 12px;">
+<label class="fl-label" for="" style="margin: 0; flex-grow: 1;">⟨label⟩</label>
+<span class="fl-num" style="font-size: 15px; color: var(--text-primary);">⟨display⟩</span>
+<span class="fl-num" style="font-size: 13px; color: var(--text-tertiary); width: 92px; text-align: right;">⟨cost⟩</span>
+</div>
+<input class="slider" type="range" id="" min="" max="" step="1" value="" aria-valuetext="" onChange="">
+<p class="fl-help" style="margin: 0;">⟨help⟩</p>
+</div>
+
+</div>
+<aside style="width: 400px; flex: none; background: var(--surface-sunken); border-left: 1px solid var(--line-hairline); padding: 40px 36px; display: flex; flex-direction: column; gap: 20px;">
+<p class="fl-overline">ESTIMATED MONTHLY</p>
+<div style="display: flex; align-items: baseline; gap: 10px;">
+<span class="fl-num" style="font-size: 56px; font-weight: 500; letter-spacing: -0.02em; color: var(--text-brand);">⟨total⟩</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">units / month</span>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-tertiary);">Shown in billing units so you can drop your own rate card in. One unit is whatever you set [YOUR UNIT PRICE] to be.</p>
+<hr class="fl-rule">
+
+<div style="display: flex; align-items: center; gap: 10px;">
+<span style="width: 8px; height: 8px; border-radius: 2px; flex: none; background: ;"></span>
+<span style="flex-grow: 1; font-size: 13px; color: var(--text-secondary);">⟨label⟩</span>
+<span class="fl-num" style="font-size: 13px; color: var(--text-primary);">⟨value⟩</span>
+</div>
+
+<div style="height: 10px; border-radius: 999px; overflow: hidden; display: flex; background: var(--surface-inset);">
+
+<span style="height: 100%; width: ; background: ;"></span>
+
+</div>
+<p style="margin: 0; font-size: 12px; color: var(--text-tertiary);">⟨recommend⟩</p>
+<a href="Flow-Onboarding.dc.html" class="fl-btn" data-variant="primary" style="margin-top: auto;">Start on ⟨recommendPlan⟩</a>
+</aside></div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 88px;">
+<div style="display: flex; align-items: flex-end; gap: 24px; margin-bottom: 24px;">
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.015em; font-weight: 600; flex-grow: 1;">Every line, side by side.</h2>
+<p style="margin: 0; font-size: 13px; color: var(--text-tertiary);">24 rows. Nothing hidden behind &ldquo;contact us&rdquo; except the enterprise numbers.</p>
+</div>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-lg); overflow: hidden;">
+<table class="fl-table cmp"><caption class="fl-visually-hidden" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Feature comparison across the Hobby, Team and Enterprise plans</caption>
+<thead><tr>
+<th scope="col" style="width: 46%;">Capability</th>
+<th scope="col" data-numeric="true" style="width: 18%;">Hobby</th>
+<th scope="col" data-numeric="true" style="width: 18%;">Team</th>
+<th scope="col" data-numeric="true" style="width: 18%;">Enterprise</th>
+</tr></thead><tbody>
+<tr><th class="grp" colspan="4" scope="colgroup" style="padding: 10px 12px; text-transform: uppercase;">Runtime</th></tr>
+<tr><td style="color: var(--text-primary);">Included requests a month</td>
+<td data-numeric="true" style="color: var(--text-secondary);">100k</td>
+<td data-numeric="true" style="color: var(--text-secondary);">2M pooled</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Negotiated</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Regions</td>
+<td data-numeric="true" style="color: var(--text-secondary);">19</td>
+<td data-numeric="true" style="color: var(--text-secondary);">19</td>
+<td data-numeric="true" style="color: var(--text-secondary);">19 + dedicated</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Edge function timeout</td>
+<td data-numeric="true" style="color: var(--text-secondary);">10 s</td>
+<td data-numeric="true" style="color: var(--text-secondary);">60 s</td>
+<td data-numeric="true" style="color: var(--text-secondary);">300 s</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Cold start p95</td>
+<td data-numeric="true" style="color: var(--text-secondary);">8.1 ms</td>
+<td data-numeric="true" style="color: var(--text-secondary);">8.1 ms</td>
+<td data-numeric="true" style="color: var(--text-secondary);">8.1 ms</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Custom domains</td>
+<td data-numeric="true" style="color: var(--text-secondary);">1</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+</tr>
+<tr><th class="grp" colspan="4" scope="colgroup" style="padding: 10px 12px; text-transform: uppercase;">Builds</th></tr>
+<tr><td style="color: var(--text-primary);">Concurrent builds</td>
+<td data-numeric="true" style="color: var(--text-secondary);">1</td>
+<td data-numeric="true" style="color: var(--text-secondary);">8</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Build minutes a month</td>
+<td data-numeric="true" style="color: var(--text-secondary);">400</td>
+<td data-numeric="true" style="color: var(--text-secondary);">6,000</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Negotiated</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Reproducible build attestation</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Preview deploy per pull request</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Bring your own build image</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><th class="grp" colspan="4" scope="colgroup" style="padding: 10px 12px; text-transform: uppercase;">State and routing</th></tr>
+<tr><td style="color: var(--text-primary);">Edge KV storage</td>
+<td data-numeric="true" style="color: var(--text-secondary);">256 MB</td>
+<td data-numeric="true" style="color: var(--text-secondary);">50 GB</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Negotiated</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Queues</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Header, cookie and geo rules</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Computed routing middleware</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Leader pinning per key</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><th class="grp" colspan="4" scope="colgroup" style="padding: 10px 12px; text-transform: uppercase;">Observability</th></tr>
+<tr><td style="color: var(--text-primary);">Trace retention</td>
+<td data-numeric="true" style="color: var(--text-secondary);">7 days</td>
+<td data-numeric="true" style="color: var(--text-secondary);">30 days</td>
+<td data-numeric="true" style="color: var(--text-secondary);">1 year</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Trace export to your sink</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Log drains</td>
+<td data-numeric="true" style="color: var(--text-secondary);">1</td>
+<td data-numeric="true" style="color: var(--text-secondary);">10</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Alert rules</td>
+<td data-numeric="true" style="color: var(--text-secondary);">3</td>
+<td data-numeric="true" style="color: var(--text-secondary);">50</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+</tr>
+<tr><th class="grp" colspan="4" scope="colgroup" style="padding: 10px 12px; text-transform: uppercase;">Team and governance</th></tr>
+<tr><td style="color: var(--text-primary);">Members</td>
+<td data-numeric="true" style="color: var(--text-secondary);">1</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Unlimited</td>
+</tr>
+<tr><td style="color: var(--text-primary);">SSO and SCIM</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Audit log</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);">30 days</td>
+<td data-numeric="true" style="color: var(--text-secondary);">3 years</td>
+</tr>
+<tr><td style="color: var(--text-primary);">Deploy approvals</td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--text-disabled); display: inline-flex;" aria-label="not included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+<td data-numeric="true" style="color: var(--text-secondary);"><span style="color: var(--success); display: inline-flex;" aria-label="included"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span></td>
+</tr>
+<tr><td style="color: var(--text-primary);">Support</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Community</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Email, 1 business day</td>
+<td data-numeric="true" style="color: var(--text-secondary);">Named engineer</td>
+</tr>
+</tbody></table></div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 88px;">
+<p class="fl-overline" style="margin-bottom: 20px;">ADD-ONS</p>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+<article class="fl-card addon" style="display: flex; flex-direction: column; gap: 14px;">
+<span style="color: var(--text-brass);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span>
+<h3 style="margin: 0; font-size: 18px; font-weight: 700;">Dedicated region</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Your own capacity in any region, with the leader for every key pinned to it.</p>
+<p class="fl-num" style="margin: auto 0 0; font-size: 14px; color: var(--text-brass);">[YOUR PRICE] / region / month</p>
+</article>
+<article class="fl-card addon" style="display: flex; flex-direction: column; gap: 14px;">
+<span style="color: var(--text-brass);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"></path></svg></span>
+<h3 style="margin: 0; font-size: 18px; font-weight: 700;">Compliance pack</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">SOC 2 report, DPA, subprocessor notifications and a signed BAA where it applies.</p>
+<p class="fl-num" style="margin: auto 0 0; font-size: 14px; color: var(--text-brass);">[YOUR PRICE] / year</p>
+</article>
+<article class="fl-card addon" style="display: flex; flex-direction: column; gap: 14px;">
+<span style="color: var(--text-brass);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></span>
+<h3 style="margin: 0; font-size: 18px; font-weight: 700;">Extended traces</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Keep every trace for a year instead of thirty days, queryable from the explorer.</p>
+<p class="fl-num" style="margin: auto 0 0; font-size: 14px; color: var(--text-brass);">[YOUR PRICE] / 100M spans</p>
+</article>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 88px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px;">
+<div><h3 style="margin: 0 0 10px; font-size: 17px; font-weight: 700;">What counts as a request?</h3><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">One request that enters Halyard from the internet. Internal calls between your own functions, KV reads and queue operations are counted separately and shown per route.</p></div>
+<div><h3 style="margin: 0 0 10px; font-size: 17px; font-weight: 700;">What happens if I go over?</h3><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">Nothing is throttled. The overage appears on the next invoice at the published rate and an alert fires the first time you cross 80% of the included volume.</p></div>
+<div><h3 style="margin: 0 0 10px; font-size: 17px; font-weight: 700;">Can I move between plans mid-month?</h3><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">Yes. Upgrades apply immediately and are prorated; downgrades apply at the next renewal so you keep what you have already paid for.</p></div>
+</section>
+<div style="flex-grow: 1;"></div>
+<footer style="flex: none; padding-left: 80px; padding-right: 80px; padding-top: 56px; padding-bottom: 40px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<div style="display: flex; gap: 80px; margin-bottom: 48px;">
+<div style="width: 300px; flex: none; display: flex; flex-direction: column; gap: 16px;">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 18px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-tertiary); max-width: 36ch;">An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.</p>
+</div>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+<div><p class="fl-overline" style="margin-bottom: 12px;">PRODUCT</p>
+<a class="foot-l" href="Main.dc.html">Overview</a>
+<a class="foot-l" href="Pricing.dc.html">Pricing</a>
+<a class="foot-l" href="Article.dc.html">Changelog</a>
+<a class="foot-l" href="Status.dc.html">Status</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">DEVELOPERS</p>
+<a class="foot-l" href="Docs.dc.html">Docs</a>
+<a class="foot-l" href="Docs.dc.html">API reference</a>
+<a class="foot-l" href="Docs.dc.html">CLI</a>
+<a class="foot-l" href="App-Overview.dc.html">Dashboard</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">COMPANY</p>
+<a class="foot-l" href="#top">About</a>
+<a class="foot-l" href="#top">Careers</a>
+<a class="foot-l" href="#top">Security</a>
+<a class="foot-l" href="#top">Press</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">LEGAL</p>
+<a class="foot-l" href="#top">Terms</a>
+<a class="foot-l" href="#top">Privacy</a>
+<a class="foot-l" href="#top">Subprocessors</a>
+<a class="foot-l" href="#top">DPA</a>
+</div>
+</div></div>
+<hr class="fl-rule">
+<div style="padding-top: 24px; display: flex; align-items: center; gap: 16px;">
+<a href="Status.dc.html" class="fl-badge" data-tone="success"><span class="fl-dot"></span>All 19 regions operational</a>
+<span style="flex-grow: 1;"></span>
+<span style="font-size: 12px; color: var(--text-tertiary);">© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.</span>
+</div></footer>
+</div>
+</body>
+</html>

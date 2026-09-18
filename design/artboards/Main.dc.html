@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halyard — ship to every region at once</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.hero-veil{position:absolute;inset:-120px -200px auto -200px;height:900px;pointer-events:none;
+background:radial-gradient(60% 70% at 28% 20%,rgba(255,106,43,.34),rgba(11,12,14,0) 68%),
+radial-gradient(45% 55% at 82% 8%,rgba(53,224,176,.16),rgba(11,12,14,0) 70%);
+opacity:.55;filter:blur(2px)}
+.hero-grid{position:absolute;inset:0;pointer-events:none;opacity:.5;
+background-image:linear-gradient(90deg,#1c2026 1px,transparent 1px);
+background-size:120px 100%;
+-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 70%);
+mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 70%)}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.rise{animation:rise var(--d-cine) var(--ease-entrance) both}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mq-track{display:flex;width:max-content;animation:mq 34s linear infinite}
+.mq-track:hover{animation-play-state:paused}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:0}}
+.caret{animation:blink 1.1s steps(1) infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(53,224,176,.45)}70%{box-shadow:0 0 0 9px rgba(53,224,176,0)}
+100%{box-shadow:0 0 0 0 rgba(53,224,176,0)}}
+.live{animation:pulse 2.4s var(--ease-standard) infinite}
+.feat:hover .feat-arrow{transform:translateX(4px);opacity:1}
+.feat-arrow{transition:transform var(--d-base) var(--ease-standard),opacity var(--d-base) linear;opacity:.45}
+.mag{transition:transform var(--d-base) var(--ease-spring),box-shadow var(--d-base) var(--ease-standard)}
+.mag:hover{transform:translateY(-3px) scale(1.02);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.faq-q{width:100%;background:none;border:0;padding:20px 0;display:flex;align-items:center;gap:16px;
+cursor:pointer;color:var(--text-primary);font:700 20px/1.3 var(--font-sans);text-align:left;
+letter-spacing:-0.01em}
+.faq-q:hover{color:var(--text-brand)}
+.plan:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+.plan{transition:border-color var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.foot-l{color:var(--text-tertiary);font:400 14px/2 var(--font-sans);display:block}
+.foot-l:hover{color:var(--text-primary)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 5200px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<header style="position: sticky; top: 0; z-index: 100; height: 68px; flex: none; display: flex; align-items: center; gap: 40px; padding-left: 80px; padding-right: 80px; background: rgba(11,12,14,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--line-hairline);">
+<a href="#top" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 19px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<nav aria-label="Primary" style="display: flex; align-items: center; gap: 28px; flex-grow: 1;">
+<a href="#features" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Product</a>
+<a href="Pricing.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Pricing</a>
+<a href="Docs.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Docs</a>
+<a href="Article.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Changelog</a>
+<a href="Status.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Status</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 12px;">
+<a href="Overlays.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="gap: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>Search<span class="fl-kbd">⌘K</span></a>
+<a href="App-Overview.dc.html" class="fl-btn" data-variant="ghost" data-size="sm">Sign in</a>
+<a href="Flow-Onboarding.dc.html" class="fl-btn" data-variant="primary" data-size="sm">Start building</a>
+</div></header>
+<section id="top" style="position: relative; flex: none; padding-left: 80px; padding-right: 80px; padding-top: 96px; padding-bottom: 72px; overflow: hidden;">
+<div class="hero-veil"></div><div class="hero-grid"></div>
+<div style="position: relative; display: flex; gap: 64px; align-items: flex-start;">
+<div style="width: 700px; flex: none; display: flex; flex-direction: column; gap: 28px;">
+<p class="fl-overline rise" style="animation-delay: 40ms;">EDGE RUNTIME &middot; 19 REGIONS &middot; ONE ARTIFACT</p>
+<h1 class="rise" style="animation-delay: 120ms; margin: 0; font-family: var(--font-display); font-size: 96px; line-height: 0.92; letter-spacing: -0.03em; font-weight: 600; font-variation-settings: 'opsz' 144; text-wrap: pretty;">Ship to every<br>region at once.</h1>
+<p class="rise" style="animation-delay: 220ms; margin: 0; max-width: 62ch; font-size: 18px; line-height: 1.6; color: var(--text-secondary);">Halyard builds your app once, signs the artifact, and switches routing in all 19 regions in the same second. No region flags, no staged rollout to configure, no cache to warm afterwards.</p>
+<div class="rise" style="animation-delay: 300ms; display: flex; gap: 12px; align-items: center;">
+<a href="Flow-Onboarding.dc.html" class="fl-btn mag" data-variant="primary" data-size="lg">Start building<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></a>
+<a href="Docs.dc.html" class="fl-btn" data-variant="secondary" data-size="lg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"></path><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"></path></svg>Read the runtime docs</a>
+</div>
+<p class="rise" style="animation-delay: 380ms; margin: 0; font-size: 13px; color: var(--text-tertiary);">Free under 100k requests a month. No card until you cross it.</p>
+</div>
+<div class="rise" style="animation-delay: 460ms; flex-grow: 1; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 48px 120px rgba(0,0,0,.7);">
+<div style="height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<span style="color: var(--text-tertiary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M13 17h6"></path></svg></span>
+<span class="fl-mono" style="font-size: 12px; color: var(--text-tertiary); flex-grow: 1;">halyard deploy --wait</span>
+<span class="fl-badge live" data-tone="accent"><span class="fl-dot"></span>live</span>
+</div>
+<div class="fl-mono" style="padding: 20px 18px; font-size: 13px; line-height: 1.9; background: var(--surface-sunken); color: var(--text-secondary);">
+<div><span style="color: var(--success);">✓</span> resolved 412 modules</div>
+<div><span style="color: var(--success);">✓</span> compiled 38 routes → edge</div>
+<div><span style="color: var(--success);">✓</span> signed sha256:8f2c41…a7</div>
+<div><span style="color: var(--success);">✓</span> packed 2.1 MB gzipped</div>
+<div><span style="color: var(--success);">✓</span> 19/19 regions acknowledged</div>
+<div style="color: var(--text-primary);"><span style="color: var(--brand);">→</span> live in 412 ms<span class="caret" style="color: var(--brand);">█</span></div>
+</div>
+<div style="display: flex; border-top: 1px solid var(--line-hairline);">
+<div style="flex-grow: 1; padding: 14px 18px; border-right: 1px solid var(--line-hairline);"><p class="fl-overline" style="margin-bottom: 4px;">BUILD</p><p class="fl-num" style="margin: 0; font-size: 20px; font-weight: 500; color: var(--text-primary);">22.4 s</p></div>
+<div style="flex-grow: 1; padding: 14px 18px; border-right: 1px solid var(--line-hairline);"><p class="fl-overline" style="margin-bottom: 4px;">PROPAGATE</p><p class="fl-num" style="margin: 0; font-size: 20px; font-weight: 500; color: var(--text-accent);">412 ms</p></div>
+<div style="flex-grow: 1; padding: 14px 18px; border-right: 1px solid var(--line-hairline);"><p class="fl-overline" style="margin-bottom: 4px;">DROPPED</p><p class="fl-num" style="margin: 0; font-size: 20px; font-weight: 500; color: var(--text-success);">0</p></div>
+</div></div>
+</div>
+<div style="position: relative; margin-top: 64px; border-top: 1px solid var(--line-hairline); border-bottom: 1px solid var(--line-hairline); padding: 18px 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image: linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);" aria-label="Regions Halyard deploys to">
+<div class="mq-track">
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>fra1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>iad1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>cdg1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>sfo1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>gru1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>hnd1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>syd1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>bom1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>jnb1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>arn1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>dub1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>sin1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>yyz1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>icn1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>cpt1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>lhr1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>ams1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>nrt1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>pdx1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>fra1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>iad1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>cdg1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>sfo1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>gru1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>hnd1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>syd1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>bom1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>jnb1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>arn1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>dub1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>sin1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>yyz1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>icn1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>cpt1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>lhr1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>ams1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>nrt1</span>
+<span class="fl-mono" style="display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; font-size: 13px; color: var(--text-tertiary); white-space: nowrap;"><span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block;"></span>pdx1</span>
+</div></div>
+</section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-top: 56px; padding-bottom: 56px;">
+<div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px;">
+<p class="fl-overline">THE HALYARD DEMO PROJECT, LAST 24 HOURS</p>
+<hr class="fl-rule" style="flex-grow: 1;">
+<a href="App-Observability.dc.html" style="font: 600 13px/1 var(--font-sans);">Open the live view</a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+<div class="fl-card" data-interactive="true" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+<p class="fl-overline">MEDIAN BUILD</p>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 34px; font-weight: 500; letter-spacing: -0.01em;">22.4</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">s</span>
+</div>
+<div style="margin-top: auto;"><svg width="132" height="34" viewBox="0 0 132 34" fill="none" aria-hidden="true"><polyline points="0.0,4.0 12.0,9.6 24.0,6.8 36.0,15.2 48.0,12.4 60.0,20.8 72.0,18.0 84.0,26.4 96.0,23.6 108.0,32.0 120.0,29.2 132.0,32.0" stroke="var(--viz-1)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+<p style="margin: 0; font-size: 12px; color: var(--text-success);">− 18% vs last week</p>
+</div>
+<div class="fl-card" data-interactive="true" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+<p class="fl-overline">GLOBAL PROPAGATION</p>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 34px; font-weight: 500; letter-spacing: -0.01em;">412</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">ms p95</span>
+</div>
+<div style="margin-top: auto;"><svg width="132" height="34" viewBox="0 0 132 34" fill="none" aria-hidden="true"><polyline points="0.0,32.0 12.0,4.0 24.0,24.2 36.0,13.3 48.0,19.6 60.0,8.7 72.0,28.9 84.0,16.4 96.0,13.3 108.0,21.1 120.0,10.2 132.0,13.3" stroke="var(--viz-2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+<p style="margin: 0; font-size: 12px; color: var(--text-tertiary);">steady, last 24h</p>
+</div>
+<div class="fl-card" data-interactive="true" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+<p class="fl-overline">COLD START</p>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 34px; font-weight: 500; letter-spacing: -0.01em;">8.1</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">ms</span>
+</div>
+<div style="margin-top: auto;"><svg width="132" height="34" viewBox="0 0 132 34" fill="none" aria-hidden="true"><polyline points="0.0,4.0 12.0,8.7 24.0,8.7 36.0,13.3 48.0,18.0 60.0,18.0 72.0,22.7 84.0,22.7 96.0,27.3 108.0,27.3 120.0,32.0 132.0,32.0" stroke="var(--viz-4)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+<p style="margin: 0; font-size: 12px; color: var(--text-success);">− 2.4 ms since v9</p>
+</div>
+<div class="fl-card" data-interactive="true" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+<p class="fl-overline">ROLLBACKS COMPLETED</p>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 34px; font-weight: 500; letter-spacing: -0.01em;">1,204</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">this quarter</span>
+</div>
+<div style="margin-top: auto;"><svg width="132" height="34" viewBox="0 0 132 34" fill="none" aria-hidden="true"><polyline points="0.0,32.0 12.0,26.0 24.0,29.0 36.0,19.1 48.0,24.2 60.0,14.8 72.0,19.5 84.0,10.5 96.0,16.5 108.0,7.2 120.0,12.6 132.0,4.0" stroke="var(--viz-3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div>
+<p style="margin: 0; font-size: 12px; color: var(--text-tertiary);">all under 600 ms</p>
+</div>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 72px;">
+<div style="background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-lg); padding: 28px 32px; display: flex; align-items: center; gap: 32px;">
+<p style="margin: 0; width: 180px; flex: none; font-size: 13px; line-height: 1.5; color: var(--text-tertiary);">Replace these with your customer wordmarks.</p>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px;">
+<div style="height: 52px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font: 600 12px/1 var(--font-mono); color: var(--text-tertiary);">[LOGO 1]</div>
+<div style="height: 52px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font: 600 12px/1 var(--font-mono); color: var(--text-tertiary);">[LOGO 2]</div>
+<div style="height: 52px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font: 600 12px/1 var(--font-mono); color: var(--text-tertiary);">[LOGO 3]</div>
+<div style="height: 52px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font: 600 12px/1 var(--font-mono); color: var(--text-tertiary);">[LOGO 4]</div>
+<div style="height: 52px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font: 600 12px/1 var(--font-mono); color: var(--text-tertiary);">[LOGO 5]</div>
+</div></div></section>
+<section id="features" style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px;">
+<div style="max-width: 720px; margin-bottom: 48px;">
+<p class="fl-overline" style="margin-bottom: 16px;">WHAT THE RUNTIME DOES</p>
+<h2 style="margin: 0 0 16px; font-family: var(--font-display); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; font-weight: 600;">Six things, and none of them are a dashboard toggle.</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">Everything that changes how a request is answered lives in the repository and ships with the build. If it is not in the artifact, it cannot break production.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-brand);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Atomic global deploys</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Every build lands in all 19 regions in the same second. There is no region flag to set and no staged rollout to configure, because there is no staged rollout.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-brand); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-accent);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Signed, reproducible builds</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Each build is content-addressed and signed at the end of the pipeline. Rebuild the same commit next year and the hash matches or the deploy is refused.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-accent); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-brass);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"></path><path d="m3 13 9 5 9-5"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Request-level routing</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Route on header, cookie, geo or a value you compute in a 2 ms middleware. Rules are versioned with the deploy, not with a dashboard toggle.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-brass); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-info);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Edge state that is not a cache</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Strongly consistent KV and queues that read in the region the request landed in. Writes replicate in under 90 ms p95 between any two regions.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-info); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-accent);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">A trace on every request</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Not a sample. Every request carries a trace with the build hash, the region, the route rule that matched and the cold-start cost, kept for 30 days.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-accent); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+<article class="fl-card feat" data-interactive="true" style="display: flex; flex-direction: column; gap: 14px; min-height: 246px;">
+<span style="width: 40px; height: 40px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; background: var(--surface-inset); color: var(--text-brand);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Rollback by hash</h3>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Any build that ever ran is one command away. Rollback is a routing change, not a rebuild, so it completes in about 400 ms worldwide.</p>
+<span class="feat-arrow" style="margin-top: auto; color: var(--text-brand); display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></span>
+</article>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px;">
+<div style="background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-2xl); overflow: hidden;">
+<div style="padding: 40px 40px 0; display: flex; align-items: flex-end; gap: 32px;">
+<div style="flex-grow: 1;">
+<p class="fl-overline" style="margin-bottom: 12px;">ONE PIPELINE, THREE VIEWS</p>
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.015em; font-weight: 600;">Watch the same release from three sides.</h2>
+</div>
+<div role="tablist" aria-label="Release views" style="display: flex; gap: 28px;">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" class="fl-tab" role="tab" aria-selected="{{ t.selected }}" onClick="{{ t.pick }}">{{ t.label }}</button>
+</sc-for>
+</div></div>
+<hr class="fl-rule" style="margin-top: 20px;">
+<div style="display: flex; min-height: 360px;">
+<div style="flex-grow: 1; padding: 28px 40px; display: flex; flex-direction: column; gap: 10px;">
+<p class="fl-mono" style="margin: 0 0 8px; font-size: 12px; color: var(--text-tertiary);">{{ panelCmd }}</p>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm); background: var(--surface-inset);">
+<span style="width: 8px; height: 8px; border-radius: 50%; flex: none; background: {{ r.dot }};"></span>
+<span style="flex-grow: 1; font-size: 14px; color: var(--text-secondary);">{{ r.label }}</span>
+<span class="fl-num" style="font-size: 12px; color: var(--text-tertiary);">{{ r.meta }}</span>
+</div>
+</sc-for>
+</div>
+<aside style="width: 340px; flex: none; border-left: 1px solid var(--line-hairline); padding: 28px 32px; background: var(--surface-sunken); display: flex; flex-direction: column; gap: 18px;">
+<p class="fl-overline">WHAT YOU ARE LOOKING AT</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">{{ panelNote }}</p>
+<a href="{{ panelHref }}" class="fl-btn" data-variant="secondary" data-size="sm" style="align-self: flex-start;">{{ panelCta }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></a>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+<p class="fl-overline">RELEASE</p>
+<p class="fl-mono" style="margin: 0; font-size: 13px; color: var(--text-accent);">sha256:8f2c41…a7</p>
+<p style="margin: 0; font-size: 12px; color: var(--text-tertiary);">Promoted 14:02 UTC by [YOUR NAME]</p>
+</div>
+</aside>
+</div></div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px; display: flex; gap: 64px; align-items: flex-start;">
+<div style="width: 420px; flex: none; display: flex; flex-direction: column; gap: 20px;">
+<p class="fl-overline">THE WHOLE INTERFACE</p>
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.015em; font-weight: 600;">A config file, a CLI, and one REST route.</h2>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: var(--text-secondary);">Anything the dashboard can do, the CLI can do, and anything the CLI can do is one HTTP call. The dashboard is a reader of the same API you get.</p>
+<a href="Docs.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="align-self: flex-start; padding-left: 0;">Full API reference<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></a>
+</div>
+<div style="flex-grow: 1; background: var(--surface-sunken); border: 1px solid var(--line-default); border-radius: var(--radius-lg); overflow: hidden;">
+<div role="tablist" aria-label="Interface" style="display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line-hairline);">
+<sc-for list="{{codeTabs}}" as="c" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{ c.selected }}" onClick="{{ c.pick }}" class="fl-mono" style="background: {{ c.bg }}; border: 0; border-radius: 6px 6px 0 0; padding: 10px 16px; font-size: 12px; color: {{ c.fg }}; cursor: pointer;">{{ c.label }}</button>
+</sc-for>
+<span style="flex-grow: 1;"></span>
+<button type="button" class="fl-icon-btn" aria-label="Copy snippet" style="width: 34px; height: 34px; min-width: 34px; margin: 2px 4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a1 1 0 0 1 1-1h9"></path></svg></button>
+</div>
+<pre class="fl-mono" style="margin: 0; padding: 24px 26px; font-size: 13px; line-height: 1.75; color: var(--text-secondary); white-space: pre-wrap; min-height: 280px;"><sc-for list="{{codeLines}}" as="ln" hint-placeholder-count="10"><span style="color: {{ ln.color }};">{{ ln.text }}</span></sc-for></pre>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px;">
+<figure style="margin: 0; max-width: 900px; border-top: 2px solid var(--brass); padding-top: 32px; display: flex; flex-direction: column; gap: 24px;">
+<span style="color: var(--brass);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6C6 7.5 4.5 10 4.5 13v5H10v-6H7.5c0-2 .6-3.5 2.5-4.5Z"></path><path d="M18.5 6c-3 1.5-4.5 4-4.5 7v5h5.5v-6H17c0-2 .6-3.5 2.5-4.5Z"></path></svg></span>
+<blockquote style="margin: 0; font-family: var(--font-display); font-size: 28px; line-height: 1.35; font-style: italic; letter-spacing: -0.01em; color: var(--text-primary);">[Replace with a real customer quote. Keep it to one claim about one measurable change — a number before and a number after — rather than a sentence about how much they enjoy the product.]</blockquote>
+<figcaption style="display: flex; align-items: center; gap: 14px;">
+<span style="width: 40px; height: 40px; border-radius: 50%; background: var(--surface-inset); border: 1px dashed var(--line-strong); display: inline-flex; align-items: center; justify-content: center; font: 600 11px/1 var(--font-mono); color: var(--text-tertiary);">[IMG]</span>
+<span style="font-size: 14px; color: var(--text-secondary);">[NAME], [ROLE] at [COMPANY]</span>
+</figcaption></figure></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px;">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; gap: 32px;">
+<div style="max-width: 620px;">
+<p class="fl-overline" style="margin-bottom: 12px;">PRICING</p>
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; font-weight: 600;">Pay for requests, not for seats you forgot.</h2>
+</div>
+<a href="Pricing.dc.html" class="fl-btn" data-variant="secondary">Compare every line<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></a>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch;">
+<article class="fl-card plan" style="display: flex; flex-direction: column; gap: 20px; border-color: var(--line-default); padding: 28px;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<h3 style="margin: 0; font-size: 20px; font-weight: 700;">Hobby</h3>
+</div>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 40px; font-weight: 500; letter-spacing: -0.015em; color: var(--text-primary);">0</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">forever</span>
+</div>
+<hr class="fl-rule">
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>100k requests a month</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>1 concurrent build</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>7-day traces</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Community support</li>
+</ul>
+<a href="Pricing.dc.html" class="fl-btn" data-variant="secondary" style="margin-top: auto;">Choose Hobby</a>
+</article>
+<article class="fl-card plan" style="display: flex; flex-direction: column; gap: 20px; border-color: var(--brand); padding: 28px; box-shadow: 0 0 0 1px rgba(255,106,43,.5), 0 12px 40px rgba(255,106,43,.16);">
+<div style="display: flex; align-items: center; gap: 10px;">
+<h3 style="margin: 0; font-size: 20px; font-weight: 700;">Team</h3>
+<span class="fl-badge" data-tone="brand">Most teams</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 40px; font-weight: 500; letter-spacing: -0.015em; color: var(--text-primary);">[YOUR PRICE]</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">per seat, per month</span>
+</div>
+<hr class="fl-rule">
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Pooled requests across projects</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>8 concurrent builds</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>30-day traces</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Preview deploys per pull request</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Routing rules and edge KV</li>
+</ul>
+<a href="Pricing.dc.html" class="fl-btn" data-variant="primary" style="margin-top: auto;">Start a 14-day trial</a>
+</article>
+<article class="fl-card plan" style="display: flex; flex-direction: column; gap: 20px; border-color: var(--line-default); padding: 28px;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<h3 style="margin: 0; font-size: 20px; font-weight: 700;">Enterprise</h3>
+</div>
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<span class="fl-num" style="font-size: 40px; font-weight: 500; letter-spacing: -0.015em; color: var(--text-primary);">Talk to us</span>
+<span style="font-size: 13px; color: var(--text-tertiary);">annual</span>
+</div>
+<hr class="fl-rule">
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;">
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Dedicated regions and BYO cloud</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Unlimited builds</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>1-year traces and export</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>SSO, SCIM, audit log</li>
+<li style="display: flex; gap: 10px; font-size: 14px; line-height: 1.5; color: var(--text-secondary);"><span style="color: var(--accent); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4 10-10"></path></svg></span>Named support engineer</li>
+</ul>
+<a href="Pricing.dc.html" class="fl-btn" data-variant="secondary" style="margin-top: auto;">Choose Enterprise</a>
+</article>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px; display: flex; gap: 80px; align-items: flex-start;">
+<div style="width: 360px; flex: none;">
+<p class="fl-overline" style="margin-bottom: 12px;">QUESTIONS WE ACTUALLY GET</p>
+<h2 style="margin: 0; font-family: var(--font-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.015em; font-weight: 600;">The five that decide it.</h2>
+</div>
+<div style="flex-grow: 1;">
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="5">
+<div style="border-bottom: 1px solid var(--line-hairline);">
+<button type="button" class="faq-q" aria-expanded="{{ f.open }}" onClick="{{ f.toggle }}"><span style="flex-grow: 1;">{{ f.q }}</span><span style="color: var(--text-tertiary); transform: {{ f.rot }}; transition: transform 220ms cubic-bezier(0.2,0,0,1); display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+<sc-if value="{{ f.isOpen }}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0 0 24px; padding-right: 60px; font-size: 15px; line-height: 1.65; color: var(--text-secondary); max-width: 72ch;">{{ f.a }}</p>
+</sc-if>
+</div>
+</sc-for>
+</div></section>
+<section style="flex: none; padding-left: 80px; padding-right: 80px; padding-bottom: 96px;">
+<div style="position: relative; overflow: hidden; border-radius: var(--radius-2xl); border: 1px solid var(--line-default); background: var(--surface-raised); padding: 72px 64px; display: flex; align-items: center; gap: 48px;">
+<div style="position: absolute; inset: auto -100px -240px auto; width: 620px; height: 620px; border-radius: 50%; background: radial-gradient(circle, rgba(255,106,43,.26), rgba(11,12,14,0) 66%); pointer-events: none;"></div>
+<div style="position: relative; flex-grow: 1;">
+<h2 style="margin: 0 0 16px; font-family: var(--font-display); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; font-weight: 600;">Your first deploy takes about four minutes.</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">Point Halyard at a repository. It detects the framework, imports your environment, and tells you what will break before it builds.</p>
+</div>
+<div style="position: relative; display: flex; flex-direction: column; gap: 12px; flex: none;">
+<a href="Flow-Onboarding.dc.html" class="fl-btn mag" data-variant="primary" data-size="lg">Connect a repository<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"></path></svg></a>
+<a href="Docs.dc.html" class="fl-btn" data-variant="ghost" data-size="lg">Read the docs first</a>
+</div></div></section>
+<div style="flex-grow: 1;"></div>
+<footer style="flex: none; padding-left: 80px; padding-right: 80px; padding-top: 56px; padding-bottom: 40px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<div style="display: flex; gap: 80px; margin-bottom: 48px;">
+<div style="width: 300px; flex: none; display: flex; flex-direction: column; gap: 16px;">
+<a href="#top" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 18px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-tertiary); max-width: 36ch;">An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.</p>
+</div>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+<div><p class="fl-overline" style="margin-bottom: 12px;">PRODUCT</p>
+<a class="foot-l" href="Main.dc.html">Overview</a>
+<a class="foot-l" href="Pricing.dc.html">Pricing</a>
+<a class="foot-l" href="Article.dc.html">Changelog</a>
+<a class="foot-l" href="Status.dc.html">Status</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">DEVELOPERS</p>
+<a class="foot-l" href="Docs.dc.html">Docs</a>
+<a class="foot-l" href="Docs.dc.html">API reference</a>
+<a class="foot-l" href="Docs.dc.html">CLI</a>
+<a class="foot-l" href="App-Overview.dc.html">Dashboard</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">COMPANY</p>
+<a class="foot-l" href="#top">About</a>
+<a class="foot-l" href="#top">Careers</a>
+<a class="foot-l" href="#top">Security</a>
+<a class="foot-l" href="#top">Press</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">LEGAL</p>
+<a class="foot-l" href="#top">Terms</a>
+<a class="foot-l" href="#top">Privacy</a>
+<a class="foot-l" href="#top">Subprocessors</a>
+<a class="foot-l" href="#top">DPA</a>
+</div>
+</div></div>
+<hr class="fl-rule">
+<div style="padding-top: 24px; display: flex; align-items: center; gap: 16px;">
+<a href="Status.dc.html" class="fl-badge" data-tone="success"><span class="fl-dot"></span>All 19 regions operational</a>
+<span style="flex-grow: 1;"></span>
+<span style="font-size: 12px; color: var(--text-tertiary);">© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.</span>
+</div></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":5200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'build', code: 'cfg', faq: 'q1' };
+  }
+
+  renderVals() {
+    var self = this;
+    var DOT = { done: '#3ad07f', active: '#ff6a2b', warn: '#f5b53c', bad: '#ff5d5d' };
+    var COLOR = { kw: '#ff8a5c', kw2: '#9b8cff', st: '#58e8bf', nu: '#f7c869',
+                  cm: '#949ba7', pl: '#b9bec7', ok: '#66dd9f', wn: '#f7c869', nl: '#b9bec7' };
+    var PANELS = {
+      build: { cmd: 'halyard build', rows: [{id:'resolve',label:'Resolved 412 modules from the lockfile',meta:'0.9 s',state:'done'},{id:'compile',label:'Compiled 38 routes to the edge target',meta:'14.2 s',state:'done'},{id:'sign',label:'Signed artifact sha256:8f2c41…a7',meta:'0.4 s',state:'done'},{id:'pack',label:'Packed 6.8 MB, 2.1 MB gzipped',meta:'1.1 s',state:'done'},{id:'upload',label:'Uploading to 19 regions',meta:'5.8 s',state:'active'}] },
+      route: { cmd: 'routes.halyard.ts', rows: [{id:'r1',label:'/api/* → edge function api, 3 regions pinned',meta:'match: path',state:'done'},{id:'r2',label:'cookie ht_beta=1 → build 8f2c41',meta:'match: cookie',state:'done'},{id:'r3',label:'geo.country in [DE, FR] → fra1 first',meta:'match: geo',state:'done'},{id:'r4',label:'/assets/* → immutable, 1 year',meta:'match: path',state:'done'},{id:'r5',label:'* → build 7c91de, all regions',meta:'fallback',state:'active'}] },
+      observe: { cmd: 'halyard trace --follow', rows: [{id:'t1',label:'GET /checkout — fra1 — 38 ms — warm',meta:'200',state:'done'},{id:'t2',label:'POST /api/cart — iad1 — 61 ms — warm',meta:'201',state:'done'},{id:'t3',label:'GET /p/HL-2201 — sin1 — 112 ms — cold',meta:'200',state:'warn'},{id:'t4',label:'GET /api/stock — gru1 — 9.4 s — upstream',meta:'504',state:'bad'},{id:'t5',label:'GET / — cdg1 — 24 ms — warm',meta:'200',state:'active'}] }
+    };
+    var NOTE = {
+      build: 'The pipeline is a list of named steps. Each one is cacheable on its own, so a dependency change does not re-run the compile.',
+      route: 'Rules are evaluated top to bottom and the first match answers. The fallback is always the last line, and it is always a build hash.',
+      observe: 'Every line here is one real request with its own trace. Click through to filter by region, status or route rule.'
+    };
+    var CTA = {
+      build: ['Open a build', 'App-BuildDetail.dc.html'],
+      route: ['Edit the rules', 'Editor.dc.html'],
+      observe: ['Open the log stream', 'App-Logs.dc.html']
+    };
+    var CODES = {
+      cfg: [{c:'kw',t:'export default'},{c:'pl',t:' defineConfig({'},{c:'nl',t:''},{c:'pl',t:'  runtime: '},{c:'st',t:'\'edge\''},{c:'pl',t:','},{c:'nl',t:''},{c:'pl',t:'  regions: '},{c:'st',t:'\'all\''},{c:'pl',t:',  '},{c:'cm',t:'// 19 today, more as they open'},{c:'nl',t:''},{c:'pl',t:'  build: { command: '},{c:'st',t:'\'pnpm build\''},{c:'pl',t:', reproducible: '},{c:'kw2',t:'true'},{c:'pl',t:' },'},{c:'nl',t:''},{c:'pl',t:'  routes: ['},{c:'nl',t:''},{c:'pl',t:'    { match: '},{c:'st',t:'\'/api/*\''},{c:'pl',t:', fn: '},{c:'st',t:'\'api\''},{c:'pl',t:', timeout: '},{c:'nu',t:'10_000'},{c:'pl',t:' },'},{c:'nl',t:''},{c:'pl',t:'    { match: { cookie: { ht_beta: '},{c:'st',t:'\'1\''},{c:'pl',t:' } }, build: '},{c:'st',t:'\'8f2c41\''},{c:'pl',t:' },'},{c:'nl',t:''},{c:'pl',t:'  ],'},{c:'nl',t:''},{c:'pl',t:'})'},{c:'nl',t:''}],
+      cli: [{c:'cm',t:'$ '},{c:'pl',t:'halyard deploy --wait'},{c:'nl',t:''},{c:'ok',t:'✓'},{c:'pl',t:' build 8f2c41 signed in 22.4 s'},{c:'nl',t:''},{c:'ok',t:'✓'},{c:'pl',t:' 19/19 regions acknowledged in 412 ms'},{c:'nl',t:''},{c:'ok',t:'✓'},{c:'pl',t:' routing switched, 0 requests dropped'},{c:'nl',t:''},{c:'nl',t:''},{c:'cm',t:'$ '},{c:'pl',t:'halyard rollback --to 7c91de'},{c:'nl',t:''},{c:'wn',t:'!'},{c:'pl',t:' 7c91de last ran 4 days ago'},{c:'nl',t:''},{c:'ok',t:'✓'},{c:'pl',t:' routing switched in 388 ms'},{c:'nl',t:''}],
+      api: [{c:'cm',t:'# '},{c:'pl',t:'promote a build without rebuilding'},{c:'nl',t:''},{c:'kw',t:'POST'},{c:'pl',t:' https://api.halyard.dev/v1/projects/hl-2201/releases'},{c:'nl',t:''},{c:'pl',t:'  -H '},{c:'st',t:'\'authorization: bearer $HALYARD_TOKEN\''},{c:'nl',t:''},{c:'pl',t:'  -d '},{c:'st',t:'\'{"build":"8f2c41","traffic":100}\''},{c:'nl',t:''},{c:'nl',t:''},{c:'cm',t:'# '},{c:'pl',t:'response'},{c:'nl',t:''},{c:'pl',t:'{ '},{c:'st',t:'"release"'},{c:'pl',t:': '},{c:'st',t:'"rl_4a91"'},{c:'pl',t:', '},{c:'st',t:'"regions"'},{c:'pl',t:': '},{c:'nu',t:'19'},{c:'pl',t:', '},{c:'st',t:'"ms"'},{c:'pl',t:': '},{c:'nu',t:'412'},{c:'pl',t:' }'},{c:'nl',t:''}]
+    };
+
+    var tabs = [['build', 'Build'], ['route', 'Route'], ['observe', 'Observe']].map(function (t) {
+      return { id: t[0], label: t[1],
+               selected: self.state.tab === t[0] ? 'true' : 'false',
+               pick: function () { self.setState({ tab: t[0] }); } };
+    });
+
+    var codeTabs = [['cfg', 'halyard.config.ts'], ['cli', 'Terminal'], ['api', 'REST']].map(function (c) {
+      var on = self.state.code === c[0];
+      return { id: c[0], label: c[1], selected: on ? 'true' : 'false',
+               bg: on ? '#131519' : 'transparent',
+               fg: on ? '#f4f1ec' : '#949ba7',
+               pick: function () { self.setState({ code: c[0] }); } };
+    });
+
+    var faqs = [{id:'q1',q:'What happens to in-flight requests during a deploy?',a:'They finish on the build they started on. Halyard switches routing, not processes: the old build keeps serving anything already in its queue and is drained once the last response leaves, usually inside two seconds.'},{id:'q2',q:'Can I keep a region out?',a:'Yes, but it is a routing rule, not a build flag. The artifact still lands everywhere so a rollback or a geo change does not need a rebuild — the rule decides who is allowed to answer.'},{id:'q3',q:'Is the edge KV eventually consistent?',a:'No. Reads are served from the region the request landed in and writes are linearised through a per-key leader. Cross-region write visibility is 90 ms p95; if you need it faster, pin the key’s leader to the region that writes most.'},{id:'q4',q:'How do you price a request that fans out?',a:'One request in, one request billed. Internal calls between your own functions, KV reads and queue operations are counted separately and shown per route in the usage view.'},{id:'q5',q:'What do I have to change to move an existing app?',a:'A config file and, usually, your session store. Node built-ins that touch the filesystem are the common blocker — the CLI reports them before the first deploy rather than at runtime.'}].map(function (f) {
+      var on = self.state.faq === f.id;
+      return { id: f.id, q: f.q, a: f.a, isOpen: on,
+               open: on ? 'true' : 'false',
+               rot: on ? 'rotate(180deg)' : 'rotate(0deg)',
+               toggle: function () { self.setState({ faq: on ? null : f.id }); } };
+    });
+
+    var panel = PANELS[this.state.tab];
+    var rows = panel.rows.map(function (r) {
+      return { id: r.id, label: r.label, meta: r.meta, dot: DOT[r.state] || '#949ba7' };
+    });
+
+    var codeLines = CODES[this.state.code].map(function (p, n) {
+      return { key: n, text: p.c === 'nl' ? '\n' : p.t, color: COLOR[p.c] || '#b9bec7' };
+    });
+
+    return {
+      tabs: tabs, rows: rows, panelCmd: panel.cmd,
+      panelNote: NOTE[this.state.tab],
+      panelCta: CTA[this.state.tab][0], panelHref: CTA[this.state.tab][1],
+      codeTabs: codeTabs, codeLines: codeLines, faqs: faqs
+    };
+  }
+}
+</script>
+</body>
+</html>

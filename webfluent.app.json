@@ -1,0 +1,19 @@
+{
+  "name": "halyard",
+  "version": "1.0.0",
+  "author": "",
+  "theme": {},
+  "build": {
+    "output": "./build",
+    "minify": true,
+    "ssg": false
+  },
+  "dev": {
+    "port": 3000
+  },
+  "meta": {
+    "title": "halyard",
+    "description": "Built with WebFluent",
+    "lang": "en"
+  }
+}

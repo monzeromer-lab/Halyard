@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Explorer — storefront-edge</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.rail-a{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:var(--radius-sm);
+color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+transition:background 140ms var(--ease-standard),color 140ms var(--ease-standard)}
+.rail-a:hover{background:var(--surface-hover);color:var(--text-primary)}
+.rail-a[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.rail-a[aria-current="page"] .bar{opacity:1}
+.bar{position:absolute;left:-10px;width:2px;height:16px;background:var(--brand);border-radius:2px;
+opacity:0}
+.crumb:hover{color:var(--text-primary)}
+
+.saved{display:flex;align-items:flex-start;gap:10px;width:100%;background:none;border:0;
+padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;text-align:left;
+transition:background 140ms var(--ease-standard)}
+.saved:hover{background:var(--surface-hover)}
+.saved[aria-current="true"]{background:var(--brand-soft)}
+.frow{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-inset);
+border:1px solid var(--line-hairline);border-radius:var(--radius-sm)}
+.qbar{transition:width 380ms var(--ease-standard)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 980px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex;">
+<aside style="width: 236px; height: 980px; flex: none; background: var(--surface-sunken); border-right: 1px solid var(--line-hairline); display: flex; flex-direction: column; padding: 16px 12px;">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 9px; padding: 4px 8px 16px; color: var(--text-primary);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 16px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<button type="button" style="display: flex; align-items: center; gap: 10px; width: 100%; height: 44px; padding: 0 10px; margin-bottom: 18px; background: var(--surface-inset); border: 1px solid var(--line-default); border-radius: var(--radius-sm); cursor: pointer; text-align: left;"><span style="width: 24px; height: 24px; border-radius: 6px; background: var(--brand-soft); color: var(--text-brand); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-mono); flex: none;">HL</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 13px/1.2 var(--font-sans); color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">storefront-edge</span><span style="display: block; font: 400 11px/1.2 var(--font-mono); color: var(--text-tertiary);">hl-2201 &middot; production</span></span><span style="color: var(--text-tertiary); display: inline-flex;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+<p class="fl-overline" style="padding: 0 10px 8px;">PROJECT</p>
+<nav aria-label="Project" style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px;">
+<a class="rail-a" href="App-Overview.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"></path><path d="m3 13 9 5 9-5"></path></svg></span>Overview</a>
+<a class="rail-a" href="App-Deployments.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15c-1.5 1.5-2 6-2 6s4.5-.5 6-2"></path><path d="M9 13 5.5 12.5 4 11l5-3 4-4a7 7 0 0 1 7-1 7 7 0 0 1-1 7l-4 4-3 5-1.5-1.5L11 15Z"></path><circle cx="14.5" cy="9.5" r="1.4"></circle></svg></span>Deployments</a>
+<a class="rail-a" href="App-Observability.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"></path></svg></span>Observability</a>
+<a class="rail-a" href="App-Logs.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M13 17h6"></path></svg></span>Logs</a>
+<a class="rail-a" href="App-BuildDetail.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="M12 12v9M12 12 4 7.5M12 12l8-4.5"></path></svg></span>Builds</a>
+<a class="rail-a" href="Explorer.dc.html" aria-current="page" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span>Explorer</a>
+<a class="rail-a" href="App-Settings.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"></path></svg></span>Settings</a>
+</nav>
+<p class="fl-overline" style="padding: 0 10px 8px;">TOOLS</p>
+<nav aria-label="Tools" style="display: flex; flex-direction: column; gap: 2px;">
+<a class="rail-a" href="Editor.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="9" r="2.5"></circle><path d="M6 8.5v7M18 11.5c0 3-4 2.5-6 4.5"></path></svg></span>Routing rules</a>
+<a class="rail-a" href="Graph.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg></span>Infrastructure</a>
+<a class="rail-a" href="Status.dc.html" style="position: relative;"><span class="bar"></span><span style="display: inline-flex; flex: none; opacity: .9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h13l-2.5 4L18 12H5"></path></svg></span>Status page</a>
+</nav>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+<a href="Status.dc.html" style="display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--line-hairline); border-radius: var(--radius-sm); background: var(--surface-inset);"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex: none;"></span><span style="font-size: 12px; color: var(--text-secondary);">19/19 regions healthy</span></a>
+<div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px;"><span style="width: 28px; height: 28px; border-radius: 50%; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-sans); color: var(--text-secondary); flex: none;">YN</span><span style="flex-grow: 1; min-width: 0; font: 600 12px/1.3 var(--font-sans); color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">[YOUR NAME]</span><span style="color: var(--text-tertiary); display: inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></span></div>
+</div></aside>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<header style="height: 60px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 28px; border-bottom: 1px solid var(--line-hairline); background: var(--surface-canvas);">
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 13px; flex-grow: 1;">
+<a class="crumb" href="App-Overview.dc.html" style="color: var(--text-tertiary);">storefront-edge</a>
+<span style="color: var(--line-strong); display: inline-flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span>
+<span aria-current="page" style="color: var(--text-primary); font-weight: 600;">Explorer</span>
+</nav>
+<a href="Overlays.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="gap: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg><span class="fl-kbd">⌘K</span></a>
+<button type="button" class="fl-icon-btn" aria-label="Notifications" style="width: 32px; height: 32px; min-width: 32px; position: relative;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"></path><path d="M10 19a2 2 0 0 0 4 0"></path></svg><span style="position: absolute; top: 5px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand);"></span></button>
+<span style="width: 28px; height: 28px; border-radius: 50%; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-sans); color: var(--text-secondary);">YN</span>
+</header>
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+<aside style="width: 260px; flex: none; border-right: 1px solid var(--line-hairline); background: var(--surface-sunken); display: flex; flex-direction: column; padding: 18px 12px;">
+<div style="display: flex; align-items: center; gap: 8px; padding: 0 12px 12px;"><p class="fl-overline" style="flex-grow: 1;">SAVED QUERIES</p><button type="button" class="fl-icon-btn" aria-label="New query" style="width: 26px; height: 26px; min-width: 26px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<sc-for list="{{saved}}" as="s" hint-placeholder-count="5">
+<button type="button" class="saved" aria-current="{{ s.on }}" onClick="{{ s.pick }}"><span style="color: {{ s.iconColor }}; flex: none; display: inline-flex; margin-top: 1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"></ellipse><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"></path><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"></path></svg></span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 600 13px/1.35 var(--font-sans); color: var(--text-primary);">{{ s.name }}</span><span style="display: block; margin-top: 2px; font-size: 11px; color: var(--text-tertiary);">{{ s.meta }}</span></span></button>
+</sc-for>
+</div>
+<div style="margin-top: auto; padding: 14px 12px 0; border-top: 1px solid var(--line-hairline);"><p style="margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-tertiary);">A saved query is a file in the repository too. Editing one here writes a diff you commit like anything else.</p></div>
+</aside>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<div style="flex: none; padding: 20px 28px; border-bottom: 1px solid var(--line-hairline); display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: flex-end; gap: 14px;">
+<div style="width: 180px;"><label class="fl-label" for="ex-src">Source</label><select class="fl-input" id="ex-src" value="{{ source }}" onChange="{{ setSource }}"><option value="traces">traces</option><option value="logs">logs</option><option value="builds">builds</option></select></div>
+<div style="width: 180px;"><label class="fl-label" for="ex-range">Time range</label><select class="fl-input" id="ex-range"><option>Last 24 hours</option><option>Last hour</option><option>Last 7 days</option><option>Custom…</option></select></div>
+<div style="width: 200px;"><label class="fl-label" for="ex-group">Group by</label><select class="fl-input" id="ex-group"><option>region, route</option><option>region</option><option>route</option><option>build</option></select></div>
+<div style="width: 180px;"><label class="fl-label" for="ex-agg">Measure</label><select class="fl-input" id="ex-agg"><option>count, p50, p99</option><option>count</option><option>p95 duration</option><option>error rate</option></select></div>
+<span style="flex-grow: 1;"></span>
+<button type="button" class="fl-btn" data-variant="primary" onClick="{{ run }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 5.5 18.5 12 7 18.5Z"></path></svg>{{ runLabel }}</button>
+</div>
+<div>
+<p class="fl-overline" style="margin-bottom: 10px;">FILTERS, ALL OF WHICH MUST MATCH</p>
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 900px;">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="3">
+<div class="frow">
+<span class="fl-num" style="width: 26px; flex: none; font-size: 11px; color: var(--text-disabled);">{{ f.n }}</span>
+<label class="fl-label" for="{{ f.fieldId }}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0;">Field</label>
+<select class="fl-input fl-mono" id="{{ f.fieldId }}" value="{{ f.field }}" onChange="{{ f.setField }}" style="width: 180px; height: 32px; font-size: 13px; flex: none;">
+<option value="region">region</option>
+<option value="route">route</option>
+<option value="status">status</option>
+<option value="duration_ms">duration_ms</option>
+<option value="build">build</option>
+<option value="rule">rule</option>
+<option value="cold_start">cold_start</option>
+<option value="country">country</option>
+</select>
+<label class="fl-label" for="{{ f.opId }}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0;">Operator</label>
+<select class="fl-input" id="{{ f.opId }}" value="{{ f.op }}" onChange="{{ f.setOp }}" style="width: 116px; height: 32px; font-size: 13px; flex: none;">
+<option value="is">is</option>
+<option value="is not">is not</option>
+<option value="contains">contains</option>
+<option value=">">></option>
+<option value="<"><</option>
+<option value="in">in</option>
+</select>
+<label class="fl-label" for="{{ f.valId }}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0;">Value</label>
+<input class="fl-input fl-mono" id="{{ f.valId }}" value="{{ f.value }}" onChange="{{ f.setValue }}" placeholder="value" style="flex-grow: 1; height: 32px; font-size: 13px;">
+<button type="button" class="fl-icon-btn" aria-label="{{ f.removeLabel }}" onClick="{{ f.remove }}" style="width: 30px; height: 30px; min-width: 30px; flex: none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg></button>
+</div>
+</sc-for>
+<div style="display: flex; gap: 10px;">
+<button type="button" class="fl-btn" data-variant="secondary" data-size="sm" onClick="{{ addFilter }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add filter</button>
+<sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ true }}"><button type="button" class="fl-btn" data-variant="ghost" data-size="sm" onClick="{{ clearFilters }}">Remove all</button></sc-if>
+</div>
+</div></div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-sunken); border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);">
+<span class="fl-overline" style="flex: none;">HQL</span>
+<code class="fl-mono" style="flex-grow: 1; min-width: 0; font-size: 12.5px; color: var(--text-accent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ hql }}</code>
+<button type="button" class="fl-btn" data-variant="ghost" data-size="sm" style="flex: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a1 1 0 0 1 1-1h9"></path></svg>Copy</button>
+</div>
+</div>
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; padding: 18px 28px 24px;">
+<div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+<p style="margin: 0; font-size: 13px; color: var(--text-tertiary); flex-grow: 1;">{{ resultNote }}</p>
+<div class="fl-seg" role="group" aria-label="Result view">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{ v.on }}" onClick="{{ v.pick }}">{{ v.label }}</button>
+</sc-for>
+</div>
+<button type="button" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M4 19h16"></path></svg>Export</button>
+</div>
+<sc-if value="{{ isTable }}" hint-placeholder-val="{{ true }}">
+<div style="flex-grow: 1; min-height: 0; overflow: auto; border: 1px solid var(--line-default); border-radius: var(--radius-md);">
+<table class="fl-table"><caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Query result grouped by region and route</caption><thead><tr>
+<th scope="col" data-numeric="false" style="position: sticky; top: 0;">Region</th>
+<th scope="col" data-numeric="false" style="position: sticky; top: 0;">Route</th>
+<th scope="col" data-numeric="true" style="position: sticky; top: 0;">Requests</th>
+<th scope="col" data-numeric="true" style="position: sticky; top: 0;">p50 ms</th>
+<th scope="col" data-numeric="true" style="position: sticky; top: 0;">p99 ms</th>
+<th scope="col" data-numeric="true" style="position: sticky; top: 0;">Share %</th>
+</tr></thead><tbody>
+<tr><td class="fl-mono" style="color: var(--text-primary);">gru1</td><td class="fl-mono" style="font-size: 13px;">GET /api/stock</td><td data-numeric="true">412</td><td data-numeric="true">1840</td><td data-numeric="true" style="color: var(--text-warning);">9,412</td><td data-numeric="true">18.4</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">sin1</td><td class="fl-mono" style="font-size: 13px;">GET /p/:sku</td><td data-numeric="true">286</td><td data-numeric="true">112</td><td data-numeric="true" style="color: var(--text-secondary);">940</td><td data-numeric="true">12.8</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">bom1</td><td class="fl-mono" style="font-size: 13px;">GET /api/stock</td><td data-numeric="true">204</td><td data-numeric="true">96</td><td data-numeric="true" style="color: var(--text-secondary);">812</td><td data-numeric="true">9.1</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">jnb1</td><td class="fl-mono" style="font-size: 13px;">GET /</td><td data-numeric="true">168</td><td data-numeric="true">88</td><td data-numeric="true" style="color: var(--text-secondary);">640</td><td data-numeric="true">7.5</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">cpt1</td><td class="fl-mono" style="font-size: 13px;">GET /p/:sku</td><td data-numeric="true">142</td><td data-numeric="true">104</td><td data-numeric="true" style="color: var(--text-secondary);">588</td><td data-numeric="true">6.4</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">syd1</td><td class="fl-mono" style="font-size: 13px;">POST /api/cart</td><td data-numeric="true">121</td><td data-numeric="true">74</td><td data-numeric="true" style="color: var(--text-secondary);">420</td><td data-numeric="true">5.4</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">hnd1</td><td class="fl-mono" style="font-size: 13px;">GET /</td><td data-numeric="true">98</td><td data-numeric="true">61</td><td data-numeric="true" style="color: var(--text-secondary);">388</td><td data-numeric="true">4.4</td></tr>
+<tr><td class="fl-mono" style="color: var(--text-primary);">icn1</td><td class="fl-mono" style="font-size: 13px;">GET /checkout</td><td data-numeric="true">84</td><td data-numeric="true">63</td><td data-numeric="true" style="color: var(--text-secondary);">344</td><td data-numeric="true">3.8</td></tr>
+</tbody></table></div></sc-if>
+<sc-if value="{{ isChart }}" hint-placeholder-val="{{ true }}">
+<div style="flex-grow: 1; min-height: 0; overflow: auto; border: 1px solid var(--line-default); border-radius: var(--radius-md); padding: 22px 26px; background: var(--surface-raised);">
+<p style="margin: 0 0 18px; font-size: 13px; color: var(--text-tertiary);">Requests per region and route. One series, so every bar carries its own value and there is no legend.</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">gru1 &middot; GET /api/stock</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 100.0%; background: #f5b53c; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">412</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">sin1 &middot; GET /p/:sku</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 69.4%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">286</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">bom1 &middot; GET /api/stock</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 49.5%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">204</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">jnb1 &middot; GET /</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 40.8%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">168</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">cpt1 &middot; GET /p/:sku</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 34.5%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">142</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">syd1 &middot; POST /api/cart</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 29.4%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">121</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">hnd1 &middot; GET /</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 23.8%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">98</span></div>
+<div style="display: flex; align-items: center; gap: 14px;"><span class="fl-mono" style="width: 190px; flex: none; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">icn1 &middot; GET /checkout</span><span style="flex-grow: 1; height: 20px; background: var(--surface-inset); border-radius: 3px; display: flex;"><span class="qbar" style="width: 20.4%; background: #ff6a2b; border-radius: 0 4px 4px 0;"></span></span><span class="fl-num" style="width: 62px; flex: none; text-align: right; font-size: 12px; color: var(--text-primary);">84</span></div>
+</div>
+<p style="margin: 20px 0 0; font-size: 12px; color: var(--text-tertiary);">Amber bars have a p99 over one second. The colour repeats what the p99 column says; it is never the only thing that says it.</p>
+</div></sc-if>
+</div>
+</div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":980}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      saved: 'slow-gru', source: 'traces', view: 'table', ran: true, next: 4,
+      filters: [
+        { id: 1, field: 'region', op: 'is', value: 'gru1' },
+        { id: 2, field: 'duration_ms', op: '>', value: '500' },
+        { id: 3, field: 'status', op: 'is not', value: '404' }
+      ]
+    };
+  }
+
+  renderVals() {
+    var self = this;
+    var SAVED = [{id:'slow-gru',name:'Slow requests in gru1',meta:'traces · last 24h · 3 filters'},{id:'5xx-route',name:'5xx by route',meta:'traces · last 7d · 1 filter'},{id:'cold',name:'Cold starts after a deploy',meta:'traces · last 1h · 2 filters'},{id:'kv-cross',name:'Cross-region KV reads',meta:'logs · last 24h · 2 filters'},{id:'build-fail',name:'Failed builds by branch',meta:'builds · last 30d · 1 filter'}];
+
+    var saved = SAVED.map(function (s) {
+      var on = self.state.saved === s.id;
+      return { key: s.id, name: s.name, meta: s.meta, on: on ? 'true' : 'false',
+               iconColor: on ? '#ff8a5c' : '#5d646f',
+               pick: function () { self.setState({ saved: s.id, ran: false }); } };
+    });
+
+    var filters = this.state.filters.map(function (f, n) {
+      return {
+        key: f.id, n: n + 1, field: f.field, op: f.op, value: f.value,
+        fieldId: 'ex-f' + f.id, opId: 'ex-o' + f.id, valId: 'ex-v' + f.id,
+        removeLabel: 'Remove filter ' + (n + 1),
+        setField: function (e) { self.patch(f.id, 'field', e.target.value); },
+        setOp: function (e) { self.patch(f.id, 'op', e.target.value); },
+        setValue: function (e) { self.patch(f.id, 'value', e.target.value); },
+        remove: function () {
+          self.setState({ ran: false, filters: self.state.filters.filter(function (x) {
+            return x.id !== f.id;
+          }) });
+        }
+      };
+    });
+
+    var where = this.state.filters.map(function (f) {
+      var v = /^[0-9]+$/.test(f.value) ? f.value : "'" + f.value + "'";
+      return f.field + ' ' + f.op + ' ' + v;
+    }).join(' and ');
+
+    var hql = 'from ' + this.state.source + ' where ' + (where || 'true')
+            + ' group by region, route select count(), p50(duration_ms), p99(duration_ms)';
+
+    var views = [['table', 'Table'], ['chart', 'Bar chart']].map(function (v) {
+      return { key: v[0], label: v[1], on: self.state.view === v[0] ? 'true' : 'false',
+               pick: function () { self.setState({ view: v[0] }); } };
+    });
+
+    return {
+      saved: saved, filters: filters, hql: hql, views: views,
+      hasFilters: this.state.filters.length > 0,
+      source: this.state.source,
+      setSource: function (e) { self.setState({ source: e.target.value, ran: false }); },
+      addFilter: function () {
+        var next = self.state.filters.slice();
+        next.push({ id: self.state.next, field: 'route', op: 'contains', value: '' });
+        self.setState({ filters: next, next: self.state.next + 1, ran: false });
+      },
+      clearFilters: function () { self.setState({ filters: [], ran: false }); },
+      runLabel: this.state.ran ? 'Re-run' : 'Run query',
+      run: function () { self.setState({ ran: true }); },
+      resultNote: this.state.ran
+        ? '8 groups from 1,024,918 traces, scanned in 340 ms'
+        : 'The query changed. Run it to refresh these 8 groups.',
+      isTable: this.state.view === 'table',
+      isChart: this.state.view === 'chart'
+    };
+  }
+
+  patch(id, key, value) {
+    var next = this.state.filters.map(function (f) {
+      if (f.id !== id) { return f; }
+      var copy = { id: f.id, field: f.field, op: f.op, value: f.value };
+      copy[key] = value;
+      return copy;
+    });
+    this.setState({ filters: next, ran: false });
+  }
+}
+</script>
+</body>
+</html>

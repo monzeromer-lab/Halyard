@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Routing rules — editor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.tree-i{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;
+padding:5px 10px;border-radius:var(--radius-sm);cursor:pointer;text-align:left;
+font:400 13px/1.4 var(--font-sans);color:var(--text-tertiary)}
+.tree-i:hover{background:var(--surface-hover);color:var(--text-primary)}
+.tree-i[aria-current="true"]{background:var(--brand-soft);color:var(--text-brand)}
+.tab{display:flex;align-items:center;gap:9px;background:var(--surface-sunken);border:0;
+border-right:1px solid var(--line-hairline);padding:0 14px;height:38px;cursor:pointer;
+font:400 13px/1 var(--font-mono);color:var(--text-tertiary)}
+.tab:hover{color:var(--text-primary)}
+.tab[aria-selected="true"]{background:var(--surface-canvas);color:var(--text-primary);
+box-shadow:inset 0 2px 0 var(--brand)}
+.ln{display:flex;min-height:22px}
+.ln:hover{background:rgba(255,255,255,.02)}
+.ln-n{width:52px;flex:none;text-align:right;padding-right:16px;color:var(--text-disabled);
+user-select:none;font-variant-numeric:tabular-nums}
+.ln[data-mark="error"]{background:rgba(255,93,93,.09);box-shadow:inset 2px 0 0 var(--danger)}
+.ln[data-mark="warn"]{background:rgba(245,181,60,.08);box-shadow:inset 2px 0 0 var(--warning)}
+.squiggle{text-decoration:underline wavy var(--danger);text-underline-offset:4px}
+.prob{display:flex;gap:11px;width:100%;background:none;border:0;padding:9px 14px;cursor:pointer;
+text-align:left;border-bottom:1px solid var(--line-hairline)}
+.prob:hover{background:var(--surface-hover)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 920px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex;">
+<aside style="width: 252px; flex: none; background: var(--surface-sunken); border-right: 1px solid var(--line-hairline); display: flex; flex-direction: column;">
+<div style="height: 44px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--line-hairline);"><span class="fl-overline" style="flex-grow: 1;">EXPLORER</span><button type="button" class="fl-icon-btn" aria-label="New file" style="width: 26px; height: 26px; min-width: 26px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+<div style="flex-grow: 1; overflow: auto; padding: 8px 6px;">
+<sc-for list="{{tree}}" as="t" hint-placeholder-count="14">
+<button type="button" class="tree-i" aria-current="{{ t.on }}" onClick="{{ t.pick }}" style="padding-left: {{ t.indent }};"><span style="display: inline-flex; flex: none; color: {{ t.iconColor }};"><sc-if value="{{ t.isDir }}" hint-placeholder-val="{{ true }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h6l2 2.5h10V19H3Z"></path></svg></sc-if><sc-if value="{{ t.isFile }}" hint-placeholder-val="{{ true }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h7l5 5v13H6Z"></path><path d="M13 3v5h5"></path></svg></sc-if></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.name }}</span><sc-if value="{{ t.hasProblem }}" hint-placeholder-val="{{ true }}"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ t.problemColor }}; flex: none;"></span></sc-if></button>
+</sc-for>
+</div>
+<div style="flex: none; padding: 12px 14px; border-top: 1px solid var(--line-hairline);"><a href="App-BuildDetail.dc.html" class="fl-btn" data-variant="secondary" data-size="sm" style="width: 100%;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="9" r="2.5"></circle><path d="M6 8.5v7M18 11.5c0 3-4 2.5-6 4.5"></path></svg>Commit 2 files</a></div>
+</aside>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<div role="tablist" aria-label="Open files" style="height: 38px; flex: none; display: flex; border-bottom: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" class="tab" role="tab" aria-selected="{{ t.on }}" onClick="{{ t.pick }}"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ t.dot }}; flex: none;"></span>{{ t.name }}</button>
+</sc-for>
+<span style="flex-grow: 1; border-bottom: 1px solid transparent;"></span>
+</div>
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+<div style="flex-grow: 1; min-width: 0; overflow: auto; padding: 14px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.7;">
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="13">
+<div class="ln" data-mark="{{ l.mark }}">
+<span class="ln-n">{{ l.n }}</span>
+<span style="flex-grow: 1; padding-right: 20px; white-space: pre-wrap;">
+<sc-for list="{{ l.parts }}" as="p" hint-placeholder-count="3"><span class="{{ p.cls }}" style="color: {{ p.color }};">{{ p.text }}</span></sc-for>
+</span></div>
+</sc-for>
+</div>
+<div aria-hidden="true" style="width: 54px; flex: none; padding: 16px 8px; border-left: 1px solid var(--line-hairline); background: var(--surface-sunken); display: flex; flex-direction: column; gap: 3px;">
+<sc-for list="{{minimap}}" as="m" hint-placeholder-count="13">
+<span style="height: 3px; border-radius: 2px; width: {{ m.w }}; background: {{ m.color }};"></span>
+</sc-for>
+</div>
+</div>
+<div style="flex: none; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<div style="height: 38px; display: flex; align-items: center; gap: 16px; padding: 0 14px; border-bottom: 1px solid var(--line-hairline);">
+<button type="button" class="fl-tab" aria-selected="true" style="padding: 0 0 2px; font-size: 13px;">Problems<span class="fl-num" style="margin-left: 7px; color: var(--text-disabled);">{{ problemCount }}</span></button>
+<button type="button" class="fl-tab" aria-selected="false" style="padding: 0 0 2px; font-size: 13px;">Terminal</button>
+<button type="button" class="fl-tab" aria-selected="false" style="padding: 0 0 2px; font-size: 13px;">Preview log</button>
+<span style="flex-grow: 1;"></span>
+<button type="button" class="fl-btn" data-variant="ghost" data-size="sm" onClick="{{ togglePanel }}">{{ panelLabel }}</button>
+</div>
+<sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ true }}">
+<div style="height: 138px; overflow: auto;">
+<sc-for list="{{problems}}" as="p" hint-placeholder-count="2">
+<button type="button" class="prob"><span style="color: {{ p.color }}; flex: none; display: inline-flex; margin-top: 1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 400 13px/1.5 var(--font-sans); color: var(--text-secondary);">{{ p.message }}</span><span style="display: block; margin-top: 3px; font: 400 11px/1.4 var(--font-mono); color: var(--text-tertiary);">{{ p.where }}</span></span><span class="fl-badge" data-tone="{{ p.tone }}" style="flex: none;">{{ p.code }}</span></button>
+</sc-for>
+<sc-if value="{{ noProblems }}" hint-placeholder-val="{{ true }}"><p style="margin: 0; padding: 40px 16px; text-align: center; font-size: 13px; color: var(--text-tertiary);">Nothing wrong with this file. The two problems in the project are in routes.halyard.ts and session.ts.</p></sc-if>
+</div></sc-if>
+</div>
+<div style="height: 30px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: var(--surface-inset); border-top: 1px solid var(--line-hairline); font-size: 11px; font-family: var(--font-mono); color: var(--text-tertiary);">
+<span style="display: flex; align-items: center; gap: 6px;"><span style="display: inline-flex;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="9" r="2.5"></circle><path d="M6 8.5v7M18 11.5c0 3-4 2.5-6 4.5"></path></svg></span>main</span>
+<span>{{ cursor }}</span>
+<span>TypeScript</span>
+<span>UTF-8</span>
+<span style="flex-grow: 1;"></span>
+<span style="display: flex; align-items: center; gap: 6px; color: {{ statusColor }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ statusColor }}; display: inline-block;"></span>{{ statusText }}</span>
+</div>
+</div>
+<aside style="width: 340px; flex: none; border-left: 1px solid var(--line-hairline); background: var(--surface-raised); display: flex; flex-direction: column;">
+<div style="height: 44px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--line-hairline);"><span class="fl-overline" style="flex-grow: 1;">RESOLVED ROUTING</span><button type="button" class="fl-icon-btn" aria-label="Re-evaluate" style="width: 26px; height: 26px; min-width: 26px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg></button></div>
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; overflow: auto;">
+<p style="margin: 0 0 4px; font-size: 12px; line-height: 1.6; color: var(--text-tertiary);">Evaluated top to bottom against a sample request. The first match answers.</p>
+<div style="padding: 11px 13px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-left: 2px solid var(--success); border-radius: var(--radius-sm);"><p style="margin: 0 0 4px; display: flex; align-items: center; gap: 8px;"><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">1</span><span class="fl-mono" style="font-size: 12px; color: var(--text-primary); flex-grow: 1;">cookie ht_beta=1</span></p><p class="fl-mono" style="margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--text-tertiary);">→ build 8f2c41</p></div>
+<div style="padding: 11px 13px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-left: 2px solid var(--success); border-radius: var(--radius-sm);"><p style="margin: 0 0 4px; display: flex; align-items: center; gap: 8px;"><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">2</span><span class="fl-mono" style="font-size: 12px; color: var(--text-primary); flex-grow: 1;">geo.country in DE, FR, NL</span></p><p class="fl-mono" style="margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--text-tertiary);">→ region fra1</p></div>
+<div style="padding: 11px 13px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-left: 2px solid var(--success); border-radius: var(--radius-sm);"><p style="margin: 0 0 4px; display: flex; align-items: center; gap: 8px;"><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">3</span><span class="fl-mono" style="font-size: 12px; color: var(--text-primary); flex-grow: 1;">path /api/*</span></p><p class="fl-mono" style="margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--text-tertiary);">→ fn api, 10 s</p></div>
+<div style="padding: 11px 13px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-left: 2px solid var(--warning); border-radius: var(--radius-sm);"><p style="margin: 0 0 4px; display: flex; align-items: center; gap: 8px;"><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">4</span><span class="fl-mono" style="font-size: 12px; color: var(--text-primary); flex-grow: 1;">path /*</span></p><p class="fl-mono" style="margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--text-tertiary);">→ build current, weight 99</p></div>
+<div style="padding: 11px 13px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-left: 2px solid var(--danger); border-radius: var(--radius-sm);"><p style="margin: 0 0 4px; display: flex; align-items: center; gap: 8px;"><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">5</span><span class="fl-mono" style="font-size: 12px; color: var(--text-primary); flex-grow: 1;">path /legacy/*</span></p><p class="fl-mono" style="margin: 0; padding-left: 20px; font-size: 11.5px; color: var(--text-tertiary);">→ build deleted</p></div>
+</div>
+<div style="flex: none; padding: 14px 16px; border-top: 1px solid var(--line-hairline);"><label class="fl-label" for="ed-test" style="font-size: 12px;">Test a request</label><input class="fl-input fl-mono" id="ed-test" value="GET /api/cart" style="font-size: 12px; height: 32px;"><p class="fl-help" style="font-size: 11px;">Rule 3 matched. Served by fn api in the region the request lands in.</p></div>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":920}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { file: 'routes.halyard.ts', panel: true };
+  }
+
+  renderVals() {
+    var self = this;
+    var COLOR = {kw:'#ff8a5c',kw2:'#9b8cff',st:'#58e8bf',nu:'#f7c869',cm:'#5d646f',pl:'#b9bec7',ty:'#79ccf5',er:'#ff8585'};
+    var FILES = {
+      'routes.halyard.ts': [{m:'',p:[{c:'kw',t:'import'},{c:'pl',t:' { defineRoutes } '},{c:'kw',t:'from'},{c:'pl',t:' '},{c:'st',t:'\'halyard\''}]},{m:'',p:[]},{m:'',p:[{c:'kw',t:'export default'},{c:'pl',t:' defineRoutes(['}]},{m:'',p:[{c:'cm',t:'  // the beta cohort stays on a known build'}]},{m:'',p:[{c:'pl',t:'  { match: { cookie: { ht_beta: '},{c:'st',t:'\'1\''},{c:'pl',t:' } }, build: '},{c:'st',t:'\'8f2c41\''},{c:'pl',t:' },'}]},{m:'',p:[]},{m:'',p:[{c:'cm',t:'  // EU traffic prefers fra1, then falls through'}]},{m:'',p:[{c:'pl',t:'  { match: { geo: { country: ['},{c:'st',t:'\'DE\''},{c:'pl',t:', '},{c:'st',t:'\'FR\''},{c:'pl',t:', '},{c:'st',t:'\'NL\''},{c:'pl',t:'] } }, region: '},{c:'st',t:'\'fra1\''},{c:'pl',t:' },'}]},{m:'',p:[]},{m:'',p:[{c:'pl',t:'  { match: { path: '},{c:'st',t:'\'/api/*\''},{c:'pl',t:' }, fn: '},{c:'st',t:'\'api\''},{c:'pl',t:', timeout: '},{c:'nu',t:'10_000'},{c:'pl',t:' },'}]},{m:'warn',p:[{c:'pl',t:'  { match: { path: '},{c:'st',t:'\'/*\''},{c:'pl',t:' }, build: '},{c:'st',t:'\'current\''},{c:'pl',t:', weight: '},{c:'nu',t:'99'},{c:'pl',t:' },'}]},{m:'error',p:[{c:'pl',t:'  { match: { path: '},{c:'st',t:'\'/legacy/*\''},{c:'pl',t:' }, build: '},{c:'er',t:'\'deleted\''},{c:'pl',t:' },'}]},{m:'',p:[{c:'pl',t:'])'}]}],
+      'session.ts': [{m:'',p:[{c:'kw',t:'import'},{c:'pl',t:' fs '},{c:'kw',t:'from'},{c:'pl',t:' '},{c:'er',t:'\'node:fs\''}]},{m:'error',p:[{c:'kw',t:'import'},{c:'pl',t:' { kv } '},{c:'kw',t:'from'},{c:'pl',t:' '},{c:'st',t:'\'halyard/kv\''}]},{m:'',p:[]},{m:'',p:[{c:'kw',t:'export async function'},{c:'pl',t:' read(id: '},{c:'ty',t:'string'},{c:'pl',t:') {'}]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'const'},{c:'pl',t:' raw = '},{c:'kw',t:'await'},{c:'pl',t:' fs.promises.readFile(`/tmp/${id}`)'}]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'return'},{c:'pl',t:' JSON.parse(raw.toString())'}]},{m:'',p:[{c:'pl',t:'}'}]},{m:'',p:[]},{m:'',p:[{c:'cm',t:'  // the edge-safe version, once the migration lands:'}]},{m:'',p:[{c:'cm',t:'  // return kv.get(`session:${id}`)'}]}],
+      'cart.ts': [{m:'',p:[{c:'kw',t:'import'},{c:'pl',t:' { kv, queue } '},{c:'kw',t:'from'},{c:'pl',t:' '},{c:'st',t:'\'halyard\''}]},{m:'',p:[]},{m:'',p:[{c:'kw',t:'export default async function'},{c:'pl',t:' (req: '},{c:'ty',t:'Request'},{c:'pl',t:') {'}]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'const'},{c:'pl',t:' { sku, qty } = '},{c:'kw',t:'await'},{c:'pl',t:' req.json()'}]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'const'},{c:'pl',t:' stock = '},{c:'kw',t:'await'},{c:'pl',t:' kv.get(`stock:${sku}`)'}]},{m:'',p:[]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'if'},{c:'pl',t:' (stock < qty) {'}]},{m:'',p:[{c:'pl',t:'    '},{c:'kw',t:'return'},{c:'pl',t:' Response.json({ error: '},{c:'st',t:'\'out_of_stock\''},{c:'pl',t:' }, { status: '},{c:'nu',t:'409'},{c:'pl',t:' })'}]},{m:'',p:[{c:'pl',t:'  }'}]},{m:'',p:[]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'await'},{c:'pl',t:' queue.publish('},{c:'st',t:'\'cart.updated\''},{c:'pl',t:', { sku, qty })'}]},{m:'',p:[{c:'pl',t:'  '},{c:'kw',t:'return'},{c:'pl',t:' Response.json({ ok: '},{c:'kw2',t:'true'},{c:'pl',t:' }, { status: '},{c:'nu',t:'201'},{c:'pl',t:' })'}]},{m:'',p:[{c:'pl',t:'}'}]}],
+      'halyard.config.ts': [{m:'',p:[{c:'kw',t:'import'},{c:'pl',t:' { defineConfig } '},{c:'kw',t:'from'},{c:'pl',t:' '},{c:'st',t:'\'halyard\''}]},{m:'',p:[]},{m:'',p:[{c:'kw',t:'export default'},{c:'pl',t:' defineConfig({'}]},{m:'',p:[{c:'pl',t:'  runtime: '},{c:'st',t:'\'edge\''},{c:'pl',t:','}]},{m:'',p:[{c:'pl',t:'  regions: '},{c:'st',t:'\'all\''},{c:'pl',t:','}]},{m:'',p:[{c:'pl',t:'  build: { command: '},{c:'st',t:'\'pnpm build\''},{c:'pl',t:', reproducible: '},{c:'kw2',t:'true'},{c:'pl',t:' },'}]},{m:'',p:[{c:'pl',t:'  kv: { namespace: '},{c:'st',t:'\'storefront\''},{c:'pl',t:', leader: '},{c:'st',t:'\'fra1\''},{c:'pl',t:' },'}]},{m:'',p:[{c:'pl',t:'})'}]}]
+    };
+    var PROBLEMS = {
+      'routes.halyard.ts': [{k:'error',code:'HL-4019',f:'routes.halyard.ts',l:12,m:'build \'deleted\' does not exist. Pin a hash that is still retained, or use \'current\'.'},{k:'warn',code:'HL-4021',f:'routes.halyard.ts',l:11,m:'Weighted rules in this group sum to 99. Add the missing 1% or remove the weight.'}],
+      'session.ts': [{k:'error',code:'HL-3002',f:'session.ts',l:1,m:'node:fs is not available in the edge runtime. Move this read to halyard/kv.'}],
+      'cart.ts': [],
+      'halyard.config.ts': []
+    };
+    var TREE = [{d:0,k:'dir',n:'apps',f:null},{d:1,k:'dir',n:'storefront',f:null},{d:2,k:'file',n:'halyard.config.ts',f:'halyard.config.ts'},{d:2,k:'file',n:'routes.halyard.ts',f:'routes.halyard.ts'},{d:2,k:'dir',n:'src',f:null},{d:3,k:'dir',n:'api',f:null},{d:4,k:'file',n:'cart.ts',f:'cart.ts'},{d:4,k:'file',n:'stock.ts',f:null},{d:3,k:'dir',n:'lib',f:null},{d:4,k:'file',n:'session.ts',f:'session.ts'},{d:4,k:'file',n:'kv.ts',f:null},{d:2,k:'file',n:'package.json',f:null},{d:0,k:'dir',n:'packages',f:null},{d:1,k:'dir',n:'design-system',f:null}];
+    var cur = this.state.file;
+
+    var tabs = ['routes.halyard.ts','session.ts','cart.ts','halyard.config.ts'].map(function (name) {
+      var probs = PROBLEMS[name] || [];
+      var worst = probs.length === 0 ? null : (probs.some(function (p) { return p.k === 'error'; })
+        ? 'error' : 'warn');
+      return { key: name, name: name, on: cur === name ? 'true' : 'false',
+               dot: worst === 'error' ? '#ff5d5d' : (worst === 'warn' ? '#f5b53c' : 'transparent'),
+               pick: function () { self.setState({ file: name }); } };
+    });
+
+    var tree = TREE.map(function (t, n) {
+      var probs = t.f ? (PROBLEMS[t.f] || []) : [];
+      var worst = probs.length === 0 ? null : (probs.some(function (p) { return p.k === 'error'; })
+        ? 'error' : 'warn');
+      return { key: n, name: t.n, indent: (10 + t.d * 14) + 'px',
+               isDir: t.k === 'dir', isFile: t.k === 'file',
+               on: t.f === cur ? 'true' : 'false',
+               iconColor: t.k === 'dir' ? '#949ba7' : '#5d646f',
+               hasProblem: !!worst,
+               problemColor: worst === 'error' ? '#ff5d5d' : '#f5b53c',
+               pick: function () { if (t.f) { self.setState({ file: t.f }); } } };
+    });
+
+    var src = FILES[cur] || [];
+    var lines = src.map(function (l, n) {
+      return { key: n, n: n + 1, mark: l.m,
+               parts: l.p.map(function (p, j) {
+                 return { key: j, text: p.t, color: COLOR[p.c] || '#b9bec7',
+                          cls: p.c === 'er' ? 'squiggle' : '' };
+               }) };
+    });
+
+    var minimap = src.map(function (l, n) {
+      var len = 0;
+      l.p.forEach(function (p) { len += p.t.length; });
+      return { key: n, w: Math.min(100, Math.max(6, len * 1.4)) + '%',
+               color: l.m === 'error' ? '#ff5d5d' : (l.m === 'warn' ? '#f5b53c' : '#2a2f37') };
+    });
+
+    var probs = PROBLEMS[cur] || [];
+    var problems = probs.map(function (p, n) {
+      return { key: n, message: p.m, where: p.f + ':' + p.l, code: p.code,
+               color: p.k === 'error' ? '#ff5d5d' : '#f5b53c',
+               tone: p.k === 'error' ? 'danger' : 'warning' };
+    });
+
+    var errs = probs.filter(function (p) { return p.k === 'error'; }).length;
+
+    return {
+      tabs: tabs, tree: tree, lines: lines, minimap: minimap, problems: problems,
+      problemCount: probs.length, noProblems: probs.length === 0,
+      panelOpen: this.state.panel,
+      panelLabel: this.state.panel ? 'Hide panel' : 'Show panel',
+      togglePanel: function () { self.setState({ panel: !self.state.panel }); },
+      cursor: 'Ln ' + src.length + ', Col 1',
+      statusColor: errs ? '#ff8585' : '#66dd9f',
+      statusText: errs ? errs + ' error, deploy blocked' : 'Ready to deploy'
+    };
+  }
+}
+</script>
+</body>
+</html>

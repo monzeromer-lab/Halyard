@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Infrastructure — storefront-edge</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.node{cursor:pointer}
+.node rect{transition:stroke 140ms var(--ease-standard),fill 140ms var(--ease-standard)}
+.node:hover rect{stroke:#6b7482}
+.legend-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-secondary)}
+.insp-row{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--line-hairline)}
+.insp-row:last-child{border-bottom:0}
+@keyframes dash{to{stroke-dashoffset:-16}}
+.flowing{stroke-dasharray:4 4;animation:dash 1.1s linear infinite}
+</style>
+</helmet>
+<div style="width: 1440px; height: 920px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<div style="height: 64px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 28px; border-bottom: 1px solid var(--line-hairline);">
+<a href="App-Overview.dc.html" class="fl-icon-btn" aria-label="Back to the project" style="width: 32px; height: 32px; min-width: 32px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></a>
+<div style="flex-grow: 1;">
+<h1 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Infrastructure</h1>
+<p style="margin: 2px 0 0; font-size: 12px; color: var(--text-tertiary);">storefront-edge &middot; production &middot; how one request travels</p>
+</div>
+<button type="button" class="fl-btn" data-variant="ghost" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4"></path><path d="M4 19h16"></path></svg>Export SVG</button>
+<a href="Editor.dc.html" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"></path></svg>Edit routing</a>
+</div>
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+<div style="flex-grow: 1; min-width: 0; position: relative; overflow: hidden; background: var(--surface-canvas);">
+<div aria-hidden="true" style="position: absolute; inset: 0; opacity: .5; background-image: radial-gradient(#1c2026 1px, transparent 1px); background-size: 24px 24px;"></div>
+<svg width="100%" height="100%" viewBox="0 0 980 600" role="img" aria-label="Infrastructure graph: how a request travels from a client through the edge to state" style="position: relative;">
+<g transform="{{ zoomTransform }}">
+<path d="M 170.0 66.0 C 200.0 66.0 200.0 156.0 230.0 156.0" fill="none" stroke="{{ e_browser_pop.stroke }}" stroke-width="{{ e_browser_pop.width }}" stroke-linecap="round"></path>
+<path d="M 170.0 156.0 C 200.0 156.0 200.0 156.0 230.0 156.0" fill="none" stroke="{{ e_mobile_pop.stroke }}" stroke-width="{{ e_mobile_pop.width }}" stroke-linecap="round"></path>
+<path d="M 170.0 246.0 C 200.0 246.0 200.0 156.0 230.0 156.0" fill="none" stroke="{{ e_partner_pop.stroke }}" stroke-width="{{ e_partner_pop.width }}" stroke-linecap="round"></path>
+<path d="M 400.0 156.0 C 430.0 156.0 430.0 56.0 460.0 56.0" class="flowing" fill="none" stroke="{{ e_pop_rules.stroke }}" stroke-width="{{ e_pop_rules.width }}" stroke-linecap="round"></path>
+<path d="M 400.0 156.0 C 430.0 156.0 430.0 144.0 460.0 144.0" class="flowing" fill="none" stroke="{{ e_pop_mw.stroke }}" stroke-width="{{ e_pop_mw.width }}" stroke-linecap="round"></path>
+<path d="M 400.0 156.0 C 430.0 156.0 430.0 232.0 460.0 232.0" fill="none" stroke="{{ e_pop_assets.stroke }}" stroke-width="{{ e_pop_assets.width }}" stroke-linecap="round"></path>
+<path d="M 630.0 56.0 C 660.0 56.0 660.0 56.0 690.0 56.0" class="flowing" fill="none" stroke="{{ e_rules_fnapi.stroke }}" stroke-width="{{ e_rules_fnapi.width }}" stroke-linecap="round"></path>
+<path d="M 630.0 144.0 C 660.0 144.0 660.0 144.0 690.0 144.0" class="flowing" fill="none" stroke="{{ e_mw_fncheckout.stroke }}" stroke-width="{{ e_mw_fncheckout.width }}" stroke-linecap="round"></path>
+<path d="M 630.0 144.0 C 660.0 144.0 660.0 232.0 690.0 232.0" fill="none" stroke="{{ e_mw_render.stroke }}" stroke-width="{{ e_mw_render.width }}" stroke-linecap="round"></path>
+<path d="M 765.0 82.0 C 765.0 206.0 765.0 206.0 765.0 330.0" class="flowing" fill="none" stroke="{{ e_fnapi_kv.stroke }}" stroke-width="{{ e_fnapi_kv.width }}" stroke-linecap="round"></path>
+<path d="M 765.0 170.0 C 765.0 250.0 765.0 250.0 765.0 330.0" fill="none" stroke="{{ e_fncheckout_kv.stroke }}" stroke-width="{{ e_fncheckout_kv.width }}" stroke-linecap="round"></path>
+<path d="M 690.0 144.0 C 660.0 144.0 660.0 356.0 630.0 356.0" fill="none" stroke="{{ e_fncheckout_queue.stroke }}" stroke-width="{{ e_fncheckout_queue.width }}" stroke-linecap="round"></path>
+<path d="M 460.0 356.0 C 430.0 356.0 430.0 356.0 400.0 356.0" fill="none" stroke="{{ e_queue_upstream.stroke }}" stroke-width="{{ e_queue_upstream.width }}" stroke-linecap="round"></path>
+<path d="M 690.0 56.0 C 545.0 56.0 545.0 356.0 400.0 356.0" fill="none" stroke="{{ e_fnapi_upstream.stroke }}" stroke-width="{{ e_fnapi_upstream.width }}" stroke-linecap="round"></path>
+<g class="node" onClick="{{ n_browser.pick }}" role="button" tabindex="0" aria-label="Browser, storefront.example.com">
+<rect x="20" y="40" width="150" height="52" rx="10" fill="{{ n_browser.fill }}" stroke="{{ n_browser.stroke }}" stroke-width="{{ n_browser.width }}"></rect>
+<rect x="21" y="52" width="3" height="28" rx="1.5" fill="#9b8cff"></rect>
+<text x="34" y="63" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Browser</text>
+<text x="34" y="79" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">storefront.example.com</text>
+</g>
+<g class="node" onClick="{{ n_mobile.pick }}" role="button" tabindex="0" aria-label="Mobile app, iOS and Android">
+<rect x="20" y="130" width="150" height="52" rx="10" fill="{{ n_mobile.fill }}" stroke="{{ n_mobile.stroke }}" stroke-width="{{ n_mobile.width }}"></rect>
+<rect x="21" y="142" width="3" height="28" rx="1.5" fill="#9b8cff"></rect>
+<text x="34" y="153" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Mobile app</text>
+<text x="34" y="169" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">iOS and Android</text>
+</g>
+<g class="node" onClick="{{ n_partner.pick }}" role="button" tabindex="0" aria-label="Partner API, server to server">
+<rect x="20" y="220" width="150" height="52" rx="10" fill="{{ n_partner.fill }}" stroke="{{ n_partner.stroke }}" stroke-width="{{ n_partner.width }}"></rect>
+<rect x="21" y="232" width="3" height="28" rx="1.5" fill="#9b8cff"></rect>
+<text x="34" y="243" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Partner API</text>
+<text x="34" y="259" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">server to server</text>
+</g>
+<g class="node" onClick="{{ n_pop.pick }}" role="button" tabindex="0" aria-label="Anycast edge, 19 points of presence">
+<rect x="230" y="108" width="170" height="96" rx="10" fill="{{ n_pop.fill }}" stroke="{{ n_pop.stroke }}" stroke-width="{{ n_pop.width }}"></rect>
+<rect x="231" y="120" width="3" height="72" rx="1.5" fill="#ff6a2b"></rect>
+<text x="244" y="131" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Anycast edge</text>
+<text x="244" y="147" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">19 points of presence</text>
+</g>
+<g class="node" onClick="{{ n_rules.pick }}" role="button" tabindex="0" aria-label="Rule engine, 5 rules, 2 ms budget">
+<rect x="460" y="30" width="170" height="52" rx="10" fill="{{ n_rules.fill }}" stroke="{{ n_rules.stroke }}" stroke-width="{{ n_rules.width }}"></rect>
+<rect x="461" y="42" width="3" height="28" rx="1.5" fill="#ff6a2b"></rect>
+<text x="474" y="53" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Rule engine</text>
+<text x="474" y="69" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">5 rules, 2 ms budget</text>
+</g>
+<g class="node" onClick="{{ n_mw.pick }}" role="button" tabindex="0" aria-label="Middleware, auth, geo, experiments">
+<rect x="460" y="118" width="170" height="52" rx="10" fill="{{ n_mw.fill }}" stroke="{{ n_mw.stroke }}" stroke-width="{{ n_mw.width }}"></rect>
+<rect x="461" y="130" width="3" height="28" rx="1.5" fill="#ff6a2b"></rect>
+<text x="474" y="141" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Middleware</text>
+<text x="474" y="157" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">auth, geo, experiments</text>
+</g>
+<g class="node" onClick="{{ n_assets.pick }}" role="button" tabindex="0" aria-label="Immutable assets, 1 year, edge cached">
+<rect x="460" y="206" width="170" height="52" rx="10" fill="{{ n_assets.fill }}" stroke="{{ n_assets.stroke }}" stroke-width="{{ n_assets.width }}"></rect>
+<rect x="461" y="218" width="3" height="28" rx="1.5" fill="#ff6a2b"></rect>
+<text x="474" y="229" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Immutable assets</text>
+<text x="474" y="245" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">1 year, edge cached</text>
+</g>
+<g class="node" onClick="{{ n_fnapi.pick }}" role="button" tabindex="0" aria-label="fn api, 38 routes">
+<rect x="690" y="30" width="150" height="52" rx="10" fill="{{ n_fnapi.fill }}" stroke="{{ n_fnapi.stroke }}" stroke-width="{{ n_fnapi.width }}"></rect>
+<rect x="691" y="42" width="3" height="28" rx="1.5" fill="#35e0b0"></rect>
+<text x="704" y="53" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">fn api</text>
+<text x="704" y="69" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">38 routes</text>
+</g>
+<g class="node" onClick="{{ n_fncheckout.pick }}" role="button" tabindex="0" aria-label="fn checkout, 8 routes">
+<rect x="690" y="118" width="150" height="52" rx="10" fill="{{ n_fncheckout.fill }}" stroke="{{ n_fncheckout.stroke }}" stroke-width="{{ n_fncheckout.width }}"></rect>
+<rect x="691" y="130" width="3" height="28" rx="1.5" fill="#35e0b0"></rect>
+<text x="704" y="141" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">fn checkout</text>
+<text x="704" y="157" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">8 routes</text>
+</g>
+<g class="node" onClick="{{ n_render.pick }}" role="button" tabindex="0" aria-label="SSR render, isolate pool">
+<rect x="690" y="206" width="150" height="52" rx="10" fill="{{ n_render.fill }}" stroke="{{ n_render.stroke }}" stroke-width="{{ n_render.width }}"></rect>
+<rect x="691" y="218" width="3" height="28" rx="1.5" fill="#35e0b0"></rect>
+<text x="704" y="229" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">SSR render</text>
+<text x="704" y="245" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">isolate pool</text>
+</g>
+<g class="node" onClick="{{ n_kv.pick }}" role="button" tabindex="0" aria-label="Edge KV, leader fra1">
+<rect x="690" y="330" width="150" height="52" rx="10" fill="{{ n_kv.fill }}" stroke="{{ n_kv.stroke }}" stroke-width="{{ n_kv.width }}"></rect>
+<rect x="691" y="342" width="3" height="28" rx="1.5" fill="#d9b45a"></rect>
+<text x="704" y="353" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Edge KV</text>
+<text x="704" y="369" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">leader fra1</text>
+</g>
+<g class="node" onClick="{{ n_queue.pick }}" role="button" tabindex="0" aria-label="Queue, cart.updated">
+<rect x="460" y="330" width="170" height="52" rx="10" fill="{{ n_queue.fill }}" stroke="{{ n_queue.stroke }}" stroke-width="{{ n_queue.width }}"></rect>
+<rect x="461" y="342" width="3" height="28" rx="1.5" fill="#d9b45a"></rect>
+<text x="474" y="353" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Queue</text>
+<text x="474" y="369" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">cart.updated</text>
+</g>
+<g class="node" onClick="{{ n_upstream.pick }}" role="button" tabindex="0" aria-label="Upstream inventory, outside Halyard">
+<rect x="230" y="330" width="170" height="52" rx="10" fill="{{ n_upstream.fill }}" stroke="{{ n_upstream.stroke }}" stroke-width="{{ n_upstream.width }}"></rect>
+<rect x="231" y="342" width="3" height="28" rx="1.5" fill="#949ba7"></rect>
+<text x="244" y="353" fill="#f4f1ec" font-family="Manrope, sans-serif" font-size="13" font-weight="700">Upstream inventory</text>
+<text x="244" y="369" fill="#949ba7" font-family="Manrope, sans-serif" font-size="11">outside Halyard</text>
+</g>
+</g></svg>
+<div style="position: absolute; left: 20px; top: 20px; display: flex; gap: 10px; align-items: center;">
+<div class="fl-seg" role="group" aria-label="Zoom">
+<sc-for list="{{zooms}}" as="z" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{ z.on }}" onClick="{{ z.pick }}">{{ z.label }}</button>
+</sc-for>
+</div>
+<button type="button" class="fl-btn" data-variant="secondary" data-size="sm" onClick="{{ reset }}">Reset view</button>
+</div>
+<div style="position: absolute; left: 20px; bottom: 20px; padding: 14px 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 8px;">
+<p class="fl-overline">LEGEND</p>
+<span class="legend-row"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(155,140,255,.10); border: 1.5px solid #9b8cff; flex: none;"></span>Client</span>
+<span class="legend-row"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(255,106,43,.10); border: 1.5px solid #ff6a2b; flex: none;"></span>Edge</span>
+<span class="legend-row"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(53,224,176,.10); border: 1.5px solid #35e0b0; flex: none;"></span>Compute</span>
+<span class="legend-row"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(217,180,90,.10); border: 1.5px solid #d9b45a; flex: none;"></span>State</span>
+<span class="legend-row"><span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(148,155,167,.08); border: 1.5px solid #949ba7; flex: none;"></span>Outside Halyard</span>
+<span class="legend-row" style="margin-top: 4px;"><svg width="20" height="8" viewBox="0 0 20 8" aria-hidden="true"><line x1="0" y1="4" x2="20" y2="4" stroke="#ff6a2b" stroke-width="2" stroke-dasharray="4 4"></line></svg>Hot path, every request</span>
+</div></div>
+<aside style="width: 360px; flex: none; border-left: 1px solid var(--line-hairline); background: var(--surface-raised); display: flex; flex-direction: column;">
+<div style="padding: 22px 22px 16px; border-bottom: 1px solid var(--line-hairline);">
+<p class="fl-overline" style="margin-bottom: 8px;">{{ sel.kindLabel }}</p>
+<h2 style="margin: 0 0 6px; font-size: 22px; font-weight: 700; letter-spacing: -0.01em;">{{ sel.label }}</h2>
+<p style="margin: 0; font-size: 13px; color: var(--text-tertiary);">{{ sel.sub }}</p>
+</div>
+<div style="flex-grow: 1; overflow: auto; padding: 8px 22px;">
+<sc-for list="{{details}}" as="d" hint-placeholder-count="5">
+<div class="insp-row"><span style="width: 132px; flex: none; font: 600 13px/1.4 var(--font-sans); color: var(--text-tertiary);">{{ d.k }}</span><span style="flex-grow: 1; min-width: 0; font-size: 13px; line-height: 1.5; color: var(--text-primary);">{{ d.v }}</span></div>
+</sc-for>
+<div style="margin-top: 20px;">
+<p class="fl-overline" style="margin-bottom: 10px;">CONNECTED TO</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px;">
+<sc-for list="{{neighbours}}" as="nb" hint-placeholder-count="3">
+<button type="button" class="fl-chip" onClick="{{ nb.pick }}">{{ nb.label }}</button>
+</sc-for>
+</div></div>
+</div>
+<div style="flex: none; padding: 16px 22px; border-top: 1px solid var(--line-hairline); display: flex; flex-direction: column; gap: 10px;">
+<a href="App-Observability.dc.html" class="fl-btn" data-variant="primary" data-size="sm">Open its metrics</a>
+<a href="App-Logs.dc.html" class="fl-btn" data-variant="secondary" data-size="sm">Traces through this hop</a>
+</div></aside>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":920}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 'pop', zoom: 1 };
+  }
+
+  renderVals() {
+    var self = this;
+    var KIND = {client:['#9b8cff','rgba(155,140,255,.10)'],edge:['#ff6a2b','rgba(255,106,43,.10)'],compute:['#35e0b0','rgba(53,224,176,.10)'],state:['#d9b45a','rgba(217,180,90,.10)'],external:['#949ba7','rgba(148,155,167,.08)']};
+    var KINDLABEL = { client: 'CLIENT', edge: 'EDGE', compute: 'COMPUTE',
+                      state: 'STATE', external: 'OUTSIDE HALYARD' };
+    var NODES = [{id:'browser',label:'Browser',sub:'storefront.example.com',kind:'client'},{id:'mobile',label:'Mobile app',sub:'iOS and Android',kind:'client'},{id:'partner',label:'Partner API',sub:'server to server',kind:'client'},{id:'pop',label:'Anycast edge',sub:'19 points of presence',kind:'edge'},{id:'rules',label:'Rule engine',sub:'5 rules, 2 ms budget',kind:'edge'},{id:'mw',label:'Middleware',sub:'auth, geo, experiments',kind:'edge'},{id:'assets',label:'Immutable assets',sub:'1 year, edge cached',kind:'edge'},{id:'fnapi',label:'fn api',sub:'38 routes',kind:'compute'},{id:'fncheckout',label:'fn checkout',sub:'8 routes',kind:'compute'},{id:'render',label:'SSR render',sub:'isolate pool',kind:'compute'},{id:'kv',label:'Edge KV',sub:'leader fra1',kind:'state'},{id:'queue',label:'Queue',sub:'cart.updated',kind:'state'},{id:'upstream',label:'Upstream inventory',sub:'outside Halyard',kind:'external'}];
+    var EDGES = [['browser','pop',false],['mobile','pop',false],['partner','pop',false],['pop','rules',true],['pop','mw',true],['pop','assets',false],['rules','fnapi',true],['mw','fncheckout',true],['mw','render',false],['fnapi','kv',true],['fncheckout','kv',false],['fncheckout','queue',false],['queue','upstream',false],['fnapi','upstream',false]];
+    var DETAIL = {
+      'pop': [['Kind','Edge point of presence'],['Regions','19'],['p95 accept','1.8 ms'],['TLS','terminated at the edge'],['Owner','Halyard platform']],
+      'rules': [['Kind','Rule engine'],['Rules','5, evaluated in order'],['Budget','2 ms, enforced'],['Source','routes.halyard.ts'],['Last change','build 8f2c41']],
+      'fnapi': [['Kind','Edge function'],['Routes','38'],['Timeout','10 s'],['Cold start p95','8.1 ms'],['Concurrency','unbounded per region']],
+      'kv': [['Kind','Edge KV namespace'],['Leader','fra1'],['Replication','90 ms p95 cross-region'],['Stored','12.4 GB'],['Reads','in-region, unmetered']],
+      'upstream': [['Kind','Outside Halyard'],['Endpoint','[YOUR UPSTREAM HOST]'],['p95','184 ms'],['Failure mode','504 after 9.4 s'],['Note','the only hop Halyard does not control']]
+    };
+    var DEFAULT = [['Kind','Part of the request path'],['Owner','Halyard platform'],['Note','Select another node to compare.']];
+    var sel = this.state.sel;
+
+    var out = {};
+
+    NODES.forEach(function (n) {
+      var on = n.id === sel;
+      out['n_' + n.id] = {
+        fill: on ? KIND[n.kind][1] : 'rgba(19,21,25,.92)',
+        stroke: on ? KIND[n.kind][0] : '#2a2f37',
+        width: on ? 2 : 1,
+        pick: function () { self.setState({ sel: n.id }); }
+      };
+    });
+
+    EDGES.forEach(function (e) {
+      var touches = e[0] === sel || e[1] === sel;
+      out['e_' + e[0] + '_' + e[1]] = {
+        stroke: touches ? '#ff6a2b' : (e[2] ? '#3d444f' : '#2a2f37'),
+        width: touches ? 2 : 1.4
+      };
+    });
+
+    var picked = null;
+    NODES.forEach(function (n) { if (n.id === sel) { picked = n; } });
+
+    var neighbours = [];
+    EDGES.forEach(function (e) {
+      var other = e[0] === sel ? e[1] : (e[1] === sel ? e[0] : null);
+      if (!other) { return; }
+      NODES.forEach(function (n) {
+        if (n.id !== other) { return; }
+        neighbours.push({ key: n.id, label: n.label,
+                          pick: function () { self.setState({ sel: n.id }); } });
+      });
+    });
+
+    var rows = DETAIL[sel] || DEFAULT;
+
+    var zooms = [['0.8', 'Fit'], ['1', '100%'], ['1.25', '125%']].map(function (z) {
+      return { key: z[0], label: z[1],
+               on: String(self.state.zoom) === z[0] ? 'true' : 'false',
+               pick: function () { self.setState({ zoom: parseFloat(z[0]) }); } };
+    });
+
+    var k = this.state.zoom;
+    out.zoomTransform = 'translate(' + (40 * (1 - k)) + ',' + (30 * (1 - k)) + ') scale(' + k + ')';
+    out.zooms = zooms;
+    out.reset = function () { self.setState({ zoom: 1, sel: 'pop' }); };
+    out.sel = picked
+      ? { label: picked.label, sub: picked.sub, kindLabel: KINDLABEL[picked.kind] }
+      : { label: '\u2014', sub: '', kindLabel: '' };
+    out.details = rows.map(function (r, n) { return { key: n, k: r[0], v: r[1] }; });
+    out.neighbours = neighbours;
+    return out;
+  }
+}
+</script>
+</body>
+</html>

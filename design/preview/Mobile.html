@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halyard on a phone — Halyard design preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.tab-b{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+flex-grow:1;min-height:56px;background:none;border:0;cursor:pointer;color:var(--text-tertiary);
+font:600 10px/1.2 var(--font-sans);transition:color 140ms var(--ease-standard)}
+.tab-b[aria-selected="true"]{color:var(--text-brand)}
+.card-b{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;background:none;border:0;
+padding:12px 16px;cursor:pointer;text-align:left;border-bottom:1px solid var(--line-hairline);
+transition:background 140ms var(--ease-standard)}
+.card-b:active{background:var(--surface-hover)}
+.pane{animation:fade 220ms var(--ease-entrance) both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sheetin{from{transform:translateY(100%)}to{transform:none}}
+.sheet{animation:sheetin 380ms var(--ease-entrance) both}
+@keyframes spin{to{transform:rotate(360deg)}}
+.refresh{animation:spin 1s linear infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(53,224,176,.45)}70%{box-shadow:0 0 0 8px rgba(53,224,176,0)}
+100%{box-shadow:0 0 0 0 rgba(53,224,176,0)}}
+.live{animation:pulse 2.4s var(--ease-standard) infinite}
+</style>
+<style>
+body{display:flex;justify-content:center;padding:24px 0}
+</style>
+</head>
+<body>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column; position: relative;">
+<div style="flex: none; padding: 14px 16px 12px; border-bottom: 1px solid var(--line-hairline); background: var(--surface-canvas);">
+<div style="display: flex; align-items: center; gap: 12px;">
+<span style="width: 28px; height: 28px; border-radius: 8px; flex: none; background: var(--brand-soft); color: var(--text-brand); display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 var(--font-mono);">HL</span>
+<span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 700 15px/1.2 var(--font-sans); color: var(--text-primary);">storefront-edge</span><span style="display: block; margin-top: 2px; font: 400 11px/1.2 var(--font-mono); color: var(--text-tertiary);">production &middot; 19 regions</span></span>
+<button type="button" class="fl-icon-btn" aria-label="" onClick="" style="width: 44px; height: 44px; min-width: 44px;"><span class="" style="display: inline-flex;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg></span></button>
+</div></div>
+<div style="flex-grow: 1; min-height: 0; overflow: auto;">
+
+<div class="pane" style="padding: 16px;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-md); margin-bottom: 16px;"><span style="color: var(--warning); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 700 13px/1.3 var(--font-sans); color: var(--text-warning);">gru1 is degraded</span><span style="display: block; margin-top: 3px; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">p95 at 148 ms. Still serving.</span></span></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px;">
+<div style="padding: 14px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><p class="fl-overline" style="margin-bottom: 8px;">P95</p><p style="margin: 0; display: flex; align-items: baseline; gap: 4px;"><span class="fl-num" style="font-size: 24px; font-weight: 500;">38</span><span style="font-size: 11px; color: var(--text-tertiary);">ms</span></p></div>
+<div style="padding: 14px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><p class="fl-overline" style="margin-bottom: 8px;">ERRORS</p><p style="margin: 0; display: flex; align-items: baseline; gap: 4px;"><span class="fl-num" style="font-size: 24px; font-weight: 500;">0.4</span><span style="font-size: 11px; color: var(--text-tertiary);">%</span></p></div>
+<div style="padding: 14px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><p class="fl-overline" style="margin-bottom: 8px;">BUILD</p><p style="margin: 0; display: flex; align-items: baseline; gap: 4px;"><span class="fl-num" style="font-size: 24px; font-weight: 500;">22.4</span><span style="font-size: 11px; color: var(--text-tertiary);">s</span></p></div>
+<div style="padding: 14px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><p class="fl-overline" style="margin-bottom: 8px;">REGIONS</p><p style="margin: 0; display: flex; align-items: baseline; gap: 4px;"><span class="fl-num" style="font-size: 24px; font-weight: 500;">19/19</span><span style="font-size: 11px; color: var(--text-tertiary);"></span></p></div>
+</div>
+<p class="fl-overline" style="margin-bottom: 10px;">LIVE RELEASE</p>
+<div style="padding: 16px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md); margin-bottom: 18px;"><div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;"><span class="fl-mono" style="font-size: 15px; color: var(--text-brand); flex-grow: 1;">8f2c41</span><span class="fl-badge live" data-tone="success"><span class="fl-dot"></span>100%</span></div><p style="margin: 0 0 12px; font-size: 13px; line-height: 1.5; color: var(--text-secondary);">Pin beta cohort to a known build</p><div class="fl-progress" style="margin-bottom: 8px;"><span class="fl-progress__fill" style="width: 100%;"></span></div><p style="margin: 0; font-size: 11px; color: var(--text-tertiary);">Promoted 2 minutes ago &middot; 412 ms to propagate</p></div>
+<button type="button" class="fl-btn" data-variant="secondary" style="width: 100%; height: 46px;" onClick=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg>Release actions</button>
+</div>
+
+<div class="pane">
+<div style="padding: 12px 16px; display: flex; gap: 8px; overflow-x: auto;">
+
+<button type="button" class="fl-chip" aria-pressed="" onClick="" style="flex: none; min-height: 44px;">⟨label⟩</button>
+
+</div>
+
+<button type="button" class="card-b" onClick="">
+<span style="width: 6px; height: 34px; border-radius: 3px; flex: none; background: ;"></span>
+<span style="flex-grow: 1; min-width: 0;"><span style="display: flex; align-items: baseline; gap: 8px;"><span class="fl-mono" style="font-size: 13px; color: var(--text-brand);">⟨hash⟩</span><span style="font-size: 11px; color: var(--text-tertiary);">⟨when⟩ ago</span></span><span style="display: block; margin-top: 3px; font-size: 13px; line-height: 1.4; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">⟨message⟩</span></span>
+<span class="fl-badge" data-tone="" style="flex: none;">⟨status⟩</span>
+</button>
+
+<p style="margin: 0; padding: 48px 24px; text-align: center; font-size: 13px; color: var(--text-tertiary);">No deployment has that status in the last six.</p>
+</div>
+
+<div class="pane">
+<div style="padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line-hairline);">
+<span id="m-follow" style="flex-grow: 1; font: 600 13px/1 var(--font-sans); color: var(--text-secondary);">Follow the stream</span>
+<button type="button" class="fl-switch" role="switch" aria-checked="" aria-labelledby="m-follow" onClick=""><span class="fl-switch__knob"></span></button>
+</div>
+<div style="background: var(--surface-sunken);">
+
+<div style="padding: 10px 16px; border-bottom: 1px solid var(--line-hairline); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;"><span style="color: var(--text-disabled);">⟨time⟩</span><span style="color: ; font-weight: 600;">⟨level⟩</span><span style="color: var(--text-tertiary);">⟨region⟩</span></div><div style="color: var(--text-secondary); word-break: break-word;">⟨message⟩</div></div>
+
+</div></div>
+
+<div class="pane" style="padding: 20px 16px;">
+<div style="display: flex; align-items: center; gap: 14px; margin-bottom: 24px;"><span style="width: 52px; height: 52px; border-radius: 50%; flex: none; background: var(--surface-active); display: inline-flex; align-items: center; justify-content: center; font: 700 16px/1 var(--font-sans); color: var(--text-secondary);">YN</span><span style="flex-grow: 1; min-width: 0;"><span style="display: block; font: 700 17px/1.2 var(--font-sans);">[YOUR NAME]</span><span style="display: block; margin-top: 3px; font-size: 13px; color: var(--text-tertiary);">Owner &middot; [YOUR COMPANY]</span></span></div>
+<p class="fl-overline" style="margin-bottom: 10px;">NOTIFY ME WHEN</p>
+<div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px;">
+
+<div style="display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 8px 4px; border-bottom: 1px solid var(--line-hairline);"><span id="" style="flex-grow: 1; font-size: 14px; color: var(--text-secondary);">⟨label⟩</span><button type="button" class="fl-switch" role="switch" aria-checked="" aria-labelledby="" onClick=""><span class="fl-switch__knob"></span></button></div>
+
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<a href="Status.dc.html" class="fl-btn" data-variant="secondary" style="height: 46px;">Open the status page</a>
+<a href="App-Overview.dc.html" class="fl-btn" data-variant="ghost" style="height: 46px;">Open the full dashboard</a>
+</div></div>
+</div>
+<nav aria-label="Sections" style="flex: none; display: flex; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken); padding-bottom: 6px;">
+<button type="button" class="tab-b" role="tab" aria-selected="" onClick=""><span style="display: inline-flex;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"></path><path d="m3 13 9 5 9-5"></path></svg></span>Overview</button>
+<button type="button" class="tab-b" role="tab" aria-selected="" onClick=""><span style="display: inline-flex;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15c-1.5 1.5-2 6-2 6s4.5-.5 6-2"></path><path d="M9 13 5.5 12.5 4 11l5-3 4-4a7 7 0 0 1 7-1 7 7 0 0 1-1 7l-4 4-3 5-1.5-1.5L11 15Z"></path><circle cx="14.5" cy="9.5" r="1.4"></circle></svg></span>Deploys</button>
+<button type="button" class="tab-b" role="tab" aria-selected="" onClick=""><span style="display: inline-flex;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M13 17h6"></path></svg></span>Logs</button>
+<button type="button" class="tab-b" role="tab" aria-selected="" onClick=""><span style="display: inline-flex;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20a7.5 7.5 0 0 1 15 0"></path></svg></span>You</button>
+</nav>
+
+<button type="button" aria-label="Close" onClick="" style="position: absolute; inset: 0; z-index: 400; background: var(--surface-scrim); border: 0; padding: 0; width: 100%; cursor: default;"></button>
+<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 500; background: var(--surface-overlay); border-top: 1px solid var(--line-strong); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 12px 16px 24px; box-shadow: 0 -24px 60px rgba(0,0,0,.65);">
+<span aria-hidden="true" style="display: block; width: 40px; height: 4px; border-radius: 2px; background: var(--line-strong); margin: 0 auto 16px;"></span>
+<h2 id="sh-t" style="margin: 0 0 4px; font-size: 18px; font-weight: 700;">Release 8f2c41</h2>
+<p style="margin: 0 0 18px; font-size: 13px; color: var(--text-tertiary);">Live in 19 regions, promoted 2 minutes ago.</p>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<button type="button" class="fl-btn" data-variant="secondary" style="height: 48px; justify-content: flex-start; padding-left: 18px;" onClick=""><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"></path><path d="m20 4-9 9"></path><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Open the build</button>
+<button type="button" class="fl-btn" data-variant="secondary" style="height: 48px; justify-content: flex-start; padding-left: 18px;" onClick=""><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg>Redeploy</button>
+<button type="button" class="fl-btn" data-variant="secondary" style="height: 48px; justify-content: flex-start; padding-left: 18px;" onClick=""><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a1 1 0 0 1 1-1h9"></path></svg>Copy the hash</button>
+<button type="button" class="fl-btn" data-variant="danger" style="height: 48px; justify-content: flex-start; padding-left: 18px;" onClick=""><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Roll back to 7c91de</button>
+</div>
+<button type="button" class="fl-btn" data-variant="ghost" style="width: 100%; height: 48px; margin-top: 14px;" onClick="">Cancel</button>
+</div>
+</div>
+</body>
+</html>

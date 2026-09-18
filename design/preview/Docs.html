@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Routing rules — Halyard docs — Halyard design preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.foot-l{color:var(--text-tertiary);font:400 14px/2 var(--font-sans);display:block}
+.foot-l:hover{color:var(--text-primary)}
+
+.tree-sec{width:100%;background:none;border:0;display:flex;align-items:center;gap:8px;padding:8px 8px;
+color:var(--text-primary);font:700 12px/1.2 var(--font-sans);letter-spacing:.06em;cursor:pointer;
+text-transform:uppercase;border-radius:6px}
+.tree-sec:hover{background:var(--surface-hover)}
+.tree-a{display:block;padding:7px 10px 7px 26px;border-radius:6px;font:400 13px/1.4 var(--font-sans);
+color:var(--text-tertiary)}
+.tree-a:hover{background:var(--surface-hover);color:var(--text-primary)}
+.tree-a[aria-current="page"]{background:var(--brand-soft);color:var(--text-brand);font-weight:600}
+.toc-a{display:block;padding:5px 0 5px 14px;border-left:2px solid var(--line-hairline);
+font:400 13px/1.45 var(--font-sans);color:var(--text-tertiary)}
+.toc-a:hover{color:var(--text-primary);border-color:var(--line-strong)}
+.toc-a[aria-current="true"]{color:var(--text-primary);border-color:var(--brand)}
+.prose p{margin:0 0 20px;font-size:16px;line-height:1.7;color:var(--text-secondary);max-width:72ch}
+.prose h2{margin:44px 0 16px;font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-0.015em;
+color:var(--text-primary);scroll-margin-top:120px}
+.prose h3{margin:32px 0 12px;font-size:20px;line-height:1.3;font-weight:700;letter-spacing:-0.01em}
+.prose li{font-size:16px;line-height:1.7;color:var(--text-secondary);margin-bottom:8px}
+.prose code{font-family:var(--font-mono);font-size:13px;background:var(--surface-inset);
+border:1px solid var(--line-hairline);border-radius:3px;padding:1px 5px;color:var(--text-accent)}
+.doc-next:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.doc-next{transition:border-color 220ms var(--ease-standard),transform 220ms var(--ease-standard)}
+</style>
+<style>
+body{display:flex;justify-content:center;padding:24px 0}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 2180px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); display: flex; flex-direction: column;">
+<header style="position: sticky; top: 0; z-index: 100; height: 68px; flex: none; display: flex; align-items: center; gap: 40px; padding-left: 80px; padding-right: 80px; background: rgba(11,12,14,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--line-hairline);">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 19px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<nav aria-label="Primary" style="display: flex; align-items: center; gap: 28px; flex-grow: 1;">
+<a href="Main.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Product</a>
+<a href="Pricing.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Pricing</a>
+<a href="Docs.dc.html" aria-current="page" style="font: 600 14px/1 var(--font-sans); color: var(--text-brand);">Docs</a>
+<a href="Article.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Changelog</a>
+<a href="Status.dc.html" style="font: 600 14px/1 var(--font-sans); color: var(--text-secondary);">Status</a>
+</nav>
+<div style="display: flex; align-items: center; gap: 12px;">
+<a href="Overlays.dc.html" class="fl-btn" data-variant="ghost" data-size="sm" style="gap: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>Search<span class="fl-kbd">⌘K</span></a>
+<a href="App-Overview.dc.html" class="fl-btn" data-variant="ghost" data-size="sm">Sign in</a>
+<a href="Flow-Onboarding.dc.html" class="fl-btn" data-variant="primary" data-size="sm">Start building</a>
+</div></header>
+<div style="position: sticky; top: 68px; z-index: 90; height: 52px; flex: none; display: flex; align-items: center; gap: 16px; padding-left: 80px; padding-right: 80px; background: rgba(11,12,14,0.9); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line-hairline);">
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-tertiary); flex-grow: 1;">
+<a href="Docs.dc.html" style="color: var(--text-tertiary);">Docs</a>
+<span style="color: var(--line-strong); display: inline-flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span>
+<a href="#top" style="color: var(--text-tertiary);">Runtime</a>
+<span style="color: var(--line-strong); display: inline-flex;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span>
+<span aria-current="page" style="color: var(--text-primary);">Routing rules</span>
+</nav>
+<div class="fl-seg" role="group" aria-label="API version">
+
+<button type="button" aria-pressed="" onClick="">⟨label⟩</button>
+
+</div>
+<a href="Overlays.dc.html" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>Search docs<span class="fl-kbd">/</span></a>
+</div>
+<div style="flex-grow: 1; display: flex; align-items: flex-start;">
+<aside style="width: 272px; flex: none; border-right: 1px solid var(--line-hairline); padding: 32px 20px 64px 80px;">
+<nav aria-label="Documentation">
+
+<div style="margin-bottom: 8px;">
+<button type="button" class="tree-sec" aria-expanded="" onClick=""><span style="color: var(--text-tertiary); transform: ; display: inline-flex; transition: transform 140ms cubic-bezier(0.2,0,0,1);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></span><span style="flex-grow: 1; text-align: left;">⟨name⟩</span><span class="fl-num" style="font-size: 11px; color: var(--text-disabled);">⟨count⟩</span></button>
+
+
+<a class="tree-a" href="" aria-current="">⟨label⟩</a>
+
+
+</div>
+
+</nav></aside>
+<main class="prose" style="flex-grow: 1; min-width: 0; padding: 40px 48px 72px;">
+<p class="fl-overline" style="margin-bottom: 14px;">RUNTIME</p>
+<h1 style="margin: 0 0 20px; font-size: 44px; line-height: 1.1; letter-spacing: -0.02em; font-weight: 700;">Routing rules</h1>
+<p style="font-size: 18px; line-height: 1.6; color: var(--text-secondary); max-width: 62ch;">A routing rule decides which build or function answers a request. Rules live in your repository, ship inside the artifact, and are evaluated at the edge before anything of yours runs.</p>
+<div style="display: flex; gap: 8px; margin: 24px 0 8px;">
+<span class="fl-badge" data-tone="success">Stable since v9</span>
+<span class="fl-badge" data-tone="info">Edge only</span>
+<span class="fl-badge" data-tone="brass">2 ms budget</span>
+</div>
+<h2 id="match">The match object</h2>
+<p>Every rule is <code>{ match, target }</code>. The match object is a conjunction: each key you set must be satisfied, and keys you omit are not consulted. A rule with an empty match is the fallback and must be last.</p>
+<div style="margin: 28px 0 32px; background: var(--surface-sunken); border: 1px solid var(--line-default); border-radius: var(--radius-md); overflow: hidden;">
+<div role="tablist" aria-label="Route definition format" style="display: flex; gap: 4px; padding: 8px 8px 0; border-bottom: 1px solid var(--line-hairline); align-items: center;">
+
+<button type="button" role="tab" class="fl-mono" aria-selected="" onClick="" style="background: ; border: 0; border-radius: 6px 6px 0 0; padding: 9px 14px; font-size: 12px; color: ; cursor: pointer;">⟨label⟩</button>
+
+<span style="flex-grow: 1;"></span>
+<button type="button" class="fl-btn" data-variant="ghost" data-size="sm" onClick="" style="margin: 2px 4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a1 1 0 0 1 1-1h9"></path></svg>⟨copyLabel⟩</button>
+</div>
+<pre class="fl-mono" style="margin: 0; padding: 22px 24px; font-size: 13px; line-height: 1.75; color: var(--text-secondary); white-space: pre-wrap; min-height: 300px;"><span style="color: ;">⟨text⟩</span></pre>
+</div>
+<div role="note" style="margin: 28px 0; display: flex; gap: 14px; padding: 18px 20px; background: var(--info-soft); border: 1px solid var(--info); border-radius: var(--radius-md); max-width: 72ch;"><span style="color: var(--info); flex: none; display: inline-flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.9v.1"></path></svg></span><div><p style="margin: 0 0 6px; font: 700 14px/1.3 var(--font-sans); color: var(--text-info);">Rules are part of the build</p><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">Changing a rule produces a new artifact and a new hash. That is deliberate: it means a rollback restores the routing that shipped with the code, not whatever the dashboard happened to say at the time.</p></div></div>
+<h2 id="order">Evaluation order</h2>
+<p>Rules are read top to bottom and the first match answers. There is no scoring and no specificity system to learn: if two rules could both match, the one written first wins. The CLI refuses a deploy where a later rule is unreachable.</p>
+<ol style="margin: 0 0 20px; padding-left: 22px; max-width: 72ch;">
+<li>Cookie and header rules, because they are the narrowest.</li>
+<li>Geo rules, which only choose a preferred region.</li>
+<li>Path rules that send traffic to a function.</li>
+<li>The fallback, which is always a build hash.</li>
+</ol>
+<h2 id="targets">Targets</h2>
+<p>A rule sends the request to exactly one of three things: a <code>build</code>, an edge <code>fn</code>, or a preferred <code>region</code>. A region target does not answer the request; it only reorders which region is asked first, and the next rule still applies.</p>
+<div role="note" style="margin: 28px 0; display: flex; gap: 14px; padding: 18px 20px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-md); max-width: 72ch;"><span style="color: var(--warning); flex: none; display: inline-flex;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div><p style="margin: 0 0 6px; font: 700 14px/1.3 var(--font-sans); color: var(--text-warning);">Weighted rules must sum to 100</p><p style="margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-secondary);">If you split traffic with weight, every rule in that group has to add up to exactly 100. A group that sums to 99 or 101 fails the deploy with HL-4021 rather than silently sending the remainder to the fallback.</p></div></div>
+<h2 id="compute">Computed rules</h2>
+<p>When a header comparison is not enough, <code>match.fn</code> takes a pure function that receives the request and returns a boolean. It runs inside a 2 ms budget on the same isolate that will serve the request, so it has no network and no KV access. Throwing counts as no match and is recorded on the trace.</p>
+<h2 id="params">Rule parameters</h2>
+<div style="border: 1px solid var(--line-default); border-radius: var(--radius-md); overflow: hidden; margin: 20px 0 28px;">
+<table class="fl-table"><caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Routing rule parameters, their types and defaults</caption><thead><tr><th scope="col" style="width: 20%;">Key</th><th scope="col" style="width: 24%;">Type</th><th scope="col" style="width: 10%;">Default</th><th scope="col">Notes</th></tr></thead><tbody>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">match.path</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">string | string[]</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">Glob against the pathname. A trailing /* matches any depth; /*.js matches one segment.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">match.header</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">Record&lt;string, string&gt;</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">All listed headers must match. Values are compared case-insensitively after trimming.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">match.cookie</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">Record&lt;string, string&gt;</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">Exact cookie value match. Absent cookies never match, including against an empty string.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">match.geo</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">{ country?, region?, asn? }</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">Resolved at the edge from the client address. Falls through when the lookup is unavailable.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">match.fn</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">(req) =&gt; boolean</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">A pure function evaluated in under 2 ms. Throwing counts as no match and is logged.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">build</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">string</td><td class="fl-mono" style="font-size: 12px;">current</td><td style="font-size: 13px;">A build hash, or current. Pinning a hash freezes this rule until you change it.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">fn</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">string</td><td class="fl-mono" style="font-size: 12px;">—</td><td style="font-size: 13px;">Name of an edge function in this project. Mutually exclusive with build.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">timeout</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">number</td><td class="fl-mono" style="font-size: 12px;">10000</td><td style="font-size: 13px;">Milliseconds before the request is cut and a 504 is returned to the client.</td></tr>
+<tr><td><code class="fl-mono" style="color: var(--text-brand); font-size: 13px;">weight</code></td><td class="fl-mono" style="font-size: 12px; color: var(--text-accent);">number</td><td class="fl-mono" style="font-size: 12px;">100</td><td style="font-size: 13px;">Share of matching traffic, 0 to 100. Weighted rules must sum to 100 or the deploy is refused.</td></tr>
+</tbody></table></div>
+<h2 id="errors">What goes wrong</h2>
+<p>Three errors account for most refused deploys. Each one is reported with the rule index and the line in your source, before anything is uploaded.</p>
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 72ch; margin-bottom: 32px;">
+<div style="display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><code class="fl-mono" style="color: var(--text-danger); font-size: 13px; flex: none; background: none; border: 0; padding: 0;">HL-4019</code><span style="font-size: 14px; color: var(--text-secondary);">A rule after the fallback can never match.</span></div>
+<div style="display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><code class="fl-mono" style="color: var(--text-danger); font-size: 13px; flex: none; background: none; border: 0; padding: 0;">HL-4021</code><span style="font-size: 14px; color: var(--text-secondary);">Weighted rules in a group do not sum to 100.</span></div>
+<div style="display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface-inset); border: 1px solid var(--line-hairline); border-radius: var(--radius-sm);"><code class="fl-mono" style="color: var(--text-danger); font-size: 13px; flex: none; background: none; border: 0; padding: 0;">HL-4033</code><span style="font-size: 14px; color: var(--text-secondary);">match.fn exceeded the 2 ms budget during the deploy check.</span></div>
+</div>
+<hr class="fl-rule" style="margin: 40px 0 28px;">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+<a class="fl-card doc-next" href="Docs.dc.html" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start;"><span class="fl-overline">PREVIOUS</span><span style="font: 700 16px/1.3 var(--font-sans); color: var(--text-primary);">Edge functions</span></a>
+<a class="fl-card doc-next" href="Docs.dc.html" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;"><span class="fl-overline">NEXT</span><span style="font: 700 16px/1.3 var(--font-sans); color: var(--text-primary);">Middleware</span></a>
+</div>
+</main>
+<aside style="width: 232px; flex: none; padding: 40px 80px 64px 0;">
+<div style="position: sticky; top: 148px;">
+<p class="fl-overline" style="margin-bottom: 12px;">ON THIS PAGE</p>
+<nav aria-label="On this page" style="display: flex; flex-direction: column;">
+
+<a class="toc-a" href="" aria-current="" onClick="">⟨label⟩</a>
+
+</nav>
+<hr class="fl-rule" style="margin: 24px 0;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<a href="Editor.dc.html" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"></path></svg>Try it in the editor</a>
+<a href="Article.dc.html" class="fl-btn" data-variant="ghost" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h7l5 5v13H6Z"></path><path d="M13 3v5h5"></path></svg>Edit this page</a>
+</div></div></aside>
+</div>
+<footer style="flex: none; padding-left: 80px; padding-right: 80px; padding-top: 56px; padding-bottom: 40px; border-top: 1px solid var(--line-hairline); background: var(--surface-sunken);">
+<div style="display: flex; gap: 80px; margin-bottom: 48px;">
+<div style="width: 300px; flex: none; display: flex; flex-direction: column; gap: 16px;">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: var(--text-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" stroke="#ff6a2b" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 7.5 16.5 12 12 16.5 7.5 12Z" fill="#ff6a2b" opacity=".85"></path></svg><span style="font: 700 18px/1 var(--font-sans); letter-spacing: -0.02em;">Halyard</span></a>
+<p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-tertiary); max-width: 36ch;">An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.</p>
+</div>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px;">
+<div><p class="fl-overline" style="margin-bottom: 12px;">PRODUCT</p>
+<a class="foot-l" href="Main.dc.html">Overview</a>
+<a class="foot-l" href="Pricing.dc.html">Pricing</a>
+<a class="foot-l" href="Article.dc.html">Changelog</a>
+<a class="foot-l" href="Status.dc.html">Status</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">DEVELOPERS</p>
+<a class="foot-l" href="Docs.dc.html">Docs</a>
+<a class="foot-l" href="Docs.dc.html">API reference</a>
+<a class="foot-l" href="Docs.dc.html">CLI</a>
+<a class="foot-l" href="App-Overview.dc.html">Dashboard</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">COMPANY</p>
+<a class="foot-l" href="#top">About</a>
+<a class="foot-l" href="#top">Careers</a>
+<a class="foot-l" href="#top">Security</a>
+<a class="foot-l" href="#top">Press</a>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">LEGAL</p>
+<a class="foot-l" href="#top">Terms</a>
+<a class="foot-l" href="#top">Privacy</a>
+<a class="foot-l" href="#top">Subprocessors</a>
+<a class="foot-l" href="#top">DPA</a>
+</div>
+</div></div>
+<hr class="fl-rule">
+<div style="padding-top: 24px; display: flex; align-items: center; gap: 16px;">
+<a href="Status.dc.html" class="fl-badge" data-tone="success"><span class="fl-dot"></span>All 19 regions operational</a>
+<span style="flex-grow: 1;"></span>
+<span style="font-size: 12px; color: var(--text-tertiary);">© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.</span>
+</div></footer>
+</div>
+</body>
+</html>

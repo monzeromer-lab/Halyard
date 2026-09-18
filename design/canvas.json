@@ -1,0 +1,242 @@
+{
+  "v": 3,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-09-18T12:15:41.405Z",
+    "v": 1
+  },
+  "title": "Halyard — a very complex site in Fluant Ink",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Artboard-fdnv.dc.html": {
+      "x": -940,
+      "y": 0,
+      "w": 860,
+      "h": 1260,
+      "title": "Start here",
+      "is_interactive": true
+    },
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 5200,
+      "title": "Landing page",
+      "is_interactive": true
+    },
+    "Pricing.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 2560,
+      "title": "Pricing",
+      "is_interactive": true
+    },
+    "Docs.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 2180,
+      "title": "Docs — routing rules",
+      "is_interactive": true
+    },
+    "Article.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 2320,
+      "title": "Changelog entry",
+      "is_interactive": true
+    },
+    "App-Overview.dc.html": {
+      "x": 0,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — overview",
+      "is_interactive": true
+    },
+    "App-Deployments.dc.html": {
+      "x": 1520,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — deployments",
+      "is_interactive": true
+    },
+    "App-Observability.dc.html": {
+      "x": 3040,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — observability",
+      "is_interactive": true
+    },
+    "App-Logs.dc.html": {
+      "x": 4560,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — logs",
+      "is_interactive": true
+    },
+    "App-BuildDetail.dc.html": {
+      "x": 6080,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — build detail",
+      "is_interactive": true
+    },
+    "App-Settings.dc.html": {
+      "x": 7600,
+      "y": 5800,
+      "w": 1440,
+      "h": 980,
+      "title": "App — settings",
+      "is_interactive": true
+    },
+    "Flow-Onboarding.dc.html": {
+      "x": 0,
+      "y": 7380,
+      "w": 1200,
+      "h": 900,
+      "title": "Onboarding wizard",
+      "is_interactive": true
+    },
+    "Overlays.dc.html": {
+      "x": 1280,
+      "y": 7380,
+      "w": 1440,
+      "h": 1000,
+      "title": "Overlays",
+      "is_interactive": true
+    },
+    "Editor.dc.html": {
+      "x": 2800,
+      "y": 7380,
+      "w": 1440,
+      "h": 920,
+      "title": "Config editor",
+      "is_interactive": true
+    },
+    "Graph.dc.html": {
+      "x": 4320,
+      "y": 7380,
+      "w": 1440,
+      "h": 920,
+      "title": "Infrastructure graph",
+      "is_interactive": true
+    },
+    "Explorer.dc.html": {
+      "x": 5840,
+      "y": 7380,
+      "w": 1440,
+      "h": 980,
+      "title": "Query explorer",
+      "is_interactive": true
+    },
+    "Status.dc.html": {
+      "x": 7360,
+      "y": 7380,
+      "w": 1200,
+      "h": 1760,
+      "title": "Public status page",
+      "is_interactive": true
+    },
+    "Mobile.dc.html": {
+      "x": 0,
+      "y": 9740,
+      "w": 390,
+      "h": 844,
+      "title": "Phone app",
+      "is_interactive": true
+    },
+    "Patterns.dc.html": {
+      "x": 470,
+      "y": 9740,
+      "w": 1440,
+      "h": 2760,
+      "title": "Porting reference"
+    }
+  },
+  "order": [
+    "Artboard-fdnv.dc.html",
+    "Main.dc.html",
+    "Pricing.dc.html",
+    "Docs.dc.html",
+    "Article.dc.html",
+    "App-Overview.dc.html",
+    "App-Deployments.dc.html",
+    "App-Observability.dc.html",
+    "App-Logs.dc.html",
+    "App-BuildDetail.dc.html",
+    "App-Settings.dc.html",
+    "Flow-Onboarding.dc.html",
+    "Overlays.dc.html",
+    "Editor.dc.html",
+    "Graph.dc.html",
+    "Explorer.dc.html",
+    "Status.dc.html",
+    "Mobile.dc.html",
+    "Patterns.dc.html"
+  ],
+  "notes": {
+    "r1": {
+      "x": -940,
+      "y": -300,
+      "text": "01 · Marketing surface",
+      "kind": "title1",
+      "maxW": 6940,
+      "color": "orange"
+    },
+    "r2": {
+      "x": 0,
+      "y": 5500,
+      "text": "02 · Product UI",
+      "kind": "title1",
+      "maxW": 9040,
+      "color": "teal"
+    },
+    "r3": {
+      "x": 0,
+      "y": 7080,
+      "text": "03 · Flows and instruments",
+      "kind": "title1",
+      "maxW": 8560,
+      "color": "orange"
+    },
+    "r4": {
+      "x": 0,
+      "y": 9440,
+      "text": "04 · Small screens and reference",
+      "kind": "title1",
+      "maxW": 1910,
+      "color": "blue"
+    },
+    "n1": {
+      "x": -940,
+      "y": 1400,
+      "w": 860,
+      "text": "Halyard is a fictional edge deploy platform, drawn end to end so every hard thing a website has to do turns up at least once.\n\nEvery board carries the Fluant Ink tokens as CSS custom properties and reproduces the system's class contract: .fl-btn[data-variant], .fl-table td[data-numeric], .fl-switch[aria-checked]. State lives in ARIA and data-* attributes, never in a class name, so the accessible state and the visual state cannot drift apart.\n\nThat is what makes it portable: emit the same element with the same attributes and the CSS carries the design."
+    },
+    "n2": {
+      "x": 0,
+      "y": 10700,
+      "w": 390,
+      "text": "The phone board is a real 390x844 frame with a working tab bar and a sheet. No painted status bar and no fake keyboard — on a device the real ones render on top."
+    }
+  },
+  "designSystems": [
+    {
+      "title": "Fluant",
+      "namespace": "fluant",
+      "artifact": "https://claude.ai/artifact/ESTELAfwcSYpTGxSWUb34T",
+      "version": null,
+      "copiedAt": "2026-09-18T13:55:05Z"
+    }
+  ]
+}

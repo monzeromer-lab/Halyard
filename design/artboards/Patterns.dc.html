@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fluant Ink — porting reference</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&amp;family=JetBrains+Mono:wght@400..600&amp;family=Manrope:wght@400..800&amp;display=swap">
+<style>
+:root{
+--surface-canvas:#0b0c0e;--surface-sunken:#060708;--surface-raised:#131519;--surface-overlay:#1a1d23;
+--surface-inset:#101318;--surface-hover:#1f232a;--surface-active:#262b33;--surface-disabled:#15181d;
+--surface-scrim:rgba(4,5,7,0.74);
+--line-hairline:#1c2026;--line-default:#2a2f37;--line-strong:#3d444f;--border-control:#6b7482;--focus-ring:#ff9a6b;
+--text-primary:#f4f1ec;--text-secondary:#b9bec7;--text-tertiary:#949ba7;--text-disabled:#5d646f;--text-inverse:#0b0c0e;
+--text-brand:#ff8a5c;--text-accent:#58e8bf;--text-brass:#e6c979;
+--brand:#ff6a2b;--brand-hover:#ff804a;--brand-soft:#2a1409;--on-brand:#180a03;
+--accent:#35e0b0;--accent-hover:#5aeac3;--accent-soft:#07221c;--on-accent:#04130f;
+--brass:#d9b45a;--brass-soft:#241c0c;--on-brass:#1a1405;
+--success:#3ad07f;--success-soft:#06231a;--text-success:#66dd9f;--on-success:#04170f;
+--warning:#f5b53c;--warning-soft:#241a06;--text-warning:#f7c869;--on-warning:#1c1301;
+--danger:#ff5d5d;--danger-soft:#2a0d0f;--text-danger:#ff8585;--on-danger:#1e0505;
+--info:#48b6ef;--info-soft:#06202c;--text-info:#79ccf5;--on-info:#03151e;
+--viz-1:#ff6a2b;--viz-2:#35e0b0;--viz-3:#d9b45a;--viz-4:#48b6ef;
+--viz-5:#ff8fc0;--viz-6:#a9d84a;--viz-7:#9b8cff;--viz-8:#c98a62;
+--font-display:"Fraunces","Iowan Old Style","Palatino Linotype",Georgia,serif;
+--font-sans:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+--font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+--radius-xs:3px;--radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-2xl:36px;
+--radius-pill:999px;
+--ease-standard:cubic-bezier(0.2,0,0,1);--ease-entrance:cubic-bezier(0.16,1,0.3,1);
+--ease-exit:cubic-bezier(0.7,0,0.84,0);--ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+--ease-anticipate:cubic-bezier(0.68,-0.4,0.27,1.4);
+--d-instant:80ms;--d-fast:140ms;--d-base:220ms;--d-slow:380ms;--d-slower:620ms;--d-cine:1100ms;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-canvas);color:var(--text-primary);
+font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}
+a:hover{color:var(--brand-hover)}
+::selection{background:rgba(255,106,43,0.34)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+button,input,select,textarea{font-family:inherit}
+.fl-num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-mono{font-family:var(--font-mono)}
+.fl-overline{font:700 11px/1.2 var(--font-sans);letter-spacing:.14em;color:var(--text-tertiary);margin:0}
+.fl-rule{height:1px;background:var(--line-hairline);border:0;margin:0;width:100%}
+
+.fl-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;
+padding:0 16px;border-radius:var(--radius-md);border:1px solid transparent;
+font:600 14px/1.2 var(--font-sans);cursor:pointer;text-decoration:none;white-space:nowrap;
+transition:background var(--d-instant) var(--ease-standard),
+border-color var(--d-instant) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-instant) var(--ease-standard)}
+.fl-btn:active{transform:translateY(1px)}
+.fl-btn[data-size="sm"]{height:30px;padding:0 12px;font-size:12px;border-radius:var(--radius-sm)}
+.fl-btn[data-size="lg"]{height:46px;padding:0 22px;font-size:16px}
+.fl-btn[data-variant="primary"]{background:var(--brand);color:var(--on-brand)}
+.fl-btn[data-variant="primary"]:hover{background:var(--brand-hover);
+box-shadow:0 0 0 1px rgba(255,106,43,.5),0 12px 40px rgba(255,106,43,.28)}
+.fl-btn[data-variant="secondary"]{background:var(--surface-raised);color:var(--text-primary);
+border-color:var(--line-strong)}
+.fl-btn[data-variant="secondary"]:hover{background:var(--surface-hover);border-color:var(--border-control)}
+.fl-btn[data-variant="ghost"]{background:transparent;color:var(--text-secondary)}
+.fl-btn[data-variant="ghost"]:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-btn[data-variant="danger"]{background:var(--danger);color:var(--on-danger)}
+.fl-btn[data-variant="danger"]:hover{background:#ff7676}
+.fl-btn[data-variant="accent"]{background:var(--accent);color:var(--on-accent)}
+.fl-btn[data-variant="accent"]:hover{background:var(--accent-hover)}
+.fl-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.fl-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;
+min-width:38px;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;
+color:var(--text-secondary);cursor:pointer;
+transition:background var(--d-instant) var(--ease-standard),color var(--d-instant) var(--ease-standard)}
+.fl-icon-btn:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-icon-btn[data-shape="circle"]{border-radius:var(--radius-circle,50%)}
+.fl-icon-btn[data-variant="outline"]{border-color:var(--line-default)}
+
+.fl-badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;
+border-radius:var(--radius-pill);font:700 12px/1 var(--font-sans);border:1px solid transparent;
+white-space:nowrap}
+.fl-badge[data-tone="brand"]{background:var(--brand-soft);color:var(--text-brand)}
+.fl-badge[data-tone="accent"]{background:var(--accent-soft);color:var(--text-accent)}
+.fl-badge[data-tone="success"]{background:var(--success-soft);color:var(--text-success)}
+.fl-badge[data-tone="warning"]{background:var(--warning-soft);color:var(--text-warning)}
+.fl-badge[data-tone="danger"]{background:var(--danger-soft);color:var(--text-danger)}
+.fl-badge[data-tone="info"]{background:var(--info-soft);color:var(--text-info)}
+.fl-badge[data-tone="brass"]{background:var(--brass-soft);color:var(--text-brass)}
+.fl-badge[data-tone="neutral"]{background:var(--surface-active);color:var(--text-secondary)}
+.fl-badge[data-variant="outline"]{background:transparent;border-color:var(--line-strong);
+color:var(--text-secondary)}
+.fl-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+.fl-card{background:var(--surface-raised);border:1px solid var(--line-default);
+border-radius:var(--radius-md);padding:24px;
+transition:border-color var(--d-base) var(--ease-standard),
+box-shadow var(--d-base) var(--ease-standard),transform var(--d-base) var(--ease-standard)}
+.fl-card[data-interactive="true"]:hover{border-color:var(--line-strong);
+box-shadow:0 10px 24px rgba(0,0,0,.55);transform:translateY(-2px)}
+
+.fl-input{height:38px;width:100%;background:var(--surface-inset);
+border:1px solid var(--border-control);border-radius:var(--radius-sm);color:var(--text-primary);
+padding:0 12px;font:400 14px/1.2 var(--font-sans);
+transition:border-color var(--d-fast) var(--ease-standard)}
+.fl-input::placeholder{color:var(--text-tertiary)}
+.fl-input:hover{border-color:#8a929e}
+.fl-input[aria-invalid="true"]{border-color:var(--danger)}
+.fl-label{display:block;font:600 14px/1.2 var(--font-sans);color:var(--text-secondary);
+margin-bottom:8px}
+.fl-help{font:400 12px/1.5 var(--font-sans);color:var(--text-tertiary);margin:6px 0 0}
+.fl-error{font:400 12px/1.5 var(--font-sans);color:var(--text-danger);margin:6px 0 0}
+
+.fl-table{width:100%;border-collapse:collapse;font:400 14px/1.55 var(--font-sans)}
+.fl-table th{text-align:left;font:700 12px/1.2 var(--font-sans);color:var(--text-tertiary);
+padding:10px 12px;border-bottom:1px solid var(--line-default);background:var(--surface-raised);
+white-space:nowrap}
+.fl-table td{padding:12px;border-bottom:1px solid var(--line-hairline);color:var(--text-secondary);
+vertical-align:middle}
+.fl-table td[data-numeric="true"],.fl-table th[data-numeric="true"]{text-align:right;
+font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.fl-table tbody tr{transition:background var(--d-instant) var(--ease-standard);cursor:default}
+.fl-table tbody tr:hover{background:var(--surface-hover)}
+.fl-table tbody tr[aria-selected="true"]{background:var(--brand-soft)}
+.fl-table__sort{background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;
+display:inline-flex;align-items:center;gap:6px}
+.fl-table__sort:hover{color:var(--text-primary)}
+
+.fl-tab{background:none;border:0;padding:0 2px 12px;color:var(--text-tertiary);
+font:600 14px/1.2 var(--font-sans);cursor:pointer;position:relative;
+transition:color var(--d-fast) var(--ease-standard)}
+.fl-tab:hover{color:var(--text-secondary)}
+.fl-tab[aria-selected="true"]{color:var(--text-primary)}
+.fl-tab[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;
+height:2px;background:var(--brand)}
+
+.fl-seg{display:inline-flex;background:var(--surface-inset);border:1px solid var(--line-default);
+border-radius:var(--radius-sm);padding:3px;gap:2px}
+.fl-seg button{background:none;border:0;height:26px;padding:0 12px;border-radius:4px;
+color:var(--text-tertiary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-seg button:hover{color:var(--text-secondary)}
+.fl-seg button[aria-pressed="true"]{background:var(--surface-active);color:var(--text-primary)}
+
+.fl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+border-radius:var(--radius-pill);border:1px solid var(--line-default);background:transparent;
+color:var(--text-secondary);font:600 12px/1 var(--font-sans);cursor:pointer;
+transition:all var(--d-fast) var(--ease-standard)}
+.fl-chip:hover{border-color:var(--line-strong);color:var(--text-primary)}
+.fl-chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+color:var(--text-accent)}
+
+.fl-navlink{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+border-radius:var(--radius-sm);color:var(--text-tertiary);font:600 13px/1 var(--font-sans);
+background:none;border:0;cursor:pointer;width:100%;text-align:left;
+transition:background var(--d-fast) var(--ease-standard),color var(--d-fast) var(--ease-standard)}
+.fl-navlink:hover{background:var(--surface-hover);color:var(--text-primary)}
+.fl-navlink[aria-current="page"]{background:var(--surface-active);color:var(--text-primary)}
+.fl-navlink[aria-current="page"] .fl-navlink__bar{opacity:1}
+.fl-navlink__bar{width:2px;height:16px;background:var(--brand);border-radius:2px;opacity:0;flex:none}
+
+.fl-switch{display:inline-flex;align-items:center;width:40px;height:22px;flex:none;
+border-radius:var(--radius-pill);background:var(--surface-inset);
+border:1px solid var(--border-control);padding:2px;cursor:pointer;
+transition:background var(--d-fast) var(--ease-standard),
+border-color var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.fl-switch__knob{width:16px;height:16px;border-radius:50%;background:var(--text-secondary);
+transition:transform var(--d-fast) var(--ease-spring),background var(--d-fast) var(--ease-standard)}
+.fl-switch[aria-checked="true"] .fl-switch__knob{transform:translateX(18px);background:var(--on-accent)}
+
+.fl-progress{height:6px;border-radius:var(--radius-pill);background:var(--surface-inset);
+overflow:hidden;width:100%}
+.fl-progress__fill{height:100%;background:var(--brand);border-radius:var(--radius-pill);
+transition:width var(--d-slow) var(--ease-standard)}
+
+.fl-kbd{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4px;
+background:var(--surface-inset);border:1px solid var(--line-default);color:var(--text-tertiary);
+font:500 11px/1 var(--font-mono)}
+
+@media (prefers-reduced-motion:reduce){
+*{animation-duration:1ms !important;animation-iteration-count:1 !important;
+transition-duration:1ms !important}
+}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line-default);
+border-radius:var(--radius-md);overflow:hidden;background:var(--surface-raised)}
+.spec-demo{padding:22px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+border-right:1px solid var(--line-hairline)}
+.spec-code{padding:18px 20px;background:var(--surface-sunken);font-family:var(--font-mono);
+font-size:12px;line-height:1.7;color:var(--text-secondary);white-space:pre-wrap;overflow-x:auto;
+margin:0}
+.sw{display:flex;flex-direction:column;gap:6px}
+.sw-chip{height:52px;border-radius:var(--radius-sm);border:1px solid var(--line-hairline)}
+.tok{font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)}
+</style>
+</helmet>
+<div style="width: 1440px; height: 2760px; box-sizing: border-box; overflow: hidden; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-sans); padding: 64px 80px 72px; display: flex; flex-direction: column; gap: 56px;">
+<header style="display: flex; flex-direction: column; gap: 18px;">
+<p class="fl-overline">FLUANT INK &middot; PORTING REFERENCE</p>
+<h1 style="margin: 0; max-width: 20ch; font-family: var(--font-display); font-size: 72px; line-height: 0.94; letter-spacing: -0.025em; font-weight: 600;">The contract, component by component.</h1>
+<p style="margin: 0; max-width: 72ch; font-size: 18px; line-height: 1.6; color: var(--text-secondary);">Every board on this canvas is built from what is on this page. Emit the same element, the same class and the same data attributes and the CSS carries the design — that is the whole porting story. The left column is what it looks like; the right column is what to emit.</p>
+<div style="display: flex; gap: 10px;">
+<a href="Artboard-fdnv.dc.html" class="fl-btn" data-variant="secondary" data-size="sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Back to the index</a>
+<a href="Main.dc.html" class="fl-btn" data-variant="ghost" data-size="sm">See it used on the landing page</a>
+</div>
+</header>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">01</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Colour</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Ink is the default theme. Paper and High contrast redefine the same custom properties; no component changes.</p>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p class="fl-overline">SURFACES</p>
+<div class="sw"><span class="sw-chip" style="background: #0b0c0e; border-color: var(--line-strong);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-canvas</span><span class="tok">#0b0c0e</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #060708; border-color: var(--line-strong);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-sunken</span><span class="tok">#060708</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #131519; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-raised</span><span class="tok">#131519</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #1a1d23; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-overlay</span><span class="tok">#1a1d23</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #101318; border-color: var(--line-strong);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-inset</span><span class="tok">#101318</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #1f232a; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-hover</span><span class="tok">#1f232a</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #262b33; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">surface-active</span><span class="tok">#262b33</span></span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p class="fl-overline">INK</p>
+<div class="sw"><span class="sw-chip" style="background: #f4f1ec; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">text-primary</span><span class="tok">#f4f1ec</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #b9bec7; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">text-secondary</span><span class="tok">#b9bec7</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #949ba7; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">text-tertiary</span><span class="tok">#949ba7</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #5d646f; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">text-disabled</span><span class="tok">#5d646f</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #1c2026; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">line-hairline</span><span class="tok">#1c2026</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #2a2f37; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">line-default</span><span class="tok">#2a2f37</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #6b7482; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">border-control</span><span class="tok">#6b7482</span></span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p class="fl-overline">BRAND AND ACCENT</p>
+<div class="sw"><span class="sw-chip" style="background: #ff6a2b; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">brand</span><span class="tok">#ff6a2b</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #ff804a; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">brand-hover</span><span class="tok">#ff804a</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #2a1409; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">brand-soft</span><span class="tok">#2a1409</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #35e0b0; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">accent</span><span class="tok">#35e0b0</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #07221c; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">accent-soft</span><span class="tok">#07221c</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #d9b45a; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">brass</span><span class="tok">#d9b45a</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #241c0c; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">brass-soft</span><span class="tok">#241c0c</span></span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p class="fl-overline">STATUS AND DATA</p>
+<div class="sw"><span class="sw-chip" style="background: #3ad07f; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">success</span><span class="tok">#3ad07f</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #f5b53c; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">warning</span><span class="tok">#f5b53c</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #ff5d5d; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">danger</span><span class="tok">#ff5d5d</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #48b6ef; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">info</span><span class="tok">#48b6ef</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #ff8fc0; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">viz-5</span><span class="tok">#ff8fc0</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #a9d84a; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">viz-6</span><span class="tok">#a9d84a</span></span></div>
+<div class="sw"><span class="sw-chip" style="background: #9b8cff; border-color: var(--line-hairline);"></span><span style="display: flex; gap: 8px;"><span class="tok" style="flex-grow: 1; color: var(--text-secondary);">viz-7</span><span class="tok">#9b8cff</span></span></div>
+</div>
+</div>
+<div class="spec"><div class="spec-demo"><span style="font-size: 13px; color: var(--text-secondary); max-width: 46ch; line-height: 1.6;">Every token is a custom property on <code class="fl-mono" style="color: var(--text-accent);">:root</code>, redefined per theme. Nothing in a component hard-codes a colour, so a theme switch is one attribute on <code class="fl-mono" style="color: var(--text-accent);">&lt;html&gt;</code>.</span></div><pre class="spec-code">&lt;html data-theme="ink"&gt;
+
+:root {
+  --surface-canvas: #0b0c0e;
+  --text-primary:   #f4f1ec;
+  --brand:          #ff6a2b;
+}
+:root[data-theme="paper"] {
+  --surface-canvas: #f6f3ee;
+  --text-primary:   #17140f;
+  --brand:          #cf3d09;
+}</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">02</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Type</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Fraunces for display, Manrope for the interface, JetBrains Mono for anything that is a number or a token.</p>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">display-2xl</span><span class="tok" style="display: block; margin-top: 3px;">Fraunces 96/0.92, -0.03em</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-family: var(--font-display); font-size: 96px; line-height: 0.92; letter-spacing: -0.03em; font-weight: 600;">Ship the surface</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">display-lg</span><span class="tok" style="display: block; margin-top: 3px;">Fraunces 56/1.0, -0.02em</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-family: var(--font-display); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; font-weight: 600;">Section opener</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">heading-xl</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 34/1.15, 700</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 700;">Page title in the product</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">heading-md</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 20/1.3, 700</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 20px; line-height: 1.3; letter-spacing: -0.01em; font-weight: 700;">Card and drawer title</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">body-lg</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 18/1.6, 400</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 18px; line-height: 1.6;">Lead paragraph, 62ch</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">body</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 16/1.6, 400</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 16px; line-height: 1.6;">Default copy, 72ch</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">body-sm</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 14/1.55, 400</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 14px; line-height: 1.55;">Table cells and helper text</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">label</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 14/1.2, 600</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 14px; line-height: 1.2; font-weight: 600;">Button and field label</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">overline</span><span class="tok" style="display: block; margin-top: 3px;">Manrope 11/1.2, 700, .14em</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-size: 11px; line-height: 1.2; font-weight: 700; letter-spacing: 0.14em;">SECTION EYEBROW</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">numeric</span><span class="tok" style="display: block; margin-top: 3px;">JetBrains Mono 15, tabular</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 500;">412 ms · 22.4 s · 1,204</span></div>
+<div style="display: flex; align-items: baseline; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line-hairline);"><span style="width: 120px; flex: none;"><span class="tok" style="display: block; color: var(--text-primary);">code</span><span class="tok" style="display: block; margin-top: 3px;">JetBrains Mono 14/1.6</span></span><span style="flex-grow: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6;">halyard deploy --wait</span></div>
+<div class="spec"><div class="spec-demo"><span style="font-size: 13px; color: var(--text-secondary); max-width: 46ch; line-height: 1.6;">One <code class="fl-mono" style="color: var(--text-accent);">display-2xl</code> per page and it lives in the hero. Inside the product UI the scale starts at <code class="fl-mono" style="color: var(--text-accent);">heading-xl</code> and display type is not used at all.</span></div><pre class="spec-code">&lt;link rel="stylesheet" href="https://fonts.googleapis.com/css2?
+  family=Fraunces:opsz,wght@9..144,400..700&amp;
+  family=JetBrains+Mono:wght@400..600&amp;
+  family=Manrope:wght@400..800&amp;display=swap"&gt;
+
+--font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+--font-sans:    "Manrope", "Segoe UI", system-ui, sans-serif;
+--font-mono:    "JetBrains Mono", ui-monospace, Menlo, monospace;</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">03</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Actions</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">One brand-filled action per viewport. Everything else is secondary, ghost, or destructive.</p>
+<div class="spec"><div class="spec-demo"><button type="button" class="fl-btn" data-variant="primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"></path></svg>Publish changes</button><button type="button" class="fl-btn" data-variant="secondary">Preview</button><button type="button" class="fl-btn" data-variant="ghost">Cancel</button><button type="button" class="fl-btn" data-variant="danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"></path></svg>Delete run</button><button type="button" class="fl-btn" data-variant="accent">Go live</button><button type="button" class="fl-btn" data-variant="primary" data-size="sm">Small</button><button type="button" class="fl-btn" data-variant="primary" data-size="lg">Large</button><button type="button" class="fl-btn" data-variant="secondary" disabled="">Disabled</button><button type="button" class="fl-icon-btn" aria-label="More actions"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.3"></circle><circle cx="12" cy="12" r="1.3"></circle><circle cx="19" cy="12" r="1.3"></circle></svg></button><button type="button" class="fl-icon-btn" data-variant="outline" aria-label="Refresh"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-4.5L4 9"></path><path d="M4 5v4h4"></path><path d="M4 13a8 8 0 0 0 14 4.5L20 15"></path><path d="M20 19v-4h-4"></path></svg></button></div><pre class="spec-code">&lt;button type="button" class="fl-btn" data-variant="primary"&gt;Publish changes&lt;/button&gt;
+&lt;button type="button" class="fl-btn" data-variant="secondary" data-size="sm"&gt;Preview&lt;/button&gt;
+&lt;button type="button" class="fl-btn" data-variant="danger" disabled&gt;Delete run&lt;/button&gt;
+
+&lt;!-- icon-only needs an accessible name --&gt;
+&lt;button type="button" class="fl-icon-btn" aria-label="More actions"&gt; svg &lt;/button&gt;
+
+variant: primary | secondary | ghost | danger | accent
+size:    sm (30px) | default (38px) | lg (46px)
+One primary per viewport. Label the outcome, never "Submit".</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">04</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Status and selection</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Badges, chips and keyboard hints. Never colour on its own.</p>
+<div class="spec"><div class="spec-demo"><span class="fl-badge" data-tone="brand"><span class="fl-dot"></span>Beta</span><span class="fl-badge" data-tone="accent"><span class="fl-dot"></span>Live</span><span class="fl-badge" data-tone="success"><span class="fl-dot"></span>Passed</span><span class="fl-badge" data-tone="warning"><span class="fl-dot"></span>Degraded</span><span class="fl-badge" data-tone="danger"><span class="fl-dot"></span>Failed</span><span class="fl-badge" data-tone="info"><span class="fl-dot"></span>Queued</span><span class="fl-badge" data-tone="brass"><span class="fl-dot"></span>Award</span><span class="fl-badge" data-tone="neutral"><span class="fl-dot"></span>Draft</span><span class="fl-badge" data-variant="outline">fra1</span><button type="button" class="fl-chip" aria-pressed="true">Errors<span class="fl-num" style="opacity: .7;">12</span></button><button type="button" class="fl-chip" aria-pressed="false">Warnings<span class="fl-num" style="opacity: .7;">4</span></button><span class="fl-kbd">⌘K</span><span class="fl-kbd">esc</span></div><pre class="spec-code">&lt;span class="fl-badge" data-tone="success"&gt;
+  &lt;span class="fl-dot"&gt;&lt;/span&gt;Passed
+&lt;/span&gt;
+&lt;span class="fl-badge" data-variant="outline"&gt;fra1&lt;/span&gt;
+
+&lt;button type="button" class="fl-chip" aria-pressed="true"&gt;Errors&lt;/button&gt;
+&lt;span class="fl-kbd"&gt;⌘K&lt;/span&gt;
+
+tone: brand | accent | success | warning | danger | info | brass | neutral
+Status is never hue alone: every status badge ships with a word.</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">05</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Forms</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">The label, the help text and the error message are part of the field, not decoration around it.</p>
+<div class="spec"><div class="spec-demo"><div style="width: 300px;"><label class="fl-label" for="p-name">Project name</label><input class="fl-input" id="p-name" value="storefront-edge"><p class="fl-help">Lower case, digits and hyphens.</p></div><div style="width: 300px;"><label class="fl-label" for="p-bad">Custom domain</label><input class="fl-input" id="p-bad" value="https://shop" aria-invalid="true"><p class="fl-error">That is not a hostname. Drop the scheme.</p></div><div style="width: 220px;"><label class="fl-label" for="p-sel">Region</label><select class="fl-input" id="p-sel"><option>All 19 regions</option></select></div><div style="display: flex; align-items: center; gap: 12px;"><button type="button" class="fl-switch" role="switch" aria-checked="true" aria-labelledby="p-sw"><span class="fl-switch__knob"></span></button><span id="p-sw" style="font-size: 14px; color: var(--text-secondary);">Reuse the build cache</span></div><div class="fl-seg" role="group" aria-label="Range"><button type="button" aria-pressed="false">1h</button><button type="button" aria-pressed="true">24h</button><button type="button" aria-pressed="false">7d</button></div></div><pre class="spec-code">&lt;label class="fl-label" for="p-name"&gt;Project name&lt;/label&gt;
+&lt;input class="fl-input" id="p-name" value="storefront-edge"&gt;
+&lt;p class="fl-help"&gt;Lower case, digits and hyphens.&lt;/p&gt;
+
+&lt;!-- invalid: the attribute carries it, not a colour --&gt;
+&lt;input class="fl-input" aria-invalid="true"&gt;
+&lt;p class="fl-error"&gt;That is not a hostname. Drop the scheme.&lt;/p&gt;
+
+&lt;button class="fl-switch" role="switch" aria-checked="true" aria-labelledby="p-sw"&gt;
+  &lt;span class="fl-switch__knob"&gt;&lt;/span&gt;
+&lt;/button&gt;
+
+Every input has a real &lt;label for&gt;. Errors state cause and next move.</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">06</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Data display</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Tables, cards and stat tiles — the three shapes almost every product screen is made of.</p>
+<div class="spec"><div class="spec-demo"><div style="width: 100%; border: 1px solid var(--line-default); border-radius: var(--radius-sm); overflow: hidden;"><table class="fl-table"><caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Example deployment rows</caption><thead><tr><th scope="col">Build</th><th scope="col">Branch</th><th scope="col">Status</th><th scope="col" data-numeric="true">Duration</th><th scope="col" data-numeric="true">Regions</th></tr></thead><tbody><tr><td class="fl-mono" style="color: var(--text-brand);">8f2c41</td><td>main</td><td><span class="fl-badge" data-tone="success"><span class="fl-dot"></span>Ready</span></td><td data-numeric="true">22.4</td><td data-numeric="true">19/19</td></tr><tr><td class="fl-mono" style="color: var(--text-brand);">5a04bb</td><td>fix/cookie-trim</td><td><span class="fl-badge" data-tone="info"><span class="fl-dot"></span>Building</span></td><td data-numeric="true">—</td><td data-numeric="true">—</td></tr><tr><td class="fl-mono" style="color: var(--text-brand);">2ee7f0</td><td>feat/queues</td><td><span class="fl-badge" data-tone="danger"><span class="fl-dot"></span>Failed</span></td><td data-numeric="true">18.9</td><td data-numeric="true">—</td></tr></tbody></table></div></div><pre class="spec-code">&lt;table class="fl-table" data-dense="false"&gt;
+  &lt;caption class="fl-visually-hidden"&gt;Deployments, newest first&lt;/caption&gt;
+  &lt;thead&gt;&lt;tr&gt;
+    &lt;th scope="col" aria-sort="none"&gt;Build&lt;/th&gt;
+    &lt;th scope="col" data-numeric="true"&gt;Duration&lt;/th&gt;
+  &lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;&lt;tr aria-selected="false"&gt;
+    &lt;td&gt;8f2c41&lt;/td&gt;
+    &lt;td data-numeric="true"&gt;22.4 s&lt;/td&gt;
+  &lt;/tr&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+
+Numeric columns are right-aligned with tabular figures. Always a caption.
+A status cell carries a badge with a word, never a bare colour.</pre></div>
+<div class="spec"><div class="spec-demo"><article class="fl-card" data-interactive="true" style="width: 280px;"><p class="fl-overline" style="margin-bottom: 10px;">EDGE</p><h3 style="margin: 0 0 8px; font-size: 20px; font-weight: 700;">Global by default</h3><p style="margin: 0 0 14px; font-size: 14px; line-height: 1.55; color: var(--text-secondary);">Every deploy lands in 19 regions at once.</p><a href="Docs.dc.html" style="font: 600 13px/1 var(--font-sans);">How routing works</a></article><div style="width: 220px; padding: 16px 18px; background: var(--surface-raised); border: 1px solid var(--line-default); border-radius: var(--radius-md);"><p class="fl-overline" style="margin-bottom: 8px;">P95 RESPONSE</p><p style="margin: 0 0 8px; display: flex; align-items: baseline; gap: 5px;"><span class="fl-num" style="font-size: 28px; font-weight: 500;">38</span><span style="font-size: 12px; color: var(--text-tertiary);">ms</span></p><svg width="120" height="30" viewBox="0 0 120 30" fill="none" aria-hidden="true"><polyline points="0,22 12,20 24,24 36,17 48,19 60,13 72,15 84,10 96,12 108,7 120,9" stroke="#ff6a2b" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></div></div><pre class="spec-code">&lt;article class="fl-card" data-interactive="true"&gt;
+  &lt;p class="fl-overline"&gt;EDGE&lt;/p&gt;
+  &lt;h3&gt;Global by default&lt;/h3&gt;
+  &lt;p&gt;Every deploy lands in 19 regions at once.&lt;/p&gt;
+&lt;/article&gt;
+
+&lt;!-- a stat tile is a card plus .fl-num and a sparkline --&gt;
+&lt;span class="fl-num"&gt;38&lt;/span&gt;
+
+data-interactive="true" adds the hover lift. Leave it off a static card.</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">07</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Feedback</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Alerts, progress and the waiting states. Each says what happened and what to do next.</p>
+<div class="spec"><div class="spec-demo"><div role="status" style="flex-grow: 1; display: flex; gap: 12px; padding: 14px 16px; background: var(--warning-soft); border: 1px solid var(--warning); border-radius: var(--radius-md);"><span style="color: var(--warning); flex: none; display: inline-flex;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4.5M12 17.6v.1"></path></svg></span><div><p style="margin: 0 0 4px; font: 700 13px/1.3 var(--font-sans); color: var(--text-warning);">gru1 is degraded</p><p style="margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary);">p95 crossed 200 ms for five minutes. Still serving.</p></div></div><div style="width: 100%; display: flex; gap: 16px; align-items: center;"><div class="fl-progress" style="max-width: 200px;"><span class="fl-progress__fill" style="width: 64%;"></span></div><span class="fl-num" style="font-size: 12px; color: var(--text-tertiary);">12 of 19 regions</span></div></div><pre class="spec-code">&lt;div role="status" class="fl-alert" data-tone="warning"&gt;
+  &lt;svg aria-hidden="true"&gt; icon &lt;/svg&gt;
+  &lt;p class="fl-alert__title"&gt;gru1 is degraded&lt;/p&gt;
+  &lt;p class="fl-alert__body"&gt;p95 crossed 200 ms for five minutes.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="fl-progress" role="progressbar" aria-valuenow="64"
+     aria-valuemin="0" aria-valuemax="100" aria-label="Upload"&gt;
+  &lt;span class="fl-progress__fill" style="width: 64%"&gt;&lt;/span&gt;
+&lt;/div&gt;
+
+Loading shows skeleton rows the height of the real rows, never a spinner
+over a table. Empty states name the missing thing and offer the action.</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">08</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Motion</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Durations and curves are tokens. If you cannot name what a transition explains, delete it.</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+<div><p class="fl-overline" style="margin-bottom: 12px;">DURATION</p>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-instant</span><span class="tok" style="width: 168px; flex: none;">80ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Colour or opacity on hover and press</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-fast</span><span class="tok" style="width: 168px; flex: none;">140ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Tooltip, switch knob, tab underline</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-base</span><span class="tok" style="width: 168px; flex: none;">220ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Menu, popover, toast, accordion</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-slow</span><span class="tok" style="width: 168px; flex: none;">380ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Modal, drawer, tab cross-fade</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-slower</span><span class="tok" style="width: 168px; flex: none;">620ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Scroll reveal, staggered entrance</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">duration-cinematic</span><span class="tok" style="width: 168px; flex: none;">1100ms</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Hero entrance, counter run. One per viewport.</span></div>
+</div>
+<div><p class="fl-overline" style="margin-bottom: 12px;">EASING</p>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">ease-standard</span><span class="tok" style="width: 168px; flex: none;">cubic-bezier(0.2,0,0,1)</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Moves that stay on screen</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">ease-entrance</span><span class="tok" style="width: 168px; flex: none;">cubic-bezier(0.16,1,0.3,1)</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Anything arriving</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">ease-exit</span><span class="tok" style="width: 168px; flex: none;">cubic-bezier(0.7,0,0.84,0)</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Anything leaving</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">ease-spring</span><span class="tok" style="width: 168px; flex: none;">cubic-bezier(0.34,1.56,0.64,1)</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">One overshoot, a deliberate act</span></div>
+<div style="display: flex; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line-hairline);"><span class="tok" style="width: 148px; flex: none; color: var(--text-primary);">ease-anticipate</span><span class="tok" style="width: 168px; flex: none;">cubic-bezier(0.68,-0.4,0.27,1.4)</span><span style="flex-grow: 1; min-width: 0; font-size: 12px; line-height: 1.5; color: var(--text-secondary);">Hero and page transitions only</span></div>
+</div>
+</div>
+<div class="spec"><div class="spec-demo"><span style="font-size: 13px; color: var(--text-secondary); max-width: 46ch; line-height: 1.6;">Animate transform and opacity. Travel is 8–24px for a reveal, 4px for a press, 100% only for a drawer. Every motion has a reduced form and each board ships the media query.</span></div><pre class="spec-code">transition: transform var(--duration-base) var(--ease-standard);
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+No literal ms and no literal cubic-bezier() in component code.</pre></div>
+</section>
+<section style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: baseline; gap: 14px;">
+<span class="fl-num" style="font-size: 13px; color: var(--text-disabled);">09</span>
+<h2 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.015em;">Porting rules</h2>
+<hr class="fl-rule" style="flex-grow: 1;">
+</div>
+<p style="margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: var(--text-tertiary); max-width: 90ch;">Five things that decide whether a port keeps working as the system grows.</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+<div class="fl-card" style="display: flex; gap: 14px; padding: 20px;"><span class="fl-num" style="flex: none; font-size: 13px; color: var(--text-brand);">01</span><div><p style="margin: 0 0 6px; font: 700 15px/1.3 var(--font-sans);">The element is part of the contract</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">A button is a &lt;button&gt;, a link is an &lt;a href&gt;, a field is an &lt;input&gt; with a &lt;label for&gt;. Swap in a div with a click handler and the CSS still matches but Tab stops working.</p></div></div>
+<div class="fl-card" style="display: flex; gap: 14px; padding: 20px;"><span class="fl-num" style="flex: none; font-size: 13px; color: var(--text-brand);">02</span><div><p style="margin: 0 0 6px; font: 700 15px/1.3 var(--font-sans);">State lives in attributes, not classes</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">aria-pressed, aria-selected, aria-checked, aria-current, aria-invalid, aria-expanded and disabled are what the CSS keys off. That means the accessible state and the visual state cannot drift apart — there is only one of them.</p></div></div>
+<div class="fl-card" style="display: flex; gap: 14px; padding: 20px;"><span class="fl-num" style="flex: none; font-size: 13px; color: var(--text-brand);">03</span><div><p style="margin: 0 0 6px; font: 700 15px/1.3 var(--font-sans);">Variants live in data-*</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">data-variant, data-size, data-tone, data-dense, data-numeric. A port emits the same strings and inherits every rule, including ones added later.</p></div></div>
+<div class="fl-card" style="display: flex; gap: 14px; padding: 20px;"><span class="fl-num" style="flex: none; font-size: 13px; color: var(--text-brand);">04</span><div><p style="margin: 0 0 6px; font: 700 15px/1.3 var(--font-sans);">Layout is flex or grid with gap</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">Never margins between siblings and never whitespace-as-spacing. Gap survives reordering, deletion and direct manipulation; margins do not.</p></div></div>
+<div class="fl-card" style="display: flex; gap: 14px; padding: 20px;"><span class="fl-num" style="flex: none; font-size: 13px; color: var(--text-brand);">05</span><div><p style="margin: 0 0 6px; font: 700 15px/1.3 var(--font-sans);">Colour is never the only signal</p><p style="margin: 0; font-size: 13px; line-height: 1.6; color: var(--text-secondary);">Status carries a word, charts carry direct labels, bars that mean 'slow' also say the number. High contrast removes every shadow, so nothing may depend on one to exist.</p></div></div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{\"$preview\":{\"width\":1440,\"height\":2760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
