@@ -1,0 +1,16 @@
+// The project switcher menu, under the rail's project button.
+Component ProjectMenu () {
+    use UiStore
+    if UiStore.menuOpen, animate(fadeIn, fast) {
+        Scrim(label: "Close the menu", dim: false)
+        Stack(role: "menu", aria-label: "Projects") {
+            style { position: "fixed"  left: "12px"  top: "96px"  width: "236px"  z-index: "900"  gap: "0"  background: "var(--surface-overlay)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "6px"  box-shadow: "var(--shadow-md)"  @media (max-width: 768px) { left: "16px"  top: "60px" } }
+            on:keydown { if event.key == "Escape" { UiStore.close() } }
+            MenuEntry(label: "storefront-edge", icon: "check") { UiStore.close() }
+            MenuEntry(label: "marketing-site") { UiStore.close() }
+            MenuEntry(label: "internal-tools") { UiStore.close() }
+            Container { style { padding: "5px 0"  width: "auto" }  Rule() }
+            MenuEntry(label: "New project", icon: "plus") { UiStore.close()  navigate("/new") }
+        }
+    }
+}

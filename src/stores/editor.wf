@@ -1,0 +1,96 @@
+// The routing-rules editor: the file tree, the open tabs, the lines of the
+// open file with their marks, the problems, and the resolved routing
+// preview with a request to test. No syntax highlighting: lines are text,
+// marks are data attributes.
+Store EditorStore {
+    state file = "routes.halyard.ts"
+    state panel = true
+    state request = "GET /api/cart"
+
+    state files = {
+        "routes.halyard.ts": [
+            { m: "", t: "import { defineRoutes } from 'halyard'" }, { m: "", t: "" }, { m: "", t: "export default defineRoutes([" },
+            { m: "", t: "  // the beta cohort stays on a known build" }, { m: "", t: "  { match: { cookie: { ht_beta: '1' } }, build: '8f2c41' }," }, { m: "", t: "" },
+            { m: "", t: "  // EU traffic prefers fra1, then falls through" }, { m: "", t: "  { match: { geo: { country: ['DE', 'FR', 'NL'] } }, region: 'fra1' }," }, { m: "", t: "" },
+            { m: "", t: "  { match: { path: '/api/*' }, fn: 'api', timeout: 10_000 }," },
+            { m: "warn", t: "  { match: { path: '/*' }, build: 'current', weight: 99 }," },
+            { m: "error", t: "  { match: { path: '/legacy/*' }, build: 'deleted' }," },
+            { m: "", t: "])" }
+        ],
+        "session.ts": [
+            { m: "error", t: "import fs from 'node:fs'" }, { m: "", t: "import { kv } from 'halyard/kv'" }, { m: "", t: "" },
+            { m: "", t: "export async function read(id: string) {" }, { m: "", t: "  const raw = await fs.promises.readFile('/tmp/' + id)" },
+            { m: "", t: "  return JSON.parse(raw.toString())" }, { m: "", t: "}" }, { m: "", t: "" },
+            { m: "", t: "  // the edge-safe version, once the migration lands:" }, { m: "", t: "  // return kv.get('session:' + id)" }
+        ],
+        "cart.ts": [
+            { m: "", t: "import { kv, queue } from 'halyard'" }, { m: "", t: "" }, { m: "", t: "export default async function (req: Request) {" },
+            { m: "", t: "  const { sku, qty } = await req.json()" }, { m: "", t: "  const stock = await kv.get('stock:' + sku)" }, { m: "", t: "" },
+            { m: "", t: "  if (stock < qty) {" }, { m: "", t: "    return Response.json({ error: 'out_of_stock' }, { status: 409 })" }, { m: "", t: "  }" }, { m: "", t: "" },
+            { m: "", t: "  await queue.publish('cart.updated', { sku, qty })" }, { m: "", t: "  return Response.json({ ok: true }, { status: 201 })" }, { m: "", t: "}" }
+        ],
+        "halyard.config.ts": [
+            { m: "", t: "import { defineConfig } from 'halyard'" }, { m: "", t: "" }, { m: "", t: "export default defineConfig({" },
+            { m: "", t: "  runtime: 'edge'," }, { m: "", t: "  regions: 'all'," }, { m: "", t: "  build: { command: 'pnpm build', reproducible: true }," },
+            { m: "", t: "  kv: { namespace: 'storefront', leader: 'fra1' }," }, { m: "", t: "})" }
+        ]
+    }
+    state problemsOf = {
+        "routes.halyard.ts": [
+            { k: "error", code: "HL-4019", f: "routes.halyard.ts", l: 12, m: "build 'deleted' does not exist. Pin a hash that is still retained, or use 'current'." },
+            { k: "warn", code: "HL-4021", f: "routes.halyard.ts", l: 11, m: "Weighted rules in this group sum to 99. Add the missing 1% or remove the weight." }
+        ],
+        "session.ts": [{ k: "error", code: "HL-3002", f: "session.ts", l: 1, m: "node:fs is not available in the edge runtime. Move this read to halyard/kv." }],
+        "cart.ts": [],
+        "halyard.config.ts": []
+    }
+    state treeList = [
+        { d: 0, k: "dir", n: "apps", f: "" }, { d: 1, k: "dir", n: "storefront", f: "" },
+        { d: 2, k: "file", n: "halyard.config.ts", f: "halyard.config.ts" }, { d: 2, k: "file", n: "routes.halyard.ts", f: "routes.halyard.ts" },
+        { d: 2, k: "dir", n: "src", f: "" }, { d: 3, k: "dir", n: "api", f: "" }, { d: 4, k: "file", n: "cart.ts", f: "cart.ts" }, { d: 4, k: "file", n: "stock.ts", f: "" },
+        { d: 3, k: "dir", n: "lib", f: "" }, { d: 4, k: "file", n: "session.ts", f: "session.ts" }, { d: 4, k: "file", n: "kv.ts", f: "" },
+        { d: 2, k: "file", n: "package.json", f: "" }, { d: 0, k: "dir", n: "packages", f: "" }, { d: 1, k: "dir", n: "design-system", f: "" }
+    ]
+    state openFiles = ["routes.halyard.ts", "session.ts", "cart.ts", "halyard.config.ts"]
+
+    action worstOf(name: String) {
+        list = if problemsOf[name] != undefined { problemsOf[name] } else { [] }
+        if list.filter(p => p.k == "error").length > 0 { return "error" }
+        if list.length > 0 { return "warn" }
+        return ""
+    }
+    action markColor(w: String) {
+        if w == "error" { return "var(--danger)" }
+        if w == "warn" { return "var(--warning)" }
+        return "transparent"
+    }
+
+    derived tabs = openFiles.map(n => { name: n, selected: file == n, dot: markColor(worstOf(n)), worst: worstOf(n) })
+    derived tree = treeList.map(t => { name: t.n, indent: "{10 + t.d * 14}px", isDir: t.k == "dir", openable: t.f != "", file: t.f, current: t.f != "" && t.f == file, problem: worstOf(t.f), problemColor: markColor(worstOf(t.f)) })
+    derived src = files[file]
+    derived lines = src.map((l, n) => { n: "{n + 1}", mark: l.m, text: l.t, bg: if l.m == "error" { "var(--danger-soft)" } else if l.m == "warn" { "var(--warning-soft)" } else { "transparent" }, edge: markColor(l.m) })
+    derived problems = problemsOf[file].map(p => { message: p.m, where: p.f + ":" + p.l, code: p.code, tone: if p.k == "error" { "danger" } else { "warning" }, color: markColor(p.k), icon: if p.k == "error" { "close" } else { "warning" } })
+    derived problemCount = "{problems.length}"
+    derived noProblems = problems.length == 0
+    derived panelLabel = if panel { "Hide panel" } else { "Show panel" }
+    derived cursor = "Ln " + src.length + ", Col 1"
+    derived errors = problems.filter(p => p.tone == "danger").length
+    derived statusColor = if errors > 0 { "var(--text-danger)" } else { "var(--text-success)" }
+    derived statusDot = if errors > 0 { "var(--danger)" } else { "var(--success)" }
+    derived statusText = if errors > 0 { errors + " error, deploy blocked" } else { "Ready to deploy" }
+
+    state rules = [
+        { n: "1", match: "cookie ht_beta=1", to: "→ build 8f2c41", mark: "ok" },
+        { n: "2", match: "geo.country in DE, FR, NL", to: "→ region fra1", mark: "ok" },
+        { n: "3", match: "path /api/*", to: "→ fn api, 10 s", mark: "ok" },
+        { n: "4", match: "path /*", to: "→ build current, weight 99", mark: "warn" },
+        { n: "5", match: "path /legacy/*", to: "→ build deleted", mark: "error" }
+    ]
+    derived ruleRows = rules.map(r => { n: r.n, match: r.match, to: r.to, mark: r.mark, edge: if r.mark == "ok" { "var(--success)" } else if r.mark == "warn" { "var(--warning)" } else { "var(--danger)" }, word: if r.mark == "ok" { "ok" } else if r.mark == "warn" { "warning" } else { "error" } })
+    derived path = request.trim().split(" ").pop()
+    derived testHelp = if path.indexOf("/legacy/") == 0 { "Rule 5 matched, and it points at a deleted build: this request answers 500 until the rule is fixed." } else if path.indexOf("/api/") == 0 { "Rule 3 matched. Served by fn api in the region the request lands in." } else if path.indexOf("/") == 0 { "Rule 4 matched. Served by the current build; rules 1 and 2 need a cookie or a country the sample does not carry." } else { "Enter a method and a path, like GET /api/cart." }
+
+    action open(name: String) { if name != "" { file = name } }
+    action togglePanel() { panel = !panel }
+    action setRequest(v: String) { request = v }
+}

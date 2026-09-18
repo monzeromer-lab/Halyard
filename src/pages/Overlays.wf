@@ -1,7 +1,150 @@
 Page Overlays (path: "/ui", title: "Interface inventory", description: "Every overlay, alert and waiting state in one place.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Interface inventory", h1)
-        Text("Coming in a later milestone.", muted)
+    use UiStore
+    state slow = "500"
+
+    Row(align: stretch) {
+        style { min-height: "100vh"  flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+        // Launchers
+        Stack { style { width: "300px"  flex: "none"  gap: "14px"  border-right: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  padding: "32px 24px"  @media (max-width: 1024px) { width: "100%"  border-right: "0"  border-bottom: "1px solid var(--line-hairline)"  padding: "20px 16px" } }
+            Stack { style { gap: "8px" }
+                Heading("Overlays", h1) { style { margin: "0"  font-size: "26px"  line-height: "1.2"  letter-spacing: "-0.015em"  font-weight: "700" } }
+                Text("Everything that floats above a page, in one board. Open one and it renders over this page with its own scrim, exactly as it would in the product.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-tertiary)" } } }
+            Rule()
+            Stack(role: "group", aria-label: "Open an overlay") { style { gap: "8px"  @media (max-width: 1024px) { flex-direction: "row"  flex-wrap: "wrap" } }
+                LaunchButton(label: "Command palette", hint: "⌘K") { UiStore.open("palette") }
+                LaunchButton(label: "Modal") { UiStore.open("modal") }
+                LaunchButton(label: "Drawer") { UiStore.open("drawer") }
+                LaunchButton(label: "Dropdown menu") { UiStore.open("menu") }
+                LaunchButton(label: "Popover") { UiStore.open("popover") } }
+            Container { style { margin: "auto 0 0"  padding: "14px"  background: "var(--surface-inset)"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-md)"  width: "auto"  @media (max-width: 1024px) { display: "none" } }
+                Text("Each overlay closes on its own scrim and on Escape. Only one at a time, by design.") { style { margin: "0"  font-size: "12px"  line-height: "1.6"  color: "var(--text-tertiary)" } } }
+        }
+
+        Stack { style { flex-grow: "1"  min-width: "0"  gap: "26px"  padding: "32px 36px"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" }  @media (max-width: 768px) { padding: "16px" } }
+            Stack { style { gap: "12px" }
+                Overline(text: "FEEDBACK, INLINE")
+                Grid(columns: 2) { style { gap: "12px"  @media (max-width: 768px) { grid-template-columns: "1fr" } }
+                    InlineAlert(tone: "info", title: "A note", body: "Preview deploys read production environment values unless you set preview-specific ones.")
+                    InlineAlert(tone: "success", title: "Attestation matched", body: "This tree built twice on different machines with the same digest.")
+                    InlineAlert(tone: "warning", title: "gru1 is degraded", body: "p95 in gru1 crossed 200 ms for 5 minutes. Traffic is still being served.")
+                    InlineAlert(tone: "danger", title: "Deploy refused: HL-4021", body: "Weighted rules in group A sum to 99. Fix the weights and redeploy.") } }
+            Stack { style { gap: "12px" }
+                Overline(text: "WAITING STATES")
+                Grid(columns: 3) { style { gap: "12px"  @media (max-width: 1024px) { grid-template-columns: "1fr" } }
+                    Stack { style { gap: "10px"  padding: "18px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)" }
+                        Overline(text: "SKELETON")
+                        Skeleton(height: "13px", width: "78%") { style { border-radius: "4px"  background: "var(--surface-active)" } }
+                        Skeleton(height: "13px", width: "94%") { style { border-radius: "4px"  background: "var(--surface-active)" } }
+                        Skeleton(height: "13px", width: "62%") { style { border-radius: "4px"  background: "var(--surface-active)" } }
+                        Text("Rows of the height the real rows will be, never a spinner over a table.") { style { margin: "4px 0 0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+                    Stack { style { gap: "12px"  padding: "18px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)" }
+                        Overline(text: "PROGRESS")
+                        Row(align: center) { style { gap: "12px"  flex-wrap: "nowrap" }
+                            Spinner(aria-label: "Building") { style { width: "18px"  height: "18px"  border-width: "2px"  border-color: "var(--line-strong)"  border-top-color: "var(--brand)" } }
+                            Text("Compiling 38 routes") { style { margin: "0"  font-size: "13px"  color: "var(--text-secondary)" } } }
+                        ProgressBar(pct: 64, label: "Upload to regions")
+                        Text("12 of 19 regions acknowledged") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+                    Stack(align: start) { style { gap: "8px"  padding: "18px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  align-items: "flex-start" }
+                        Overline(text: "EMPTY STATE")
+                        Icon("info") { style { color: "var(--text-disabled)"  display: "inline-flex"  font-size: "22px" } }
+                        Text("No queues yet") { style { margin: "0"  font: "700 14px/1.3 var(--font-sans)" } }
+                        Text("A queue appears here the first time a function publishes to one.") { style { margin: "0"  font-size: "12px"  line-height: "1.5"  color: "var(--text-tertiary)" } }
+                        FlButton(label: "Read the queue guide", variant: "secondary", size: "sm", to: "/docs") } } }
+            Stack { style { gap: "12px" }
+                Overline(text: "TOOLTIP, ON HOVER")
+                Row { style { gap: "12px"  flex-wrap: "wrap" }
+                    Tooltip(text: "Builds and ships the current branch") { FlButton(label: "Deploy", variant: "secondary", size: "sm", icon: "upload") }
+                    Tooltip(text: "Routing change only, about 400 ms") { FlButton(label: "Roll back", variant: "secondary", size: "sm", icon: "arrow-left") { UiStore.open("modal") } }
+                    Tooltip(text: "Streams logs to your own sink") { FlButton(label: "Drain", variant: "secondary", size: "sm", icon: "download") } } }
+            Stack { style { gap: "12px" }
+                Overline(text: "TOASTS")
+                Row { style { gap: "10px"  flex-wrap: "wrap" }
+                    FlButton(label: "Deploy finished", variant: "secondary", size: "sm") { UiStore.toast("success", "Deploy finished", "Build 8f2c41 is live in 19 regions.") }
+                    FlButton(label: "Build queued", variant: "secondary", size: "sm") { UiStore.toast("info", "Build queued", "One build ahead of yours in the queue.") }
+                    FlButton(label: "Quota at 82%", variant: "secondary", size: "sm") { UiStore.toast("warning", "Quota at 82%", "You have used 1.64M of 2M requests this month.") }
+                    FlButton(label: "Deploy refused", variant: "secondary", size: "sm") { UiStore.toast("danger", "Deploy refused", "Weighted rules in group A sum to 99, not 100.") }
+                    FlButton(label: "Clear the stack", variant: "ghost", size: "sm") { UiStore.clearToasts() } } }
+        }
     }
+
+    CommandPalette()
+
+    // Modal: a rollback confirmation
+    if UiStore.modalOpen, animate(fadeIn, fast) {
+        Scrim(label: "Close the dialog")
+        DialogFrame(label: "Roll back", width: "520px", labelledBy: "md-t") {
+            Row(align: start) { style { padding: "24px 26px 18px"  gap: "16px"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                Container { style { width: "40px"  height: "40px"  border-radius: "50%"  flex: "none"  background: "var(--danger-soft)"  color: "var(--danger)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  padding: "0"  margin: "0" }
+                    Icon("warning") { style { display: "inline-flex"  font-size: "18px" } } }
+                Stack { style { gap: "8px" }
+                    Heading("Roll back to 7c91de?", h2, id: "md-t") { style { margin: "0"  font-size: "20px"  font-weight: "700"  letter-spacing: "-0.01em" } }
+                    Text("Traffic moves off 8f2c41 in about 400 milliseconds. Requests already in flight finish on the build they started on. The routing rules that shipped with 7c91de come back with it.") { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)" } } } }
+            Container { style { padding: "0 26px 20px"  width: "auto"  margin: "0" }
+                Callout(tone: "warning", title: "7c91de last ran four days ago", body: "It predates the cookie rule fix. The beta cohort will fall back to the default build.") }
+            Row(justify: end) { style { gap: "10px"  padding: "16px 26px"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)" }
+                FlButton(label: "Keep 8f2c41", variant: "ghost") { UiStore.close() }
+                FlButton(label: "Roll back now", variant: "danger") { UiStore.close()  UiStore.toast("success", "Rolled back", "Traffic moved to 7c91de in 412 ms.") } }
+        }
+    }
+
+    // Drawer: a trace filter panel
+    if UiStore.drawerOpen, animate(slideLeft, fast) {
+        Scrim(label: "Close the panel")
+        Stack(role: "dialog", aria-modal: "true", aria-labelledby: "dr-t") {
+            style { position: "fixed"  top: "0"  right: "0"  bottom: "0"  width: "400px"  max-width: "100vw"  z-index: "900"  gap: "0"  background: "var(--surface-overlay)"  border-left: "1px solid var(--line-strong)"  box-shadow: "var(--shadow-lg)"  overflow: "auto"
+                    @media (max-width: 480px) { width: "100vw"  border-left: "0" } }
+            on:keydown { if event.key == "Escape" { UiStore.close() } }
+            Row(align: center) { style { gap: "12px"  padding: "20px 22px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap" }
+                Heading("Filter traces", h2, id: "dr-t") { style { margin: "0"  font-size: "20px"  font-weight: "700"  flex-grow: "1" } }
+                IconBtn(icon: "close", label: "Close", size: 32) { UiStore.close() } }
+            Stack { style { gap: "22px"  padding: "22px"  flex-grow: "1" }
+                Field(label: "Time range", id: "dr-range") { FlSelect(id: "dr-range", labelId: "dr-range-label") { Option("15m", "Last 15 minutes")  Option("1h", "Last hour")  Option("24h", "Last 24 hours")  Option("custom", "Custom…") } }
+                Stack { style { gap: "10px" }
+                    Text("Status class", id: "dr-classes") { style { margin: "0"  font: "600 14px/1.2 var(--font-sans)"  color: "var(--text-secondary)" } }
+                    Row(role: "group", aria-labelledby: "dr-classes") { style { gap: "8px"  flex-wrap: "wrap" }
+                        for c in UiStore.drawerChips { Chip(label: c.label, pressed: c.pressed) { UiStore.toggleChip(c.label) } } } }
+                Field(label: "Region", id: "dr-region") { FlSelect(id: "dr-region", labelId: "dr-region-label") { Option("all", "All 19 regions")  Option("fra1", "fra1")  Option("iad1", "iad1")  Option("gru1", "gru1") } }
+                Field(label: "Slower than", id: "dr-min", help: "Milliseconds. Leave empty to include everything.") {
+                    Container { style { width: "140px"  padding: "0"  margin: "0" }  FlInput(id: "dr-min", value: slow, mono: true, labelId: "dr-min-label") { on:input { slow = event.target.value } } } }
+                Stack { style { gap: "12px" }
+                    Text("Only show") { style { margin: "0"  font: "600 14px/1.2 var(--font-sans)"  color: "var(--text-secondary)" } }
+                    FlSwitch(checked: UiStore.cold, label: "Requests that paid a cold start", id: "dsw-cold") { UiStore.toggleCold() }
+                    FlSwitch(checked: UiStore.errors, label: "Requests that threw", id: "dsw-errors") { UiStore.toggleErrors() }
+                    FlSwitch(checked: UiStore.traced, label: "Requests with a full trace", id: "dsw-traced") { UiStore.toggleTraced() } } }
+            Row { style { gap: "10px"  padding: "16px 22px"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  flex-wrap: "nowrap" }
+                FlButton(label: "Reset", variant: "ghost", width: "100%") { UiStore.close() }
+                FlButton(label: "Apply filters", variant: "primary", width: "100%") { UiStore.close()  UiStore.toast("info", "Filters applied", "Showing traces slower than {slow} ms.") } }
+        }
+    }
+
+    // Dropdown menu: build actions
+    if UiStore.menuOpen, animate(fadeIn, fast) {
+        Scrim(label: "Close the menu", dim: false)
+        Stack(role: "menu", aria-label: "Build actions") {
+            style { position: "fixed"  left: "360px"  top: "150px"  width: "236px"  z-index: "900"  gap: "0"  background: "var(--surface-overlay)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "6px"  box-shadow: "var(--shadow-md)"  @media (max-width: 1024px) { left: "16px"  top: "80px" } }
+            on:keydown { if event.key == "Escape" { UiStore.close() } }
+            MenuEntry(label: "Open build", icon: "eye") { UiStore.close()  navigate("/app/builds/8f2c41") }
+            MenuEntry(label: "Promote to production", icon: "upload", hint: "⌘⇧P") { UiStore.close() }
+            MenuEntry(label: "Copy build hash", icon: "copy", hint: "⌘C") { UiStore.close() }
+            MenuEntry(label: "Download artifacts", icon: "download") { UiStore.close() }
+            Container { style { padding: "5px 0"  width: "auto" }  Rule() }
+            MenuEntry(label: "Delete deployment", icon: "trash", tone: "danger") { UiStore.close() }
+        }
+    }
+
+    // Popover: a short explanation with a link
+    if UiStore.popoverOpen, animate(fadeIn, fast) {
+        Scrim(label: "Close the popover", dim: false)
+        Stack(role: "dialog", aria-labelledby: "po-t") {
+            style { position: "fixed"  left: "360px"  top: "210px"  width: "320px"  max-width: "calc(100vw - 32px)"  z-index: "900"  gap: "0"  background: "var(--surface-overlay)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "18px"  box-shadow: "var(--shadow-md)"  @media (max-width: 1024px) { left: "16px"  top: "80px" } }
+            on:keydown { if event.key == "Escape" { UiStore.close() } }
+            Heading("What is a cold start?", h2, id: "po-t") { style { margin: "0 0 8px"  font: "700 15px/1.3 var(--font-sans)" } }
+            Text("The time to create a fresh isolate in a region that has not served this build recently. It is paid by one request in a few thousand, and it is included in the p95 you see.") { style { margin: "0 0 14px"  font-size: "13px"  line-height: "1.6"  color: "var(--text-secondary)" } }
+            Row { style { gap: "8px" }
+                FlButton(label: "Read more", variant: "secondary", size: "sm", to: "/docs")
+                FlButton(label: "Got it", variant: "ghost", size: "sm") { UiStore.close() } }
+        }
+    }
+
+    ToastStack()
 }

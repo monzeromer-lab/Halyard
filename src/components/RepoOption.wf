@@ -1,0 +1,18 @@
+// A repository to pick: role=radio, checked in aria-checked.
+Component RepoOption (full: String, meta: String, lang: String, checked: Bool = false) {
+    derived edge = if checked { "var(--brand)" } else { "var(--line-default)" }
+    derived bg = if checked { "var(--brand-soft)" } else { "transparent" }
+    Button("", type: "button", role: "radio", aria-checked: checked, aria-label: "{full}, {lang}, {meta}") {
+        style {
+            display: "flex"  align-items: "center"  gap: "12px"  width: "100%"  background: bg  padding: "12px 14px"
+            border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"
+            transition: "border-color var(--d-fast) var(--ease-standard), background var(--d-fast) var(--ease-standard)"
+            hover { border-color: "var(--line-strong)"  background: "var(--surface-hover)" }
+        }
+        Icon("link") { style { color: "var(--text-tertiary)"  display: "inline-flex"  flex: "none"  font-size: "14px" } }
+        Stack { style { gap: "2px"  flex-grow: "1"  min-width: "0" }
+            Text(full) { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+            Text(meta) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+        OutlineBadge(label: lang)
+    }
+}

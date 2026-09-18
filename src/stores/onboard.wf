@@ -1,0 +1,79 @@
+// Onboarding: four steps, the picked repository, the repository filter,
+// the environment variables to import, and what each step needs before
+// the next one opens.
+Store OnboardStore {
+    state step = 0
+    state repo = "storefront"
+    state query = ""
+    state env = ["DATABASE_URL", "STRIPE_SECRET_KEY", "SESSION_SIGNING_KEY", "NEXT_PUBLIC_CDN"]
+
+    state stepList = [
+        { id: "repo", label: "Repository", note: "Read once, never written to" },
+        { id: "framework", label: "Framework", note: "Detected, override anything" },
+        { id: "env", label: "Environment", note: "Encrypted before it leaves the browser" },
+        { id: "review", label: "Review", note: "The project is created here" }
+    ]
+    state repoList = [
+        { id: "storefront", full: "company/storefront", lang: "TypeScript", meta: "updated 2 hours ago" },
+        { id: "storefront-api", full: "company/storefront-api", lang: "TypeScript", meta: "updated yesterday" },
+        { id: "design-system", full: "company/design-system", lang: "CSS", meta: "updated 3 days ago" },
+        { id: "marketing-site", full: "company/marketing-site", lang: "Astro", meta: "updated last week" },
+        { id: "internal-tools", full: "company/internal-tools", lang: "Python", meta: "updated last month" }
+    ]
+    state envList = [
+        { k: "DATABASE_URL", v: "postgres://••••••@db.internal:5432/store", secret: true },
+        { k: "STRIPE_SECRET_KEY", v: "sk_live_••••••••••••", secret: true },
+        { k: "SESSION_SIGNING_KEY", v: "••••••••••••••••", secret: true },
+        { k: "NEXT_PUBLIC_CDN", v: "https://cdn.example.com", secret: false },
+        { k: "ANALYTICS_ID", v: "UA-legacy-do-not-use", secret: false }
+    ]
+
+    derived steps = stepList.map((s, n) => { id: s.id, label: s.label, note: s.note, phase: if n == step { "active" } else if n < step { "done" } else { "todo" }, badge: if n < step { "✓" } else { "{n + 1}" }, line: if n < step { "var(--success)" } else { "var(--line-default)" }, last: n == 3 })
+    derived q = query.toLowerCase()
+    derived repos = repoList.filter(r => q == "" || r.full.toLowerCase().indexOf(q) > -1).map(r => { id: r.id, full: r.full, lang: r.lang, meta: r.meta, checked: repo == r.id })
+    derived noRepos = repos.length == 0
+    derived picked = repoList.filter(r => r.id == repo)
+    derived hasRepo = picked.length > 0
+    derived repoName = if hasRepo { picked[0].full } else { "—" }
+    derived envs = envList.map(e => { key: e.k, value: e.v, kind: if e.secret { "Secret" } else { "Plain" }, tone: if e.secret { "brass" } else { "neutral" }, checked: env.indexOf(e.k) > -1, label: (if env.indexOf(e.k) > -1 { "Do not import " } else { "Import " }) + e.k })
+    derived envCount = env.length
+    derived allOn = env.length == envList.length
+    derived envAllLabel = if allOn { "Clear all" } else { "Select all" }
+    derived summary = [
+        { label: "Repository", value: repoName, mono: true, step: 0 },
+        { label: "Branch", value: "main", mono: true, step: 0 },
+        { label: "Framework", value: "Next.js 15, node 22.x", mono: false, step: 1 },
+        { label: "Build command", value: "pnpm build", mono: true, step: 1 },
+        { label: "Environment", value: env.length + " variables imported", mono: false, step: 2 },
+        { label: "Regions", value: "All 19, atomic", mono: false, step: 1 }
+    ]
+    state titles = ["Pick a repository", "This is what we found", "Bring the environment across", "Ready to build"]
+    state leads = [
+        "Halyard reads it once to detect the framework and the environment it expects. Nothing is written back.",
+        "Override anything that is wrong. These settings are written to halyard.config.ts so they live in the repository from here on.",
+        "Read from the .env in the repository root. Uncheck anything you do not want stored. Secrets are encrypted before they leave your browser.",
+        "Creating the project starts the first build immediately. It lands in all 19 regions or in none of them."
+    ]
+    derived stepTitle = titles[step]
+    derived stepLead = leads[step]
+    derived atRepo = step == 0
+    derived atFramework = step == 1
+    derived atEnv = step == 2
+    derived atReview = step == 3
+    derived atFirst = step == 0
+    derived isLast = step == 3
+    derived blocked = step == 0 && !hasRepo
+    derived nextLabel = if step == 2 { "Review" } else { "Continue" }
+    derived progress = Math.round((step + 1) / 4 * 100)
+    derived progressLabel = "Step " + (step + 1) + " of 4 · " + stepList[step].label
+
+    action setQuery(v: String) { query = v }
+    action pickRepo(id: String) { repo = id }
+    action toggleEnv(k: String) {
+        if env.indexOf(k) > -1 { env = env.filter(x => x != k) } else { env = env.concat([k]) }
+    }
+    action selectAllEnv() { env = if allOn { [] } else { envList.map(e => e.k) } }
+    action back() { step = Math.max(0, step - 1) }
+    action next() { if !blocked { step = Math.min(3, step + 1) } }
+    action goTo(n: Number) { step = n }
+}

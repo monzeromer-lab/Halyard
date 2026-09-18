@@ -1,7 +1,99 @@
 Page Onboarding (path: "/new", title: "New project", description: "Connect a repository and ship the first build.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("New project", h1)
-        Text("Coming in a later milestone.", muted)
+    use OnboardStore
+    state q = ""
+
+    Row(align: stretch) {
+        style { min-height: "100vh"  flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+        // Steps rail
+        Stack { style { width: "320px"  flex: "none"  gap: "0"  background: "var(--surface-sunken)"  border-right: "1px solid var(--line-hairline)"  padding: "36px 32px"  @media (max-width: 1024px) { width: "100%"  border-right: "0"  border-bottom: "1px solid var(--line-hairline)"  padding: "20px 16px" } }
+            Link("", to: "/", aria-label: "Halyard home") { style { display: "flex"  align-items: "center"  gap: "10px"  margin: "0 0 40px"  color: "var(--text-primary)"  text-decoration: "none"  @media (max-width: 1024px) { margin: "0 0 20px" } }
+                Mark(size: 24)
+                Text("Halyard") { style { margin: "0"  font: "700 20px/1 var(--font-sans)"  letter-spacing: "-0.02em" } } }
+            Container { style { margin: "0 0 20px"  padding: "0"  width: "auto" }  Overline(text: "NEW PROJECT") }
+            Stack(role: "list", aria-label: "Steps") { style { gap: "0"  @media (max-width: 1024px) { flex-direction: "row"  flex-wrap: "wrap"  gap: "0 24px" } }
+                for s in OnboardStore.steps { StepItem(label: s.label, note: s.note, phase: s.phase, badge: s.badge, line: s.line, last: s.last) } }
+            Stack { style { margin: "auto 0 0"  gap: "6px"  padding: "16px"  background: "var(--surface-inset)"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-md)"  @media (max-width: 1024px) { display: "none" } }
+                Text("Nothing is deployed yet") { style { margin: "0"  font: "700 13px/1.3 var(--font-sans)" } }
+                Text("You can leave at any point. The project is created on the last step, not before.") { style { margin: "0"  font-size: "12px"  line-height: "1.55"  color: "var(--text-tertiary)" } } }
+        }
+
+        Stack { style { flex-grow: "1"  min-width: "0"  gap: "0"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" } }
+            Stack { style { flex-grow: "1"  gap: "0"  padding: "48px 48px 32px"  @media (max-width: 768px) { padding: "24px 16px" } }
+                Heading("{OnboardStore.stepTitle}", h1) { style { margin: "0 0 8px"  font-size: "34px"  line-height: "1.15"  letter-spacing: "-0.02em"  font-weight: "700"  @media (max-width: 768px) { font-size: "28px" } } }
+                Text("{OnboardStore.stepLead}") { style { margin: "0 0 24px"  font-size: "16px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "62ch" } }
+                // 1. Repository
+                if OnboardStore.atRepo, animate(slideLeft, fast) {
+                    Stack { style { gap: "0" }
+                        Container { style { position: "relative"  max-width: "520px"  margin: "0 0 18px"  padding: "0"  width: "100%" }
+                            Icon("search") { style { position: "absolute"  left: "11px"  top: "11px"  color: "var(--text-tertiary)"  pointer-events: "none"  display: "inline-flex"  font-size: "16px"  z-index: "1" } }
+                            Input(search, bind: q, id: "ob-q", placeholder: "Filter 42 repositories", aria-label: "Filter repositories") {
+                                style { height: "38px"  width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px 0 34px"  font: "400 14px/1.2 var(--font-sans)"  hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" }  focus { border-color: "var(--focus-ring)" } }
+                                on:input { OnboardStore.setQuery(q) } } }
+                        Stack(role: "radiogroup", aria-label: "Repository") { style { gap: "8px"  max-width: "620px" }
+                            for r in OnboardStore.repos { RepoOption(full: r.full, meta: r.meta, lang: r.lang, checked: r.checked) { OnboardStore.pickRepo(r.id) } }
+                            if OnboardStore.noRepos { Text("No repository matches that filter.") { style { margin: "12px 0"  font-size: "14px"  color: "var(--text-tertiary)" } } } }
+                    }
+                }
+                // 2. Framework
+                if OnboardStore.atFramework, animate(slideLeft, fast) {
+                    Stack { style { gap: "0" }
+                        Container { style { max-width: "620px"  margin: "0 0 24px"  padding: "0"  width: "100%" }
+                            Callout(tone: "success", title: "Next.js 15 detected from package.json", body: "38 routes, 6 of them dynamic.") }
+                        Grid(columns: 2) { style { gap: "18px"  max-width: "620px"  @media (max-width: 480px) { grid-template-columns: "1fr" } }
+                            Field(label: "Framework preset", id: "ob-fw") { FlSelect(id: "ob-fw", labelId: "ob-fw-label") { Option("next", "Next.js 15")  Option("astro", "Astro")  Option("sveltekit", "SvelteKit")  Option("remix", "Remix") } }
+                            Field(label: "Node version", id: "ob-node") { FlSelect(id: "ob-node", labelId: "ob-node-label") { Option("22", "22.x")  Option("20", "20.x")  Option("18", "18.x") } }
+                            Field(label: "Build command", id: "ob-cmd") { FlInput(id: "ob-cmd", value: "pnpm build", mono: true, labelId: "ob-cmd-label") }
+                            Field(label: "Output directory", id: "ob-out") { FlInput(id: "ob-out", value: ".halyard/edge", mono: true, labelId: "ob-out-label") } }
+                        Stack { style { margin: "26px 0 0"  max-width: "620px"  gap: "12px" }
+                            Overline(text: "2 THINGS TO LOOK AT")
+                            Callout(tone: "danger", title: "src/lib/session.ts imports node:fs", body: "The edge runtime has no filesystem. Move the session store to edge KV, or keep this route on a node function.")
+                            Callout(tone: "warning", title: "3 environment variables are unset in preview", body: "Preview deploys will read the production values unless you set preview-specific ones now.") }
+                    }
+                }
+                // 3. Environment
+                if OnboardStore.atEnv, animate(slideLeft, fast) {
+                    Stack { style { gap: "0" }
+                        Row(align: center) { style { gap: "12px"  margin: "0 0 14px"  max-width: "680px"  flex-wrap: "nowrap" }
+                            Text("{OnboardStore.envCount} of 5 selected", role: "status") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+                            FlButton(label: OnboardStore.envAllLabel, variant: "ghost", size: "sm") { OnboardStore.selectAllEnv() } }
+                        Stack(role: "group", aria-label: "Environment variables to import") { style { gap: "0"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "hidden"  max-width: "680px" }
+                            for e in OnboardStore.envs {
+                                Row(align: center) { style { gap: "14px"  padding: "13px 16px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                                    CheckBtn(checked: "{e.checked}", label: e.label) { OnboardStore.toggleEnv(e.key) }
+                                    Text(e.key) { style { margin: "0"  width: "210px"  flex: "none"  font: "400 13px/1.4 var(--font-mono)"  color: "var(--text-primary)"  @media (max-width: 480px) { width: "auto" } } }
+                                    Text(e.value) { style { margin: "0"  flex-grow: "1"  min-width: "0"  font: "400 12.5px/1.4 var(--font-mono)"  color: "var(--text-tertiary)"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap" } }
+                                    StatusBadge(label: e.kind, tone: e.tone, dot: false) }
+                            } }
+                    }
+                }
+                // 4. Review
+                if OnboardStore.atReview, animate(slideLeft, fast) {
+                    Stack { style { gap: "0" }
+                        Stack(role: "list", aria-label: "Summary") { style { gap: "0"  max-width: "680px"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  overflow: "hidden" }
+                            for s in OnboardStore.summary {
+                                Row(role: "listitem", align: center) { style { gap: "16px"  padding: "15px 20px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                                    Text(s.label) { style { margin: "0"  width: "160px"  flex: "none"  font: "600 13px/1.3 var(--font-sans)"  color: "var(--text-tertiary)" } }
+                                    if s.mono {
+                                        Text(s.value) { style { margin: "0"  flex-grow: "1"  min-width: "0"  font: "400 14px/1.4 var(--font-mono)"  color: "var(--text-primary)" } }
+                                    } else {
+                                        Text(s.value) { style { margin: "0"  flex-grow: "1"  min-width: "0"  font-size: "14px"  color: "var(--text-primary)" } }
+                                    }
+                                    FlButton(label: "Edit", variant: "ghost", size: "sm") { OnboardStore.goTo(s.step) } }
+                            } }
+                        Container { style { margin: "22px 0 0"  max-width: "680px"  padding: "0"  width: "100%" }
+                            Callout(tone: "warning", title: "The node:fs import in src/lib/session.ts is still unresolved", body: "The build will complete, but any request that reaches that route returns a 500 until you move the session store.") }
+                    }
+                }
+            }
+            // Footer: progress, back, next
+            Row(align: center) { style { padding: "20px 48px"  border-top: "1px solid var(--line-hairline)"  gap: "14px"  flex-wrap: "nowrap"  @media (max-width: 768px) { padding: "16px"  flex-wrap: "wrap" } }
+                Stack { style { flex-grow: "1"  gap: "7px"  min-width: "160px" }
+                    ProgressBar(pct: OnboardStore.progress, label: "Onboarding progress", maxWidth: "220px")
+                    Text("{OnboardStore.progressLabel}") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+                FlButton(label: "Back", variant: "ghost", icon: "arrow-left", disabled: OnboardStore.atFirst) { OnboardStore.back() }
+                if !OnboardStore.isLast { FlButton(label: OnboardStore.nextLabel, variant: "primary", disabled: OnboardStore.blocked) { OnboardStore.next() } }
+                if OnboardStore.isLast { FlButton(label: "Create project and build", variant: "primary", to: "/app/builds/8f2c41") }
+            }
+        }
     }
 }

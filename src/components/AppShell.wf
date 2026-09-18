@@ -73,6 +73,9 @@ Component AppShell (crumb: String) {
             }
             children
         }
+        CommandPalette()
+        ProjectMenu()
+        ToastStack()
 
         // Phone tab bar
         Row(role: "navigation", aria-label: "Sections") {

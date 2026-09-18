@@ -1,0 +1,19 @@
+// A step in the onboarding rail: the dot says the number or a tick, the
+// state lives in data-state, the line below joins it to the next.
+Component StepItem (label: String, note: String, phase: String, badge: String, line: String, last: Bool = false) {
+    derived dotEdge = if phase == "active" { "var(--brand)" } else if phase == "done" { "var(--success)" } else { "var(--line-strong)" }
+    derived dotBg = if phase == "active" { "var(--brand)" } else { "transparent" }
+    derived dotFg = if phase == "active" { "var(--on-brand)" } else if phase == "done" { "var(--text-success)" } else { "var(--text-tertiary)" }
+    derived labelFg = if phase == "active" { "var(--text-primary)" } else { "var(--text-tertiary)" }
+    derived cur = if phase == "active" { "step" } else { null }
+    derived phaseWord = if phase == "active" { "current step" } else if phase == "done" { "done" } else { "to do" }
+    Row(align: start, data-state: phase, aria-current: cur, role: "listitem") {
+        style { gap: "14px"  flex-wrap: "nowrap"  align-items: "stretch" }
+        Stack(align: center) { style { flex: "none"  gap: "0"  align-items: "center" }
+            Text(badge, aria-label: "{label}, {phaseWord}") { style { width: "26px"  height: "26px"  border-radius: "50%"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 12px/1 var(--font-mono)"  border: "1.5px solid var(--edge)"  --edge: dotEdge  background: dotBg  color: dotFg  margin: "0"  transition: "all var(--d-base) var(--ease-standard)" } }
+            if !last { Container { style { width: "1px"  flex-grow: "1"  min-height: "34px"  background: line  padding: "0"  margin: "0" } } } }
+        Stack { style { gap: "3px"  padding: "0 0 20px" }
+            Text(label) { style { margin: "0"  font: "700 14px/1.3 var(--font-sans)"  color: labelFg } }
+            Text(note) { style { margin: "0"  font-size: "12px"  line-height: "1.5"  color: "var(--text-disabled)" } } }
+    }
+}

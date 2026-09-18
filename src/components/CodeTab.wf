@@ -1,7 +1,11 @@
-Component CodeTab (label: String, selected: Bool) {
+// An open-file tab: aria-selected marks the open one; a dot in danger or
+// warning says the file has problems (the word is in the label).
+Component CodeTab (label: String, selected: Bool, dot: String = "transparent", worst: String = "") {
     derived bg = if selected { "var(--surface-raised)" } else { "transparent" }
     derived fg = if selected { "var(--text-primary)" } else { "var(--text-tertiary)" }
-    Button(label, type: "button", role: "tab", aria-selected: selected) {
-        style { background: bg  color: fg  border: "0"  border-radius: "6px 6px 0 0"  padding: "10px 16px"  font-family: "var(--font-mono)"  font-size: "12px"  cursor: "pointer"  hover { color: "var(--text-secondary)" } }
+    derived name = if worst == "" { label } else { label + ", " + worst }
+    Button(label, type: "button", role: "tab", aria-selected: selected, aria-label: name) {
+        style { display: "inline-flex"  align-items: "center"  gap: "8px"  background: bg  color: fg  border: "0"  border-radius: "6px 6px 0 0"  padding: "10px 16px"  font-family: "var(--font-mono)"  font-size: "12px"  cursor: "pointer"  white-space: "nowrap"  hover { color: "var(--text-secondary)" } }
+        Container { style { width: "6px"  height: "6px"  border-radius: "50%"  background: dot  flex: "none"  padding: "0"  margin: "0"  order: "-1" } }
     }
 }

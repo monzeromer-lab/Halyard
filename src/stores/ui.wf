@@ -1,33 +1,67 @@
 // Overlay and notification state shared by every page: which overlay is
-// open (command palette, modal, drawer, menu, popover), the toast stack.
+// open (command palette, modal, drawer, menu, popover), the palette query
+// and its groups, the drawer's filter state, the toast stack.
 Store UiStore {
     state overlay = ""
     state query = ""
     state toasts = []
     state nextToast = 1
+    state chips = ["5xx"]
+    state cold = true
+    state errors = false
+    state traced = true
 
     derived paletteOpen = overlay == "palette"
     derived modalOpen = overlay == "modal"
     derived drawerOpen = overlay == "drawer"
     derived menuOpen = overlay == "menu"
     derived popoverOpen = overlay == "popover"
+    derived anyOpen = overlay != ""
 
-    action open(name: String) {
-        overlay = name
-        query = ""
+    state groupList = [
+        { name: "Go to", items: [{ label: "Overview", hint: "G then O", to: "/app" }, { label: "Deployments", hint: "G then D", to: "/app/deployments" }, { label: "Logs", hint: "G then L", to: "/app/logs" }, { label: "Settings", hint: "G then S", to: "/app/settings" }] },
+        { name: "Actions", items: [{ label: "Deploy the current branch", hint: "⌘ ⇧ D", to: "" }, { label: "Roll back to the previous build", hint: "", to: "" }, { label: "Invite a team member", hint: "", to: "/app/settings" }, { label: "Open the routing rules", hint: "", to: "/app/editor" }] },
+        { name: "Recent", items: [{ label: "Build 8f2c41", hint: "", to: "/app/builds/8f2c41" }, { label: "Trace tr_140241118", hint: "", to: "/app/logs" }, { label: "Domain storefront.example.com", hint: "", to: "/app/settings" }] }
+    ]
+    derived q = query.toLowerCase()
+    derived groups = groupList.map(g => { name: g.name, items: g.items.filter(it => q == "" || it.label.toLowerCase().indexOf(q) > -1) }).filter(g => g.items.length > 0)
+    derived paletteCount = groups.reduce((n, g) => n + g.items.length, 0)
+    derived paletteEmpty = paletteCount == 0
+    derived paletteRows = groups.map((g, gi) => { name: g.name, items: g.items.map((it, i) => { label: it.label, hint: it.hint, to: it.to, hasHint: it.hint != "", first: gi == 0 && i == 0 }) })
+
+    state classes = ["2xx", "3xx", "4xx", "5xx"]
+    derived drawerChips = classes.map(c => { label: c, pressed: chips.indexOf(c) > -1 })
+
+    derived toastRows = toasts.map(t => { id: t.id, title: t.title, body: t.body, color: toneColor(t.kind), edge: toneEdge(t.kind), dismissLabel: "Dismiss: " + t.title })
+
+    action toneColor(k: String) {
+        if k == "success" { return "var(--success)" }
+        if k == "info" { return "var(--info)" }
+        if k == "warning" { return "var(--warning)" }
+        return "var(--danger)"
+    }
+    action toneEdge(k: String) {
+        if k == "success" { return "#0f3a26" }
+        if k == "info" { return "#0d3346" }
+        if k == "warning" { return "#3c2c0c" }
+        return "#46181a"
     }
 
-    action close() {
-        overlay = ""
+    action open(name: String) { overlay = name  query = "" }
+    action close() { overlay = "" }
+    action setQuery(v: String) { query = v }
+    action toggleChip(c: String) {
+        if chips.indexOf(c) > -1 { chips = chips.filter(x => x != c) } else { chips = chips.concat([c]) }
     }
+    action toggleCold() { cold = !cold }
+    action toggleErrors() { errors = !errors }
+    action toggleTraced() { traced = !traced }
 
     action toast(kind: String, title: String, body: String) {
         next = toasts.slice(-3)
         toasts = next.concat([{ id: nextToast, kind: kind, title: title, body: body }])
         nextToast = nextToast + 1
     }
-
-    action dismiss(id: Number) {
-        toasts = toasts.filter(t => t.id != id)
-    }
+    action dismiss(id: Number) { toasts = toasts.filter(t => t.id != id) }
+    action clearToasts() { toasts = [] }
 }

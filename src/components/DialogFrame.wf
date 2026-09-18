@@ -1,0 +1,15 @@
+// A centred dialog: role=dialog, modal, named by the caller. Escape closes
+// it. On a phone it becomes a bottom sheet.
+Component DialogFrame (label: String, width: String = "520px", labelledBy: String = "") {
+    derived named = if labelledBy == "" { label } else { null }
+    derived by = if labelledBy == "" { null } else { labelledBy }
+    Stack(role: "dialog", aria-modal: "true", aria-label: named, aria-labelledby: by) {
+        style {
+            position: "fixed"  left: "50%"  top: "14vh"  transform: "translateX(-50%)"  width: width  max-width: "calc(100vw - 32px)"  z-index: "900"  gap: "0"
+            background: "var(--surface-overlay)"  border: "1px solid var(--line-strong)"  border-radius: "var(--radius-lg)"  box-shadow: "var(--shadow-lg)"  overflow: "hidden"
+            @media (max-width: 480px) { top: "auto"  bottom: "0"  width: "100%"  max-width: "100%"  border-radius: "var(--radius-lg) var(--radius-lg) 0 0" }
+        }
+        on:keydown { if event.key == "Escape" { UiStore.close() } }
+        children
+    }
+}

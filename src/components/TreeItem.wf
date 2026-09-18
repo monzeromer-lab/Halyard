@@ -1,0 +1,20 @@
+// A file-tree row: a directory or a file, indented by depth; the open file
+// in aria-current; a dot in danger or warning if the file has problems.
+Component TreeItem (name: String, indent: String, isDir: Bool = false, openable: Bool = false, current: Bool = false, problem: String = "", problemColor: String = "transparent") {
+    derived bg = if current { "var(--brand-soft)" } else { "transparent" }
+    derived fg = if current { "var(--text-brand)" } else { "var(--text-tertiary)" }
+    derived cur = if current { "true" } else { null }
+    derived glyph = if isDir { "chevron-down" } else { "edit" }
+    derived tint = if isDir { "var(--text-tertiary)" } else { "var(--text-disabled)" }
+    derived label = if problem == "" { name } else { name + ", " + problem }
+    Button(name, type: "button", aria-current: cur, aria-label: label, disabled: !openable) {
+        style {
+            display: "flex"  align-items: "center"  gap: "8px"  width: "100%"  background: bg  border: "0"  padding: "5px 10px"  padding-left: indent
+            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  font: "400 13px/1.4 var(--font-sans)"  color: fg  white-space: "nowrap"
+            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+            disabled { cursor: "default"  opacity: "1" }
+        }
+        Icon(glyph) { style { display: "inline-flex"  flex: "none"  color: tint  font-size: "13px"  order: "-1" } }
+        if problem != "" { Container { style { width: "6px"  height: "6px"  border-radius: "50%"  background: problemColor  flex: "none"  padding: "0"  margin: "0 0 0 auto" } } }
+    }
+}

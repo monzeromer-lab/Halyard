@@ -1,0 +1,33 @@
+// The command palette: a dialog over a scrim, a search, grouped results,
+// a footer with the keys. Opened from the topbar's ⌘K on every app page.
+Component CommandPalette () {
+    use UiStore
+    state q = ""
+    if UiStore.paletteOpen, animate(fadeIn, fast) {
+        Scrim(label: "Close the command palette")
+        DialogFrame(label: "Command palette", width: "620px") {
+            Row(align: center) { style { gap: "12px"  padding: "14px 18px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap" }
+                Icon("search") { style { color: "var(--text-tertiary)"  display: "inline-flex"  font-size: "16px" } }
+                Input(search, bind: q, id: "cp-q", placeholder: "Search commands, builds, domains", aria-label: "Search commands", autofocus: "true") {
+                    style { flex-grow: "1"  background: "none"  border: "0"  outline: "none"  color: "var(--text-primary)"  font: "400 16px/1.2 var(--font-sans)"  padding: "0"  placeholder { color: "var(--text-tertiary)" } }
+                    on:input { UiStore.setQuery(q) } }
+                Kbd(text: "esc") }
+            Stack(role: "listbox", aria-label: "Results") { style { max-height: "360px"  overflow: "auto"  padding: "8px"  gap: "6px" }
+                for g in UiStore.paletteRows {
+                    Stack { style { gap: "0" }
+                        Container { style { padding: "8px 11px 6px"  width: "auto"  margin: "0" }  Overline(text: g.name) }
+                        for it in g.items {
+                            MenuEntry(label: it.label, hint: it.hint, role: "option", selected: it.first) { on:click { UiStore.close()  if it.to != "" { navigate(it.to) } } }
+                        } }
+                }
+                if UiStore.paletteEmpty {
+                    Text("Nothing matches. Commands, build hashes and domain names are all searchable here.") { style { margin: "0"  padding: "36px 16px"  text-align: "center"  font-size: "14px"  color: "var(--text-tertiary)" } }
+                } }
+            Row(align: center) { style { gap: "14px"  padding: "10px 16px"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  flex-wrap: "nowrap" }
+                Row(align: center) { style { gap: "6px"  flex-wrap: "nowrap"  font-size: "12px"  color: "var(--text-tertiary)" }  Kbd(text: "↑↓")  Text("move") { style { margin: "0"  font-size: "12px" } } }
+                Row(align: center) { style { gap: "6px"  flex-wrap: "nowrap"  font-size: "12px"  color: "var(--text-tertiary)" }  Kbd(text: "↵")  Text("run") { style { margin: "0"  font-size: "12px" } } }
+                Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                Num(text: "{UiStore.paletteCount} results", size: "12px", color: "var(--text-tertiary)", weight: "400") }
+        }
+    }
+}

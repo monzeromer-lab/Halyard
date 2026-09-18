@@ -1,0 +1,12 @@
+// The header of a full-screen tool (graph, editor): back to the project,
+// title and a line under it, then the caller's actions.
+Component ToolHead (title: String, sub: String) {
+    Row(align: center) {
+        style { height: "64px"  gap: "16px"  padding: "0 28px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap"  flex: "none"  @media (max-width: 768px) { padding: "0 16px"  gap: "10px"  height: "auto"  min-height: "56px"  flex-wrap: "wrap"  padding-top: "10px"  padding-bottom: "10px" } }
+        IconBtn(icon: "arrow-left", label: "Back to the project", size: 32) { navigate("/app") }
+        Stack { style { flex-grow: "1"  gap: "2px"  min-width: "0" }
+            Heading(title, h1) { style { margin: "0"  font-size: "20px"  font-weight: "700"  letter-spacing: "-0.01em" } }
+            Text(sub) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+        children
+    }
+}

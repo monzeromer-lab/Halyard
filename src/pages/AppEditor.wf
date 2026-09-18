@@ -1,7 +1,89 @@
-Page AppEditor (path: "/app/editor", title: "Routing rules editor", description: "The routing rules that ship with the build.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Routing rules editor", h1)
-        Text("Coming in a later milestone.", muted)
+Page AppEditor (path: "/app/editor", title: "Routing rules", description: "Edit routing rules and see how a request resolves.", noindex) {
+    use EditorStore
+    state req = "GET /api/cart"
+
+    Stack { style { gap: "0"  min-height: "100vh" }
+        ToolHead(title: "Routing rules", sub: "storefront-edge · apps/storefront · a diff you commit like anything else") {
+            FlButton(label: "Commit 2 files", variant: "secondary", size: "sm", icon: "upload", to: "/app/builds/8f2c41")
+        }
+        Row(align: stretch) {
+            style { flex-grow: "1"  flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+            // File tree
+            Stack(aria-label: "Explorer") { style { width: "252px"  flex: "none"  gap: "0"  background: "var(--surface-sunken)"  border-right: "1px solid var(--line-hairline)"  @media (max-width: 1024px) { width: "100%"  border-right: "0"  border-bottom: "1px solid var(--line-hairline)" } }
+                Row(align: center) { style { height: "44px"  gap: "10px"  padding: "0 14px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap" }
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" }  Overline(text: "EXPLORER") }
+                    IconBtn(icon: "plus", label: "New file", size: 26) }
+                Stack(role: "group", aria-label: "Files") { style { gap: "0"  padding: "8px 6px"  flex-grow: "1"  @media (max-width: 1024px) { flex-direction: "row"  flex-wrap: "wrap"  gap: "2px" } }
+                    for t in EditorStore.tree { TreeItem(name: t.name, indent: t.indent, isDir: t.isDir, openable: t.openable, current: t.current, problem: t.problem, problemColor: t.problemColor) { EditorStore.open(t.file) } } }
+            }
+
+            // Editor column
+            Stack { style { flex-grow: "1"  min-width: "0"  gap: "0"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" } }
+                Row(role: "tablist", aria-label: "Open files") { style { height: "38px"  gap: "0"  border-bottom: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  flex-wrap: "nowrap"  overflow-x: "auto" }
+                    for t in EditorStore.tabs {
+                        CodeTab(label: t.name, selected: t.selected, dot: t.dot, worst: t.worst) { EditorStore.open(t.name) }
+                    } }
+                Stack(role: "region", aria-label: "{EditorStore.file}") { style { gap: "0"  padding: "14px 0"  font: "400 13px/1.7 var(--font-mono)"  flex-grow: "1"  overflow-x: "auto"  min-height: "280px" }
+                    for l in EditorStore.lines {
+                        Row(data-mark: l.mark) { style { gap: "0"  flex-wrap: "nowrap"  min-height: "22px"  background: l.bg  box-shadow: "inset 2px 0 0 var(--edge)"  --edge: l.edge  hover { background: "var(--surface-hover)" } }
+                            Text(l.n, aria-hidden: "true") { style { margin: "0"  width: "52px"  flex: "none"  text-align: "right"  padding-right: "16px"  color: "var(--text-disabled)"  user-select: "none"  font-variant-numeric: "tabular-nums"  font: "inherit" } }
+                            Code(l.text) { style { flex-grow: "1"  padding-right: "20px"  white-space: "pre"  font: "inherit"  color: "var(--text-secondary)"  background: "transparent"  border: "0"  padding: "0 20px 0 0" } } }
+                    } }
+                // Problems panel
+                Stack { style { gap: "0"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)" }
+                    Row(align: center) { style { height: "38px"  gap: "16px"  padding: "0 14px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap" }
+                        Row(align: baseline) { style { gap: "7px"  flex-wrap: "nowrap" }
+                            TabButton(label: "Problems", selected: true)
+                            Num(text: EditorStore.problemCount, size: "12px", color: "var(--text-disabled)", weight: "500") }
+                        TabButton(label: "Terminal", selected: false)
+                        TabButton(label: "Preview log", selected: false)
+                        Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                        FlButton(label: EditorStore.panelLabel, variant: "ghost", size: "sm") { EditorStore.togglePanel() } }
+                    if EditorStore.panel {
+                        Stack(role: "list", aria-label: "Problems") { style { gap: "0"  min-height: "138px" }
+                            for p in EditorStore.problems {
+                                Row(role: "listitem", align: start) { style { gap: "11px"  padding: "9px 14px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                                    Icon(p.icon) { style { color: p.color  flex: "none"  display: "inline-flex"  margin-top: "1px"  font-size: "14px" } }
+                                    Stack { style { gap: "3px"  flex-grow: "1"  min-width: "0" }
+                                        Text(p.message) { style { margin: "0"  font: "400 13px/1.5 var(--font-sans)"  color: "var(--text-secondary)" } }
+                                        Text(p.where) { style { margin: "0"  font: "400 11px/1.4 var(--font-mono)"  color: "var(--text-tertiary)" } } }
+                                    StatusBadge(label: p.code, tone: p.tone, dot: false) }
+                            }
+                            if EditorStore.noProblems {
+                                Text("Nothing wrong with this file. The two problems in the project are in routes.halyard.ts and session.ts.") { style { margin: "0"  padding: "40px 16px"  text-align: "center"  font-size: "13px"  color: "var(--text-tertiary)" } }
+                            } }
+                    } }
+                // Status bar
+                Row(align: center) { style { height: "30px"  gap: "16px"  padding: "0 14px"  background: "var(--surface-inset)"  border-top: "1px solid var(--line-hairline)"  font: "400 11px/1 var(--font-mono)"  color: "var(--text-tertiary)"  flex-wrap: "nowrap"  overflow: "hidden" }
+                    Text("main") { style { margin: "0"  font: "inherit" } }
+                    Text("{EditorStore.cursor}") { style { margin: "0"  font: "inherit" } }
+                    Text("TypeScript") { style { margin: "0"  font: "inherit" } }
+                    Text("UTF-8") { style { margin: "0"  font: "inherit" } }
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                    Row(align: center, role: "status") { style { gap: "6px"  flex-wrap: "nowrap"  color: EditorStore.statusColor }
+                        Container { style { width: "6px"  height: "6px"  border-radius: "50%"  background: EditorStore.statusDot  padding: "0"  margin: "0" } }
+                        Text("{EditorStore.statusText}") { style { margin: "0"  font: "inherit"  color: "inherit" } } } }
+            }
+
+            // Resolved routing
+            Stack(aria-label: "Resolved routing") { style { width: "340px"  flex: "none"  gap: "0"  border-left: "1px solid var(--line-hairline)"  background: "var(--surface-raised)"  @media (max-width: 1024px) { width: "100%"  border-left: "0"  border-top: "1px solid var(--line-hairline)" } }
+                Row(align: center) { style { height: "44px"  gap: "10px"  padding: "0 16px"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap" }
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" }  Overline(text: "RESOLVED ROUTING") }
+                    IconBtn(icon: "settings", label: "Re-evaluate", size: 26) }
+                Stack { style { gap: "8px"  padding: "16px"  flex-grow: "1" }
+                    Text("Evaluated top to bottom against a sample request. The first match answers.") { style { margin: "0 0 4px"  font-size: "12px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+                    for r in EditorStore.ruleRows {
+                        Stack(data-mark: r.mark) { style { gap: "4px"  padding: "11px 13px"  background: "var(--surface-inset)"  border: "1px solid var(--line-hairline)"  border-left: "2px solid var(--edge)"  --edge: r.edge  border-radius: "var(--radius-sm)" }
+                            Row(align: center) { style { gap: "8px"  flex-wrap: "nowrap" }
+                                Num(text: r.n, size: "11px", color: "var(--text-disabled)", weight: "400")
+                                Text(r.match) { style { margin: "0"  font: "400 12px/1.4 var(--font-mono)"  color: "var(--text-primary)"  flex-grow: "1" } }
+                                Text(r.word) { style { margin: "0"  font: "600 11px/1 var(--font-sans)"  color: r.edge } } }
+                            Text(r.to) { style { margin: "0"  padding-left: "20px"  font: "400 11.5px/1.4 var(--font-mono)"  color: "var(--text-tertiary)" } } }
+                    } }
+                Container { style { padding: "14px 16px"  border-top: "1px solid var(--line-hairline)"  width: "auto"  margin: "0" }
+                    Field(label: "Test a request", id: "ed-test", help: EditorStore.testHelp) {
+                        FlInput(id: "ed-test", value: req, mono: true, labelId: "ed-test-label", height: "32px") { on:input { req = event.target.value  EditorStore.setRequest(event.target.value) } } } }
+            }
+        }
     }
 }

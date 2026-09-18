@@ -222,3 +222,36 @@ the library uses `pressed`, `checked` and `note`.
 - Compiler fixes this milestone needed: a select's bound value was set
   before its options existed (runtime), and a slot inside a `Select`
   component was appended after the value (codegen).
+
+## Milestone 12 — graph, editor, onboarding, overlays
+
+- **The infrastructure graph is a table** of eleven hops in request order,
+  each row's name a button with the selection in `aria-pressed` and the row
+  tinted by `data-selected`; the inspector shows the hop's detail and its
+  neighbours as chips. The artboard's zoom controls have no meaning for a
+  table and are gone; the legend stays. The upstream row is badged "not
+  ours" and the inspector shows a warning callout for it.
+- **The editor has no syntax highlighting**: each line is a `Code` run with
+  a line number in the first column and a `data-mark` (error/warn) that
+  tints the row; the problems panel, the status bar and the resolved
+  routing preview follow the open file. "Test a request" matches the path
+  against the rules in the store.
+- **Onboarding** keeps one `h1` (the A12 lint counts every `h1` in a page,
+  even in exclusive `if` branches) whose text is a derived per step. Steps
+  animate with `slideLeft`; the progress bar is the `ProgressBar` component.
+  A step prop cannot be called `state`; it is `phase`.
+- **Overlays are components over a `Scrim` button**, not the builtin `Modal`,
+  whose `visible:` binds only to page-local state and whose paint cannot be
+  restyled from a style block. The command palette, the project menu and
+  the toast stack live in `AppShell`, so ⌘K works on every product page.
+  Each overlay closes on its scrim, on Escape (a `keydown` on the dialog)
+  and on its own buttons; focus is not trapped or restored, and the
+  palette's input is not focused on open, because the language has no way
+  to call `focus()` after a render.
+- **Tooltips** are the builtin `Tooltip`, hover-only; its text box takes the
+  structural sheet's inverted colours.
+- A handler written as a block on a component call must be action
+  statements only; an `if` inside makes it content, so the palette's
+  options use an explicit `on:click { }`.
+- Compiler fixes this milestone needed: an icon button drew its glyph twice
+  (runtime); `data-state:` was a parse error because `state` is a keyword.

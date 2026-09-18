@@ -1,0 +1,18 @@
+// The toast stack, bottom right, a polite live region. Each toast names
+// its tone with a colour and its title; dismiss is a real button.
+Component ToastStack () {
+    use UiStore
+    Stack(role: "region", aria-live: "polite", aria-label: "Notifications") {
+        style { position: "fixed"  right: "24px"  bottom: "24px"  z-index: "950"  gap: "10px"  width: "356px"  max-width: "calc(100vw - 32px)"  @media (max-width: 768px) { right: "16px"  bottom: "76px" } }
+        for t in UiStore.toastRows {
+            Row(align: start) {
+                style { gap: "12px"  padding: "14px 16px"  background: "var(--surface-overlay)"  border: "1px solid var(--edge)"  --edge: t.edge  border-radius: "var(--radius-md)"  box-shadow: "var(--shadow-md)"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                Container { style { width: "9px"  height: "9px"  border-radius: "50%"  background: t.color  flex: "none"  margin: "5px 0 0"  padding: "0" } }
+                Stack { style { gap: "3px"  flex-grow: "1"  min-width: "0" }
+                    Text(t.title) { style { margin: "0"  font: "700 13px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                    Text(t.body) { style { margin: "0"  font-size: "13px"  line-height: "1.5"  color: "var(--text-secondary)" } } }
+                IconBtn(icon: "close", label: t.dismissLabel, size: 26) { UiStore.dismiss(t.id) }
+            }
+        }
+    }
+}

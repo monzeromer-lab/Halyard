@@ -1,0 +1,48 @@
+// Infrastructure: the request path as an ordered list of hops (the artboard's
+// node graph), the selected hop, its detail rows and its neighbours.
+Store GraphStore {
+    state sel = "pop"
+    state hops = [
+        { id: "clients", label: "Browser / Mobile app / Partner API", kind: "client", what: "where the request starts", sub: "storefront.example.com, iOS and Android, server to server" },
+        { id: "pop", label: "Anycast edge, 19 POPs", kind: "edge", what: "TLS terminated here; p95 accept 1.8 ms", sub: "19 points of presence" },
+        { id: "rules", label: "Rule engine", kind: "edge", what: "5 rules, evaluated in order, 2 ms budget", sub: "5 rules, 2 ms budget" },
+        { id: "mw", label: "Middleware", kind: "edge", what: "auth, geo, experiments", sub: "auth, geo, experiments" },
+        { id: "assets", label: "Immutable assets", kind: "edge", what: "1 year, edge cached", sub: "1 year, edge cached" },
+        { id: "fnapi", label: "fn api", kind: "compute", what: "38 routes, 10 s timeout, cold start p95 8.1 ms", sub: "38 routes" },
+        { id: "fncheckout", label: "fn checkout", kind: "compute", what: "8 routes", sub: "8 routes" },
+        { id: "render", label: "SSR render", kind: "compute", what: "isolate pool", sub: "isolate pool" },
+        { id: "kv", label: "Edge KV", kind: "state", what: "leader fra1, 90 ms p95 replication, 12.4 GB", sub: "leader fra1" },
+        { id: "queue", label: "Queue", kind: "state", what: "cart.updated", sub: "cart.updated" },
+        { id: "upstream", label: "Upstream inventory", kind: "external", what: "[YOUR UPSTREAM HOST], p95 184 ms, 504 after 9.4 s", sub: "outside Halyard" }
+    ]
+    state edges = [
+        { a: "clients", b: "pop", hot: true }, { a: "pop", b: "rules", hot: true }, { a: "pop", b: "mw", hot: true }, { a: "pop", b: "assets", hot: false },
+        { a: "rules", b: "fnapi", hot: true }, { a: "mw", b: "fncheckout", hot: true }, { a: "mw", b: "render", hot: false },
+        { a: "fnapi", b: "kv", hot: true }, { a: "fncheckout", b: "kv", hot: false }, { a: "fncheckout", b: "queue", hot: false },
+        { a: "queue", b: "upstream", hot: false }, { a: "fnapi", b: "upstream", hot: false }
+    ]
+    state kindLabel = { client: "CLIENT", edge: "EDGE", compute: "COMPUTE", state: "STATE", external: "OUTSIDE HALYARD" }
+    state kindColor = { client: "var(--viz-7)", edge: "var(--viz-1)", compute: "var(--viz-2)", state: "var(--viz-3)", external: "var(--text-tertiary)" }
+    state kindTone = { client: "brand", edge: "brand", compute: "success", state: "brass", external: "neutral" }
+    state kinds = [
+        { id: "client", label: "Client" }, { id: "edge", label: "Edge" }, { id: "compute", label: "Compute" }, { id: "state", label: "State" }, { id: "external", label: "Outside Halyard" }
+    ]
+    derived legend = kinds.map(k => { label: k.label, color: kindColor[k.id] })
+    derived hotIds = edges.filter(e => e.hot).map(e => e.b).concat(["clients"])
+    derived rows = hops.map((h, i) => { id: h.id, n: "{i + 1}", label: h.label, kind: h.kind, kindWord: kindLabel[h.kind], color: kindColor[h.kind], what: h.what, selected: sel == h.id, hot: hotIds.indexOf(h.id) > -1, external: h.kind == "external" })
+    derived picked = hops.filter(h => h.id == sel)[0]
+    derived current = { label: picked.label, sub: picked.sub, kindLabel: kindLabel[picked.kind], color: kindColor[picked.kind], external: picked.kind == "external" }
+    state detailOf = {
+        pop: [["Kind", "Edge point of presence"], ["Regions", "19"], ["p95 accept", "1.8 ms"], ["TLS", "terminated at the edge"], ["Owner", "Halyard platform"]],
+        rules: [["Kind", "Rule engine"], ["Rules", "5, evaluated in order"], ["Budget", "2 ms, enforced"], ["Source", "routes.halyard.ts"], ["Last change", "build 8f2c41"]],
+        fnapi: [["Kind", "Edge function"], ["Routes", "38"], ["Timeout", "10 s"], ["Cold start p95", "8.1 ms"], ["Concurrency", "unbounded per region"]],
+        kv: [["Kind", "Edge KV namespace"], ["Leader", "fra1"], ["Replication", "90 ms p95 cross-region"], ["Stored", "12.4 GB"], ["Reads", "in-region, unmetered"]],
+        upstream: [["Kind", "Outside Halyard"], ["Endpoint", "[YOUR UPSTREAM HOST]"], ["p95", "184 ms"], ["Failure mode", "504 after 9.4 s"], ["Note", "the only hop Halyard does not control"]]
+    }
+    state defaultDetail = [["Kind", "Part of the request path"], ["Owner", "Halyard platform"], ["Note", "Select another hop to compare."]]
+    derived details = (if detailOf[sel] != undefined { detailOf[sel] } else { defaultDetail }).map(d => { k: d[0], v: d[1] })
+    derived neighbours = edges.filter(e => e.a == sel || e.b == sel).map(e => if e.a == sel { e.b } else { e.a }).map(id => { id: id, label: hops.filter(h => h.id == id)[0].label })
+
+    action pick(id: String) { sel = id }
+    action reset() { sel = "pop" }
+}

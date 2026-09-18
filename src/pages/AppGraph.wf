@@ -1,7 +1,58 @@
 Page AppGraph (path: "/app/graph", title: "Infrastructure", description: "The path a request takes through Halyard.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Infrastructure", h1)
-        Text("Coming in a later milestone.", muted)
+    use GraphStore
+
+    Stack { style { gap: "0"  min-height: "100vh" }
+        ToolHead(title: "Infrastructure", sub: "storefront-edge · production · how one request travels") {
+            FlButton(label: "Export", variant: "ghost", size: "sm", icon: "download")
+            FlButton(label: "Edit routing", variant: "secondary", size: "sm", icon: "edit", to: "/app/editor")
+        }
+        Row(align: stretch) {
+            style { flex-grow: "1"  flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+            // The request path
+            Stack { style { flex-grow: "1"  min-width: "0"  gap: "16px"  padding: "20px 28px 24px"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" }  @media (max-width: 768px) { padding: "16px" } }
+                Row(align: center) { style { gap: "10px"  flex-wrap: "wrap" }
+                    Text("The graph as a table: hops in the order a request meets them. Select a hop to inspect it.") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+                    FlButton(label: "Reset view", variant: "secondary", size: "sm") { GraphStore.reset() } }
+                Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  background: "var(--surface-raised)"  padding: "0"  width: "100%"  max-width: "100%" }
+                    Table(caption: "The request path through Halyard, one hop per row") {
+                        style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "720px" }
+                        Thead { Trow { Th(text: "Hop")  Th(text: "Kind")  Th(text: "What it does")  Th(text: "Traffic") } }
+                        Tbody {
+                            for h in GraphStore.rows {
+                                HopRow(n: h.n, label: h.label, kindWord: h.kindWord, color: h.color, what: h.what, selected: h.selected, hot: h.hot, external: h.external) { GraphStore.pick(h.id) }
+                            } } } }
+                Row(align: center) { style { gap: "16px"  flex-wrap: "wrap"  padding: "14px 16px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  width: "fit-content"  max-width: "100%" }
+                    Overline(text: "LEGEND")
+                    for k in GraphStore.legend {
+                        Row(align: center) { style { gap: "8px"  flex-wrap: "nowrap"  font-size: "12px"  color: "var(--text-secondary)" }
+                            Container { style { width: "12px"  height: "12px"  border-radius: "3px"  border: "1.5px solid var(--kind)"  --kind: k.color  flex: "none"  padding: "0"  margin: "0" } }
+                            Text(k.label) { style { margin: "0"  font-size: "12px" } } }
+                    }
+                    Text("every request = the hot path") { style { margin: "0"  font-size: "12px"  color: "var(--text-brand)" } } }
+            }
+            // Inspector
+            Stack(aria-label: "Hop inspector") {
+                style { width: "360px"  flex: "none"  gap: "0"  border-left: "1px solid var(--line-hairline)"  background: "var(--surface-raised)"  @media (max-width: 1024px) { width: "100%"  border-left: "0"  border-top: "1px solid var(--line-hairline)" } }
+                Stack { style { gap: "6px"  padding: "22px 22px 16px"  border-bottom: "1px solid var(--line-hairline)" }
+                    Overline(text: GraphStore.current.kindLabel, color: GraphStore.current.color)
+                    Heading("{GraphStore.current.label}", h2) { style { margin: "0"  font-size: "22px"  font-weight: "700"  letter-spacing: "-0.01em" } }
+                    Text("{GraphStore.current.sub}") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+                    if GraphStore.current.external { Callout(tone: "warning", title: "Outside Halyard", body: "The only hop Halyard does not control. Its latency and failures show up as 504s at the edge.") } }
+                Stack { style { gap: "0"  padding: "8px 22px"  flex-grow: "1" }
+                    for d in GraphStore.details {
+                        Row(align: start) { style { gap: "12px"  padding: "10px 0"  border-bottom: "1px solid var(--line-hairline)"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                            Text(d.k) { style { margin: "0"  width: "132px"  flex: "none"  font: "600 13px/1.4 var(--font-sans)"  color: "var(--text-tertiary)" } }
+                            Text(d.v) { style { margin: "0"  flex-grow: "1"  min-width: "0"  font-size: "13px"  line-height: "1.5"  color: "var(--text-primary)" } } }
+                    }
+                    Stack { style { gap: "10px"  margin: "20px 0 0" }
+                        Overline(text: "CONNECTED TO")
+                        Row { style { gap: "8px"  flex-wrap: "wrap" }
+                            for nb in GraphStore.neighbours { Chip(label: nb.label) { GraphStore.pick(nb.id) } } } }
+                }
+                Stack { style { gap: "10px"  padding: "16px 22px"  border-top: "1px solid var(--line-hairline)" }
+                    FlButton(label: "Open its metrics", variant: "primary", size: "sm", to: "/app/observability", width: "100%")
+                    FlButton(label: "Traces through this hop", variant: "secondary", size: "sm", to: "/app/logs", width: "100%") }
+            }
+        }
     }
 }
