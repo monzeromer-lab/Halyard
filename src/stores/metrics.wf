@@ -1,0 +1,26 @@
+// Observability: the overview tiles per time range, the four p95 series
+// over 13 two-hourly buckets, responses by status class, the hour-of-week
+// heatmap and the share by route. Series are drawn in viz order, never
+// reordered, and never more than four on one chart.
+Store MetricsStore {
+    state range = "24h"
+    state off = []
+    state region = "all"
+    state env = "production"
+    state table = false
+
+    // Overview tiles: [p95 ms, error %, median build s, cold start ms] per range.
+    state tileValues = { "1h": ["34", "0.5", "22", "8.1"], "24h": ["38", "0.8", "22", "8"], "7d": ["51", "1.2", "24", "8"], "30d": ["68", "2.1", "29", "9"] }
+    state tileMeta = [
+        { label: "P95 RESPONSE", unit: "ms", delta: "− 9%", tone: "success", note: "across all 19 regions", color: "var(--viz-1)", bars: [24, 34, 28, 46, 40, 52, 36, 62, 48, 70, 58, 66] },
+        { label: "ERROR RATE", unit: "%", delta: "− 0.3", tone: "success", note: "5xx as a share of all responses", color: "var(--danger)", bars: [50, 30, 60, 38, 70, 46, 82, 54, 90, 62, 74, 86] },
+        { label: "MEDIAN BUILD", unit: "s", delta: "− 18%", tone: "success", note: "cold steps only, cache excluded", color: "var(--viz-2)", bars: [70, 62, 56, 60, 48, 52, 40, 44, 34, 38, 30, 28] },
+        { label: "COLD START", unit: "ms", delta: "steady", tone: "neutral", note: "p95 at first request after idle", color: "var(--viz-4)", bars: [50, 52, 48, 50, 51, 49, 52, 50, 48, 51, 50, 49] }
+    ]
+    derived tiles = tileMeta.map(m => { label: m.label, unit: m.unit, delta: m.delta, tone: m.tone, note: m.note, color: m.color, bars: m.bars, value: tileValues[range][tileMeta.indexOf(m)] })
+
+    action setRange(r: String) { range = r }
+    action setRegion(r: String) { region = r }
+    action setEnv(e: String) { env = e }
+    action toggleTable() { table = !table }
+}

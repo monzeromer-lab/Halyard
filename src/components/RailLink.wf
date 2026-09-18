@@ -1,0 +1,20 @@
+// A rail item: icon (or none — a wrong metaphor is worse than no icon),
+// label, and a brand bar that appears on the current route.
+Component RailLink (label: String, to: String, icon: String = "", prefix: Bool = false) {
+    derived mode = if prefix { "prefix" } else { "exact" }
+    Link(to: to, active: mode) {
+        style {
+            position: "relative"  display: "flex"  align-items: "center"  gap: "10px"  height: "34px"  padding: "0 10px"  border-radius: "var(--radius-sm)"
+            color: "var(--text-tertiary)"  font: "600 13px/1 var(--font-sans)"  text-decoration: "none"
+            transition: "background var(--d-fast) var(--ease-standard), color var(--d-fast) var(--ease-standard)"
+            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+            current { background: "var(--surface-active)"  color: "var(--text-primary)"  --bar: "1" }
+        }
+        // The brand bar the current item carries; --bar is set by the current rule.
+        Container { style { position: "absolute"  left: "0"  width: "2px"  height: "16px"  background: "var(--brand)"  border-radius: "2px"  opacity: "var(--bar, 0)"  padding: "0"  margin: "0" } }
+        if icon != "" {
+            Icon(icon) { style { display: "inline-flex"  flex: "none"  opacity: "0.9"  font-size: "16px" } }
+        }
+        Text(label) { style { margin: "0"  font: "inherit"  color: "inherit" } }
+    }
+}

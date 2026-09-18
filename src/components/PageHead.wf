@@ -1,0 +1,7 @@
+// The product page header band: title, badges, meta line, actions.
+Component PageHead () {
+    Row(align: start) {
+        style { padding: "24px 28px 20px"  flex-wrap: "nowrap"  gap: "20px"  border-bottom: "1px solid var(--line-hairline)"  align-items: "flex-start"  @media (max-width: 1024px) { flex-wrap: "wrap" }  @media (max-width: 768px) { padding: "16px" } }
+        children
+    }
+}

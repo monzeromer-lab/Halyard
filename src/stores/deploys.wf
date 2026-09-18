@@ -1,0 +1,134 @@
+// Deployments: the 12 rows the table shows (of a pretended 128), the search,
+// the status facets, the sort, the selection, the density and the page.
+Store DeployStore {
+    state all = [
+        { h: "8f2c41", msg: "Pin beta cohort to a known build", br: "main", env: "production", st: "ready", dur: 22.4, reg: 19, when: "2 min ago", age: 0 },
+        { h: "7c91de", msg: "Bump edge runtime to v9.4", br: "main", env: "production", st: "ready", dur: 24.1, reg: 19, when: "4 h ago", age: 1 },
+        { h: "5a04bb", msg: "Trim trailing spaces in cookie rules", br: "fix/cookie-trim", env: "preview", st: "building", dur: 0, reg: 0, when: "4 h ago", age: 2 },
+        { h: "2ee7f0", msg: "Queue consumer for order events", br: "feat/queues", env: "preview", st: "failed", dur: 18.9, reg: 0, when: "1 d ago", age: 3 },
+        { h: "91ab3c", msg: "Raise api timeout to 10 s", br: "main", env: "production", st: "ready", dur: 21.7, reg: 19, when: "1 d ago", age: 4 },
+        { h: "6d13c8", msg: "Split checkout bundle by route", br: "perf/split", env: "preview", st: "ready", dur: 26.3, reg: 3, when: "2 d ago", age: 5 },
+        { h: "4f80aa", msg: "Drop unused polyfills", br: "perf/split", env: "preview", st: "canceled", dur: 0, reg: 0, when: "2 d ago", age: 6 },
+        { h: "0b92ef", msg: "Add cpt1 to the region set", br: "main", env: "production", st: "ready", dur: 23.8, reg: 19, when: "3 d ago", age: 7 },
+        { h: "cc41d7", msg: "Fix stale cart on cookie rule miss", br: "fix/cart", env: "preview", st: "ready", dur: 20.9, reg: 3, when: "4 d ago", age: 8 },
+        { h: "e77a20", msg: "Move session store to edge KV", br: "feat/kv", env: "preview", st: "failed", dur: 31.2, reg: 0, when: "5 d ago", age: 9 },
+        { h: "3ab5f1", msg: "Rollback: restore 0b92ef", br: "main", env: "production", st: "ready", dur: 0.4, reg: 19, when: "5 d ago", age: 10 },
+        { h: "9c0e64", msg: "Instrument the checkout trace", br: "main", env: "production", st: "ready", dur: 22.0, reg: 19, when: "6 d ago", age: 11 }
+    ]
+    state query = ""
+    state facets = []
+    state sortKey = "created"
+    state sortDir = "desc"
+    state selected = []
+    state menu = ""
+    state dense = false
+    state page = 1
+    state pages = 11
+
+    derived q = query.toLowerCase()
+    derived matched = all.filter(r => (q == "" || (r.h + " " + r.msg + " " + r.br).toLowerCase().indexOf(q) > -1) && (facets.length == 0 || facets.indexOf(r.st) > -1))
+    derived sorted = sortRows(matched)
+    derived rows = sorted.map(r => shape(r))
+    derived recent = all.slice(0, 5).map(r => shape(r))
+    derived empty = rows.length == 0
+    derived shownCount = rows.length
+    derived selectedCount = selected.length
+    derived anySelected = selected.length > 0
+    derived allOn = selected.length > 0 && selected.length == rows.length
+    derived someOn = selected.length > 0 && selected.length < rows.length
+    derived counts = { ready: countOf("ready"), building: countOf("building"), failed: countOf("failed"), canceled: countOf("canceled") }
+    derived atFirst = page == 1
+    derived atLast = page == pages
+    derived rowHeight = if dense { "38px" } else { "52px" }
+    derived densityWord = if dense { "true" } else { "false" }
+
+    action countOf(st: String) { return all.filter(r => r.st == st).length }
+
+    action shape(r: Map) {
+        return {
+            h: r.h, msg: r.msg, br: r.br, env: r.env, st: r.st, when: r.when,
+            status: statusWord(r.st), tone: statusTone(r.st),
+            duration: if r.dur == 0 { "—" } else { r.dur.toFixed(1) + " s" },
+            regions: if r.reg == 0 { "—" } else { r.reg + "/19" },
+            selected: selected.indexOf(r.h) > -1,
+            menuOpen: menu == r.h
+        }
+    }
+
+    action statusWord(st: String) {
+        if st == "ready" { return "Ready" }
+        if st == "building" { return "Building" }
+        if st == "failed" { return "Failed" }
+        return "Canceled"
+    }
+
+    action statusTone(st: String) {
+        if st == "ready" { return "success" }
+        if st == "building" { return "info" }
+        if st == "failed" { return "danger" }
+        return "neutral"
+    }
+
+    action sortRows(list: List) {
+        copy = list.slice()
+        dir = if sortDir == "asc" { 1 } else { -1 }
+        if sortKey == "created" {
+            copy.sort((a, b) => (a.age - b.age) * dir)
+            return copy
+        }
+        key = sortField(sortKey)
+        copy.sort((a, b) => compareBy(a, b, key) * dir)
+        return copy
+    }
+
+    action sortField(k: String) {
+        if k == "build" { return "h" }
+        if k == "message" { return "msg" }
+        if k == "branch" { return "br" }
+        if k == "environment" { return "env" }
+        if k == "status" { return "st" }
+        if k == "duration" { return "dur" }
+        return "reg"
+    }
+
+    action compareBy(a: Map, b: Map, key: String) {
+        x = a[key]
+        y = b[key]
+        if Number.isFinite(x) && Number.isFinite(y) { return x - y }
+        return String(x).localeCompare(String(y))
+    }
+
+    action sortState(k: String) {
+        if sortKey != k { return "none" }
+        if sortDir == "asc" { return "ascending" }
+        return "descending"
+    }
+
+    action sortBy(k: String) {
+        if sortKey == k && sortDir == "desc" { sortDir = "asc" } else { sortDir = "desc" }
+        sortKey = k
+        menu = ""
+    }
+
+    action setQuery(v: String) { query = v  page = 1  menu = "" }
+    action toggleFacet(id: String) {
+        if facets.indexOf(id) > -1 { facets = facets.filter(f => f != id) } else { facets = facets.concat([id]) }
+        menu = ""
+    }
+    action toggleRow(h: String) {
+        if selected.indexOf(h) > -1 { selected = selected.filter(s => s != h) } else { selected = selected.concat([h]) }
+        menu = ""
+    }
+    action toggleAll() {
+        if allOn { selected = [] } else { selected = rows.map(r => r.h) }
+        menu = ""
+    }
+    action clearSelection() { selected = [] }
+    action openMenu(h: String) { if menu == h { menu = "" } else { menu = h } }
+    action closeMenu() { menu = "" }
+    action setDense(d: Bool) { dense = d }
+    action goTo(n: Number) { page = n  menu = "" }
+    action prevPage() { page = Math.max(1, page - 1) }
+    action nextPage() { page = Math.min(pages, page + 1) }
+    action reset() { query = ""  facets = []  page = 1 }
+}

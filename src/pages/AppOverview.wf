@@ -1,7 +1,88 @@
 Page AppOverview (path: "/app", title: "Overview", description: "The live release, the last 24 hours and the health of every region.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Overview", h1)
-        Text("Coming in a later milestone.", muted)
+    use ProjectStore
+    use MetricsStore
+    use DeployStore
+
+    AppShell(crumb: "Overview") {
+        PageHead() {
+            Stack { style { flex-grow: "1"  gap: "8px"  min-width: "0" }
+                Row(align: center) { style { flex-wrap: "wrap"  gap: "12px" }
+                    Heading("{ProjectStore.name}", h1) { style { margin: "0"  font-size: "34px"  line-height: "1.15"  letter-spacing: "-0.02em"  font-weight: "700"  @media (max-width: 768px) { font-size: "26px" } } }
+                    StatusBadge(label: "Ready", tone: "success")
+                    StatusBadge(label: ProjectStore.env, tone: "neutral", dot: false) }
+                Row(align: center) { style { flex-wrap: "wrap"  gap: "14px"  font-size: "13px"  color: "var(--text-tertiary)" }
+                    Num(text: ProjectStore.release, size: "13px", color: "var(--text-tertiary)", weight: "400")
+                    Text("·") { style { margin: "0"  color: "var(--text-tertiary)" } }
+                    Text("{ProjectStore.promoted}") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+                    Text("·") { style { margin: "0"  color: "var(--text-tertiary)" } }
+                    Link("{ProjectStore.domain}", to: "/") { style { color: "var(--text-brand)"  text-decoration: "none"  font-size: "13px"  hover { color: "var(--brand-hover)" } } } } }
+            SegGroup(label: "Time range") {
+                SegButton(label: "1h", pressed: MetricsStore.range == "1h") { MetricsStore.setRange("1h") }
+                SegButton(label: "24h", pressed: MetricsStore.range == "24h") { MetricsStore.setRange("24h") }
+                SegButton(label: "7d", pressed: MetricsStore.range == "7d") { MetricsStore.setRange("7d") }
+                SegButton(label: "30d", pressed: MetricsStore.range == "30d") { MetricsStore.setRange("30d") }
+            }
+            FlButton(label: "Redeploy", variant: "secondary", size: "sm")
+            FlButton(label: "Open build", variant: "primary", size: "sm", to: "/app/builds/8f2c41")
+        }
+
+        Grid(columns: 4) {
+            style { gap: "16px"  padding: "20px 28px"  @media (max-width: 1024px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" }  @media (max-width: 768px) { padding: "16px" }  @media (max-width: 480px) { grid-template-columns: "1fr" } }
+            for t in MetricsStore.tiles {
+                StatTile(label: t.label, value: t.value, unit: t.unit, delta: t.delta, tone: t.tone, note: t.note, bars: t.bars, color: t.color)
+            }
+        }
+
+        Grid(columns: 2) {
+            style { gap: "16px"  padding: "0 28px 20px"  grid-template-columns: "1.15fr 1fr"  @media (max-width: 1024px) { grid-template-columns: "1fr" }  @media (max-width: 768px) { padding: "0 16px 16px" } }
+            Panel(title: "Recent deployments", link: "See all 128", to: "/app/deployments") {
+                for d in DeployStore.recent {
+                    DeployRow(h: d.h, msg: d.msg, br: d.br, when: d.when, duration: d.duration, status: d.status, tone: d.tone)
+                }
+            }
+            Stack {
+                style { gap: "0"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "hidden"  min-width: "0" }
+                Row(align: center) { style { flex-wrap: "nowrap"  gap: "12px"  padding: "16px 18px"  border-bottom: "1px solid var(--line-hairline)" }
+                    Heading("Activity", h2) { style { margin: "0"  font-size: "17px"  font-weight: "700"  flex-grow: "1" } }
+                    FlButton(label: ProjectStore.detailLabel, variant: "ghost", size: "sm") { ProjectStore.toggleDetail() } }
+                Stack(role: "list") { style { gap: "0"  padding: "18px 20px" }
+                    for e in ProjectStore.events {
+                        Row(role: "listitem") { style { flex-wrap: "nowrap"  gap: "14px" }
+                            Stack(align: center) { style { flex: "none"  width: "12px"  gap: "0" }
+                                if e.active {
+                                    Container { style { width: "10px"  height: "10px"  border-radius: "50%"  border: "2px solid var(--brand)"  background: "var(--brand)"  flex: "none"  margin: "4px 0 0"  padding: "0" } }
+                                } else {
+                                    Container { style { width: "10px"  height: "10px"  border-radius: "50%"  border: "2px solid var(--success)"  background: "transparent"  flex: "none"  margin: "4px 0 0"  padding: "0" } }
+                                }
+                                Container { style { flex-grow: "1"  width: "1px"  background: "var(--line-default)"  min-height: "22px"  padding: "0"  margin: "0" } } }
+                            Stack { style { flex-grow: "1"  padding-bottom: "16px"  min-width: "0"  gap: "0" }
+                                Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "10px" }
+                                    Text(e.title) { style { margin: "0"  font: "600 14px/1.4 var(--font-sans)"  color: "var(--text-primary)"  flex-grow: "1" } }
+                                    Num(text: e.time, size: "12px", color: "var(--text-tertiary)") }
+                                if ProjectStore.showDetail {
+                                    Text(e.body) { style { display: "block"  margin: "5px 0 0"  font-size: "13px"  line-height: "1.55"  color: "var(--text-secondary)" } }
+                                } }
+                        }
+                    }
+                }
+            }
+        }
+
+        Container { style { padding: "0 28px 24px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 16px" } }
+            Panel(title: "Region health", note: "p95 response, milliseconds", link: "Status page", to: "/status", bodyPadding: "14px 18px 18px") {
+                Grid(columns: 10) {
+                    style { gap: "8px"  @media (max-width: 1024px) { grid-template-columns: "repeat(5, minmax(0, 1fr))" }  @media (max-width: 768px) { grid-template-columns: "repeat(3, minmax(0, 1fr))" }  @media (max-width: 480px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" } }
+                    for r in ProjectStore.regionHealth {
+                        Link(to: "/app/observability", aria-label: "{r.code}, {r.p95} ms, {r.word}") {
+                            style { display: "flex"  align-items: "center"  gap: "7px"  padding: "7px 10px"  border-radius: "var(--radius-sm)"  background: "var(--surface-inset)"  border: "1px solid var(--line-hairline)"  text-decoration: "none"
+                                    transition: "border-color var(--d-fast) var(--ease-standard)"  hover { border-color: "var(--line-strong)" } }
+                            Dot(color: r.color, size: 6)
+                            Text(r.code) { style { margin: "0"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-secondary)"  flex-grow: "1" } }
+                            Num(text: "{r.p95}", size: "11px", color: "var(--text-tertiary)")
+                        }
+                    }
+                }
+            }
+        }
     }
 }

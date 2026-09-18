@@ -1,0 +1,12 @@
+// One recent deployment: hash, message with branch and age, duration, badge.
+Component DeployRow (h: String, msg: String, br: String, when: String, duration: String, status: String, tone: String) {
+    Link(to: "/app/builds/{h}") {
+        style { display: "flex"  align-items: "center"  gap: "14px"  padding: "12px 16px"  border-radius: "var(--radius-sm)"  text-decoration: "none"  transition: "background var(--d-fast) var(--ease-standard)"  hover { background: "var(--surface-hover)" } }
+        Num(text: h, size: "13px", color: "var(--text-brand)")
+        Stack { style { flex-grow: "1"  min-width: "0"  gap: "3px" }
+            Text(msg) { style { margin: "0"  font-size: "14px"  color: "var(--text-primary)"  white-space: "nowrap"  overflow: "hidden"  text-overflow: "ellipsis" } }
+            Text("{br} · {when}") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+        Num(text: duration, size: "12px", color: "var(--text-tertiary)")
+        StatusBadge(label: status, tone: tone, dot: false)
+    }
+}

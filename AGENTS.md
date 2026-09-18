@@ -315,6 +315,17 @@ setTimeout(callback, 1000)
 // alert, confirm, prompt, RegExp, Map, Set, etc.
 ```
 
+### Lambdas
+
+`x => expr` and `(a, b) => expr` — one expression as the body, returning a
+map with `(x) => { key: value }`. Used with `filter`, `map`, `sort` and the
+other array methods, mostly inside stores:
+
+```wf
+derived open = incidents.filter(i => !i.resolved)
+derived byAge = rows.slice().sort((a, b) => a.age - b.age)
+```
+
 ### Control Flow
 
 ```wf
@@ -756,7 +767,10 @@ Input(text, placeholder: "shop.example.com") {
 
 States: `hover`, `focus` (compiled to `:focus-visible` — the keyboard focus
 ring, not a ring on every click), `active`, `disabled`, `placeholder`,
-`focus-within`. These are stylesheet rules, so their values must be known at
+`focus-within`, and the ARIA states a control keeps in its attributes —
+`current` (`aria-current="page"`, which the router sets on a `Link`),
+`pressed`, `selected`, `checked`, `expanded`, `invalid` (each `aria-…="true"`)
+— so the rule keys off the attribute assistive technology reads. These are stylesheet rules, so their values must be known at
 build time: literals and token keywords, not state. They override the
 element's base declarations while the state or media condition holds (they
 are emitted `!important`, since the base is inline); when a state rule and a

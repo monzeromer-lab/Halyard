@@ -110,3 +110,21 @@ the library uses `pressed`, `checked` and `note`.
   sub-component dropped its style block, attributes and handlers in the SPA;
   an Input with both `bind:` and `on:input` lost its binding; a Button's
   block that mixed content with an action ran the action at render time.
+
+## Milestones 6–7 — stores, the app shell, overview
+
+- **`AppShell` is one component with children** (unknown #1 came back yes
+  after the fix), holding the rail, the topbar and, below 768px, the Mobile
+  artboard's tab bar. Rail items are `Link`s: `Sidebar.Item` reloaded the
+  whole app on click before it was fixed, and the design's rail is plain
+  links anyway.
+- **The rail pill says 18/19 regions healthy** with a warning dot. The
+  artboard paints "19/19" in green beside a degraded gru1 on the same
+  screen; the data wins over the drawing here.
+- **The current rail item** is styled with the new `current { }` block, a
+  rule keyed off `aria-current="page"`, which the router sets. Chips, tabs
+  and switches could use `pressed`/`selected`/`checked` the same way; the
+  library keeps its derived colours where the value also drives a
+  custom property.
+- Sort comparators needed two-parameter lambdas, `Number.isFinite` and
+  `Array.from`, none of which parsed; all three are compiler fixes.

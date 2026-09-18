@@ -1,0 +1,87 @@
+// The product shell: a 236px rail on surface-sunken, a 60px topbar with the
+// breadcrumb, and the page's own content as children. Below 768px the rail
+// becomes the phone tab bar from the Mobile artboard.
+Component AppShell (crumb: String) {
+    use ProjectStore
+    use UiStore
+    Row {
+        style { flex-wrap: "nowrap"  gap: "0"  min-height: "100vh"  align-items: "stretch" }
+
+        // Rail
+        Stack(role: "navigation", aria-label: "Project") {
+            style { width: "236px"  flex: "none"  background: "var(--surface-sunken)"  border-right: "1px solid var(--line-hairline)"  padding: "16px 12px"  gap: "0"  position: "sticky"  top: "0"  height: "100vh"  overflow: "auto"
+                    @media (max-width: 768px) { display: "none" } }
+            Link(to: "/") { style { display: "flex"  align-items: "center"  gap: "9px"  padding: "4px 8px 16px"  color: "var(--text-primary)"  text-decoration: "none" }
+                Mark(size: 22)
+                Text("Halyard") { style { margin: "0"  font: "700 16px/1 var(--font-sans)"  letter-spacing: "-0.02em"  color: "var(--text-primary)" } } }
+            Button("", type: "button", aria-label: "Switch project") {
+                style { display: "flex"  align-items: "center"  gap: "10px"  width: "100%"  height: "44px"  padding: "0 10px"  margin-bottom: "18px"  background: "var(--surface-inset)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  color: "var(--text-primary)"
+                        hover { border-color: "var(--line-strong)" } }
+                Text("HL") { style { width: "24px"  height: "24px"  border-radius: "6px"  background: "var(--brand-soft)"  color: "var(--text-brand)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 11px/1 var(--font-mono)"  flex: "none"  margin: "0" } }
+                Stack { style { flex-grow: "1"  min-width: "0"  gap: "2px" }
+                    Text("{ProjectStore.name}") { style { margin: "0"  font: "600 13px/1.2 var(--font-sans)"  color: "var(--text-primary)"  white-space: "nowrap"  overflow: "hidden"  text-overflow: "ellipsis" } }
+                    Text("{ProjectStore.id} · {ProjectStore.env}") { style { margin: "0"  font: "400 11px/1.2 var(--font-mono)"  color: "var(--text-tertiary)" } } }
+                Icon("chevron-down") { style { color: "var(--text-tertiary)"  display: "inline-flex"  font-size: "14px" } }
+                UiStore.open("menu")
+            }
+            Container { style { padding: "0 10px 8px"  width: "auto" }  Overline(text: "PROJECT") }
+            Stack { style { gap: "2px"  margin-bottom: "20px" }
+                RailLink(label: "Overview", to: "/app", icon: "home")
+                RailLink(label: "Deployments", to: "/app/deployments", icon: "upload")
+                RailLink(label: "Observability", to: "/app/observability", icon: "eye")
+                RailLink(label: "Logs", to: "/app/logs", icon: "menu")
+                RailLink(label: "Builds", to: "/app/builds/8f2c41", icon: "settings", prefix: true)
+                RailLink(label: "Explorer", to: "/app/explorer", icon: "search")
+                RailLink(label: "Settings", to: "/app/settings", icon: "settings") }
+            Container { style { padding: "0 10px 8px"  width: "auto" }  Overline(text: "TOOLS") }
+            Stack { style { gap: "2px" }
+                RailLink(label: "Routing rules", to: "/app/editor")
+                RailLink(label: "Infrastructure", to: "/app/graph")
+                RailLink(label: "Status page", to: "/status", icon: "info") }
+            Stack { style { margin-top: "auto"  gap: "10px"  padding-top: "20px" }
+                Link(to: "/status") { style { display: "flex"  align-items: "center"  gap: "8px"  padding: "10px"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-sm)"  background: "var(--surface-inset)"  text-decoration: "none"  hover { border-color: "var(--line-strong)" } }
+                    Dot(color: "var(--warning)", size: 7)
+                    Text("{ProjectStore.healthy}/19 regions healthy") { style { margin: "0"  font-size: "12px"  color: "var(--text-secondary)" } } }
+                Row(align: center) { style { flex-wrap: "nowrap"  gap: "10px"  padding: "6px 8px" }
+                    Text("{ProjectStore.initials}") { style { width: "28px"  height: "28px"  border-radius: "50%"  background: "var(--surface-active)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 11px/1 var(--font-sans)"  color: "var(--text-secondary)"  flex: "none"  margin: "0" } }
+                    Text("{ProjectStore.owner}") { style { margin: "0"  flex-grow: "1"  min-width: "0"  font: "600 12px/1.3 var(--font-sans)"  color: "var(--text-secondary)"  white-space: "nowrap"  overflow: "hidden"  text-overflow: "ellipsis" } }
+                    IconBtn(icon: "menu", label: "Account menu", size: 28) }
+            }
+        }
+
+        // Topbar + content
+        Stack {
+            style { flex-grow: "1"  min-width: "0"  gap: "0"  @media (max-width: 768px) { padding-bottom: "64px" } }
+            Row(align: center, role: "banner") {
+                style { height: "60px"  flex: "none"  flex-wrap: "nowrap"  gap: "14px"  padding: "0 28px"  border-bottom: "1px solid var(--line-hairline)"  background: "var(--surface-canvas)"  position: "sticky"  top: "0"  z-index: "50"
+                        @media (max-width: 768px) { padding: "0 16px"  height: "56px" } }
+                Row(align: center, role: "navigation", aria-label: "Breadcrumb") { style { flex-wrap: "nowrap"  gap: "8px"  font-size: "13px"  flex-grow: "1" }
+                    Link("{ProjectStore.name}", to: "/app") { style { color: "var(--text-tertiary)"  text-decoration: "none"  font-size: "13px"  hover { color: "var(--text-primary)" } } }
+                    Icon("chevron-right") { style { color: "var(--line-strong)"  display: "inline-flex"  font-size: "13px" } }
+                    Text(crumb, aria-current: "page") { style { margin: "0"  color: "var(--text-primary)"  font-weight: "600"  font-size: "13px" } } }
+                Button("", type: "button", aria-label: "Search, command palette") {
+                    style { display: "inline-flex"  align-items: "center"  gap: "10px"  height: "30px"  padding: "0 12px"  border-radius: "var(--radius-sm)"  border: "1px solid transparent"  background: "transparent"  color: "var(--text-secondary)"  cursor: "pointer"
+                            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" } }
+                    Icon("search") { style { display: "inline-flex"  font-size: "14px" } }
+                    Kbd(text: "⌘K")
+                    UiStore.open("palette")
+                }
+                Container { style { position: "relative"  padding: "0"  width: "auto" }
+                    IconBtn(icon: "bell", label: "Notifications", size: 32)
+                    Dot(color: "var(--brand)", size: 6) }
+                Text("{ProjectStore.initials}") { style { width: "28px"  height: "28px"  border-radius: "50%"  background: "var(--surface-active)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 11px/1 var(--font-sans)"  color: "var(--text-secondary)"  margin: "0" } }
+            }
+            children
+        }
+
+        // Phone tab bar
+        Row(role: "navigation", aria-label: "Sections") {
+            style { display: "none"  position: "fixed"  left: "0"  right: "0"  bottom: "0"  z-index: "60"  flex-wrap: "nowrap"  gap: "0"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  padding-bottom: "6px"
+                    @media (max-width: 768px) { display: "flex" } }
+            TabBarLink(label: "Overview", to: "/app", icon: "home")
+            TabBarLink(label: "Deploys", to: "/app/deployments", icon: "upload")
+            TabBarLink(label: "Logs", to: "/app/logs", icon: "menu")
+            TabBarLink(label: "You", to: "/app/settings", icon: "user")
+        }
+    }
+}
