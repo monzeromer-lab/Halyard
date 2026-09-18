@@ -173,3 +173,32 @@ the library uses `pressed`, `checked` and `note`.
   the tooltip's `left` is computed in an action.
 - Compiler fix this milestone needed: `Option("value", "Label")` dropped the
   label and used the value as text, in all three backends.
+
+## Milestone 10 — logs, build detail
+
+- **Regex validation without `try/catch`.** `LogStore.patternOk` scans the
+  pattern with a `reduce` over its characters — balanced `( )` and `[ ]`,
+  no trailing backslash, no quantifier with nothing before it — and the
+  `RegExp` is only built when the scan passes. It catches what people type
+  by mistake; an exotic pattern the scan accepts but the engine rejects
+  would still throw. `RegExp(p, "i")` is called as a function: there is no
+  `new` in the language.
+- **Log lines are buttons** with the selection in `aria-pressed` (the
+  artboard's `aria-selected` is not valid on a button) and an `aria-label`
+  reading the whole line; ↑/↓ on the list moves the selection.
+- **The trace detail** is an `if` beside the list; under 1024px it wraps
+  below, and the list keeps `flex-basis: 100%` so the two never share a
+  line at phone width.
+- **`/app/builds/:hash`** reads `params.hash`, opens it in `BuildStore` and
+  shows an empty state for a hash it does not know. The page is not
+  pre-rendered (dynamic route): a static host serves `404.html`, whose
+  static paint is the Not-found page for the instant before the router
+  takes over. The diff's line tint is `data-kind` plus a background from
+  the store; the attestation is a `CodeBlock` with escaped braces.
+- Compiler fixes this milestone needed: an action parameter named like
+  another action read the store member (`move(step)` beside `step`);
+  `placeholder`/`disabled`/`src` and the other recognised attribute names
+  were painted once even when bound to state; `404.html` addressed its
+  assets relatively, so a dynamic route under a static build never
+  hydrated. `for` inside an action body is silently dropped — not fixed,
+  avoided with `.reduce`/`.map`.

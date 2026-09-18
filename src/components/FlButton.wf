@@ -2,7 +2,7 @@
 // in the label. One primary per viewport. A `to` makes it a link that looks
 // the same; a handler written on the call reaches the root either way.
 // `current: "page"` marks the button for the page it stands on (a pager).
-Component FlButton (label: String, variant: String = "secondary", size: String = "md", to: String = "", icon: String = "", disabled: Bool = false, submit: Bool = false, current: String = "") {
+Component FlButton (label: String, variant: String = "secondary", size: String = "md", to: String = "", icon: String = "", disabled: Bool = false, submit: Bool = false, current: String = "", width: String = "auto") {
     derived btnType = if submit { "submit" } else { "button" }
     derived ariaCurrent = if current == "" { null } else { current }
     derived bg = if variant == "primary" { "var(--brand)" } else if variant == "secondary" { "var(--surface-raised)" } else if variant == "danger" { "var(--danger)" } else if variant == "accent" { "var(--accent)" } else { "transparent" }
@@ -23,7 +23,7 @@ Component FlButton (label: String, variant: String = "secondary", size: String =
         Link(label, to: to, data-variant: variant, data-size: size) {
             style {
                 --bg: bg  --fg: fg  --edge: edge  --hover-bg: hoverBg  --hover-fg: hoverFg  --hover-edge: hoverEdge  --hover-glow: hoverGlow
-                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"
+                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"  width: width
                 height: h  padding: px  border-radius: radius  border: "1px solid var(--edge)"
                 font-family: "var(--font-sans)"  font-weight: "600"  font-size: fs  line-height: "1.2"
                 background: "var(--bg)"  color: "var(--fg)"  white-space: "nowrap"  text-decoration: "none"  cursor: "pointer"
@@ -36,7 +36,7 @@ Component FlButton (label: String, variant: String = "secondary", size: String =
         Button(label, type: btnType, data-variant: variant, data-size: size, disabled: disabled, aria-current: ariaCurrent) {
             style {
                 --bg: bg  --fg: fg  --edge: edge  --hover-bg: hoverBg  --hover-fg: hoverFg  --hover-edge: hoverEdge  --hover-glow: hoverGlow
-                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"
+                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"  width: width
                 height: h  padding: px  border-radius: radius  border: "1px solid var(--edge)"
                 font-family: "var(--font-sans)"  font-weight: "600"  font-size: fs  line-height: "1.2"
                 background: "var(--bg)"  color: "var(--fg)"  white-space: "nowrap"  cursor: cursor  opacity: dim

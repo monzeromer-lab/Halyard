@@ -1,0 +1,79 @@
+// One build per hash: the pipeline stages, the output per stage, the diff,
+// the artifacts and the attestation. The page opens a hash from the URL;
+// an unknown hash is an empty state, not a crash.
+Store BuildStore {
+    state hash = "8f2c41"
+    state stage = "compile"
+    state tab = "output"
+    state file = "routes.halyard.ts"
+    state builds = {
+        "8f2c41": { hash: "8f2c41", status: "Ready", tone: "success", env: "production", traffic: "100% of traffic", commit: "a91f3c2", branch: "main", author: "[YOUR NAME]", trigger: "push", duration: "22.4 s", regions: "19/19" },
+        "7c91de": { hash: "7c91de", status: "Ready", tone: "success", env: "production", traffic: "0% of traffic", commit: "d20b7e1", branch: "main", author: "[YOUR NAME]", trigger: "push", duration: "24.1 s", regions: "19/19" },
+        "5a04bb": { hash: "5a04bb", status: "Building", tone: "info", env: "preview", traffic: "not routed", commit: "0c4e9a7", branch: "fix/cookie-trim", author: "[YOUR NAME]", trigger: "push", duration: "—", regions: "0/19" }
+    }
+    derived known = builds[hash] != undefined
+    derived build = if known { builds[hash] } else { builds["8f2c41"] }
+
+    state stageList = [
+        { id: "resolve", label: "Resolve", dur: "0.9 s", state: "done", note: "412 modules from the lockfile" },
+        { id: "compile", label: "Compile", dur: "14.2 s", state: "done", note: "38 routes to the edge target" },
+        { id: "test", label: "Test", dur: "3.8 s", state: "done", note: "204 assertions, 0 failing" },
+        { id: "sign", label: "Sign", dur: "0.4 s", state: "done", note: "sha256:8f2c41…a7" },
+        { id: "pack", label: "Pack", dur: "1.1 s", state: "done", note: "6.8 MB, 2.1 MB gzipped" },
+        { id: "ship", label: "Ship", dur: "2.0 s", state: "active", note: "19 regions acknowledged" }
+    ]
+    derived stages = stageList.map(s => { id: s.id, label: s.label, dur: s.dur, note: s.note, selected: stage == s.id, active: s.state == "active", last: s.id == "ship" })
+    derived stageName = stage
+
+    state outputs = {
+        resolve: [{ c: "dim", t: "$ halyard build --stage resolve" }, { c: "ok", t: "✓ lockfile unchanged since 7c91de, reusing the module graph" }, { c: "pl", t: "  412 modules, 0 added, 0 removed" }, { c: "pl", t: "  resolved in 0.9 s" }],
+        compile: [{ c: "dim", t: "$ halyard build --stage compile" }, { c: "pl", t: "  compiling 38 routes for target edge-v9" }, { c: "warn", t: "! /api/order imports node:fs, stubbed at build time" }, { c: "pl", t: "  tree-shaken 214 kB of unreachable code" }, { c: "ok", t: "✓ compiled in 14.2 s" }],
+        test: [{ c: "dim", t: "$ halyard build --stage test" }, { c: "pl", t: "  routes.spec.ts   38 passed" }, { c: "pl", t: "  cart.spec.ts    112 passed" }, { c: "pl", t: "  stock.spec.ts    54 passed" }, { c: "ok", t: "✓ 204 assertions, 0 failing, 3.8 s" }],
+        sign: [{ c: "dim", t: "$ halyard build --stage sign" }, { c: "pl", t: "  hashing 1,284 files" }, { c: "ok", t: "✓ sha256:8f2c41d0e7b93a5c1f4880aa27c6be5390e1f2ca88b0d47e39ac5be2f1c0d3a7" }, { c: "ok", t: "✓ attestation matches the previous build of the same tree" }],
+        pack: [{ c: "dim", t: "$ halyard build --stage pack" }, { c: "pl", t: "  6.8 MB raw, 2.1 MB gzipped, 1.8 MB brotli" }, { c: "ok", t: "✓ packed in 1.1 s" }],
+        ship: [{ c: "dim", t: "$ halyard build --stage ship" }, { c: "pl", t: "  uploading to 19 regions" }, { c: "ok", t: "✓ fra1 iad1 cdg1 sfo1 gru1 hnd1 syd1 bom1 jnb1 arn1" }, { c: "ok", t: "✓ dub1 sin1 yyz1 icn1 cpt1 lhr1 ams1 nrt1 pdx1" }, { c: "ok", t: "✓ 19/19 acknowledged in 412 ms, 0 requests dropped" }]
+    }
+    state outputColor = { dim: "var(--text-disabled)", pl: "var(--text-secondary)", ok: "var(--text-success)", warn: "var(--text-warning)", err: "var(--text-danger)" }
+    derived output = outputs[stage].map(l => { text: l.t, color: outputColor[l.c] })
+
+    derived tabs = [
+        { id: "output", label: "Output", count: "" }, { id: "diff", label: "Diff", count: "4" },
+        { id: "artifacts", label: "Artifacts", count: "5" }, { id: "attestation", label: "Attestation", count: "" }
+    ].map(t => { id: t.id, label: t.label, count: t.count, selected: tab == t.id })
+    derived isOutput = tab == "output"
+    derived isDiff = tab == "diff"
+    derived isArtifacts = tab == "artifacts"
+    derived isAttestation = tab == "attestation"
+
+    state fileList = [
+        { name: "routes.halyard.ts", add: 18, del: 4 }, { name: "src/api/cart.ts", add: 6, del: 2 },
+        { name: "src/lib/session.ts", add: 0, del: 22 }, { name: "halyard.config.ts", add: 3, del: 1 }
+    ]
+    derived files = fileList.map(f => { name: f.name, add: "+" + f.add, del: "−" + f.del, current: file == f.name })
+    derived diffFile = file
+    state diff = [
+        { n: "12", kind: "ctx", text: "export default defineRoutes([" },
+        { n: "13", kind: "ctx", text: "  { match: { path: '/assets/*' }, immutable: true }," },
+        { n: "14", kind: "del", text: "  { match: { cookie: { ht_beta: '1' } }, build: 'current' }," },
+        { n: "14", kind: "add", text: "  { match: { cookie: { ht_beta: '1' } }, build: '8f2c41' }," },
+        { n: "15", kind: "add", text: "  { match: { geo: { country: ['DE', 'FR', 'NL'] } }, region: 'fra1' }," },
+        { n: "16", kind: "ctx", text: "  { match: { path: '/api/*' }, fn: 'api', timeout: 10_000 }," },
+        { n: "17", kind: "del", text: "  { match: { path: '/*' }, build: 'current', weight: 99 }," },
+        { n: "17", kind: "add", text: "  { match: { path: '/*' }, build: 'current' }," },
+        { n: "18", kind: "ctx", text: "])" }
+    ]
+    derived diffLines = diff.map(l => { n: l.n, kind: l.kind, text: l.text, sign: if l.kind == "add" { "+" } else if l.kind == "del" { "−" } else { " " }, bg: if l.kind == "add" { "var(--success-soft)" } else if l.kind == "del" { "var(--danger-soft)" } else { "transparent" }, fg: if l.kind == "add" { "var(--text-success)" } else if l.kind == "del" { "var(--text-danger)" } else { "var(--text-secondary)" } })
+
+    state artifacts = [
+        { path: "edge/bundle.js", type: "application/javascript", size: "1.84 MB", digest: "e91c…44" },
+        { path: "edge/bundle.js.map", type: "application/json", size: "3.12 MB", digest: "77af…09" },
+        { path: "static/app.css", type: "text/css", size: "82.4 kB", digest: "2b10…d3" },
+        { path: "static/fonts/*.woff2", type: "font/woff2", size: "204 kB", digest: "9c44…e1" },
+        { path: "attestation.intoto.jsonl", type: "application/jsonl", size: "4.1 kB", digest: "8f2c…a7" }
+    ]
+
+    action open(h: String) { hash = h }
+    action pickStage(id: String) { stage = id  tab = "output" }
+    action pickTab(id: String) { tab = id }
+    action pickFile(name: String) { file = name }
+}

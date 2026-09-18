@@ -1,0 +1,8 @@
+// An overline over a value, for a metadata strip.
+Component MetaItem (label: String, value: String, mono: Bool = false) {
+    derived family = if mono { "var(--font-mono)" } else { "var(--font-sans)" }
+    Stack { style { gap: "4px" }
+        Overline(text: label)
+        Text(value) { style { margin: "0"  font-size: "13px"  color: "var(--text-secondary)"  font-family: family  font-variant-numeric: "tabular-nums" } }
+    }
+}

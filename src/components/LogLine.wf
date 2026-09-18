@@ -1,0 +1,22 @@
+// One log line: a button whose selection lives in aria-pressed. Mono, seven
+// columns, the message trailing and clipped.
+Component LogLine (time: String, level: String, color: String, region: String, route: String, status: String, statusColor: String, ms: String, msColor: String, message: String, selected: Bool = false) {
+    derived bg = if selected { "var(--surface-active)" } else { "transparent" }
+    derived edge = if selected { "var(--brand)" } else { "transparent" }
+    Button("", type: "button", aria-pressed: selected, aria-label: "{time} {level} {region} {route} {status} {ms} {message}") {
+        style {
+            display: "flex"  align-items: "baseline"  gap: "12px"  width: "100%"  background: bg  border: "0"  border-left: "2px solid var(--edge)"  --edge: edge
+            padding: "7px 14px"  cursor: "pointer"  text-align: "left"  font: "400 12.5px/1.5 var(--font-mono)"  color: "var(--text-secondary)"  border-radius: "0"
+            transition: "background 80ms var(--ease-standard)"
+            hover { background: "var(--surface-hover)" }
+            @media (max-width: 768px) { flex-wrap: "wrap"  gap: "6px 10px" }
+        }
+        Text(time) { style { margin: "0"  color: "var(--text-disabled)"  flex: "none"  font: "inherit" } }
+        Text(level) { style { margin: "0"  width: "46px"  flex: "none"  color: color  font-weight: "600"  font: "inherit"  font-weight: "600" } }
+        Text(region) { style { margin: "0"  width: "40px"  flex: "none"  color: "var(--text-tertiary)"  font: "inherit" } }
+        Text(route) { style { margin: "0"  width: "150px"  flex: "none"  color: "var(--text-primary)"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  font: "inherit"  @media (max-width: 768px) { width: "auto" } } }
+        Text(status) { style { margin: "0"  width: "34px"  flex: "none"  color: statusColor  font: "inherit" } }
+        Text(ms) { style { margin: "0"  width: "58px"  flex: "none"  text-align: "right"  color: msColor  font: "inherit"  @media (max-width: 768px) { text-align: "left"  width: "auto" } } }
+        Text(message) { style { margin: "0"  flex-grow: "1"  min-width: "0"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  font: "inherit"  @media (max-width: 768px) { flex-basis: "100%"  white-space: "normal" } } }
+    }
+}

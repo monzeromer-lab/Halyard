@@ -1,0 +1,7 @@
+// A titled block in a detail panel: overline, then the caller's content.
+Component DetailSection (title: String) {
+    Stack { style { gap: "10px" }
+        Overline(text: title)
+        children
+    }
+}

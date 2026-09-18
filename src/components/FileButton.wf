@@ -1,0 +1,17 @@
+// A changed file in the diff list: the current one in aria-current, the
+// counts in success and danger.
+Component FileButton (name: String, add: String, del: String, current: Bool = false) {
+    derived bg = if current { "var(--brand-soft)" } else { "transparent" }
+    derived fg = if current { "var(--text-brand)" } else { "var(--text-tertiary)" }
+    derived cur = if current { "true" } else { null }
+    Button("", type: "button", aria-current: cur, aria-label: "{name}, {add} {del}") {
+        style {
+            display: "flex"  align-items: "center"  gap: "9px"  width: "100%"  background: bg  border: "0"  padding: "8px 12px"
+            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  font: "400 13px/1.3 var(--font-mono)"  color: fg
+            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+        }
+        Text(name) { style { margin: "0"  flex-grow: "1"  min-width: "0"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  font: "inherit"  color: "inherit" } }
+        Num(text: add, size: "11px", color: "var(--text-success)", weight: "400")
+        Num(text: del, size: "11px", color: "var(--text-danger)", weight: "400")
+    }
+}

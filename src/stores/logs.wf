@@ -1,0 +1,131 @@
+// Logs: the 16 lines of the last five minutes, the search (plain or regex),
+// the severity facets, follow, and the selected trace. There is no
+// try/catch in the language, so a pattern is scanned for the mistakes a
+// RegExp would reject before one is built from it.
+Store LogStore {
+    state all = [
+        { t: "14:02:41.118", lv: "info", rg: "fra1", rt: "GET /", st: "200", ms: 24, msg: "request completed", b: "8f2c41" },
+        { t: "14:02:41.102", lv: "info", rg: "iad1", rt: "POST /api/cart", st: "201", ms: 61, msg: "cart item added, sku HL-2201", b: "8f2c41" },
+        { t: "14:02:40.984", lv: "warn", rg: "gru1", rt: "GET /api/stock", st: "200", ms: 1840, msg: "upstream slow, served stale for 12 s", b: "8f2c41" },
+        { t: "14:02:40.771", lv: "info", rg: "cdg1", rt: "GET /p/HL-2201", st: "200", ms: 38, msg: "request completed", b: "8f2c41" },
+        { t: "14:02:40.640", lv: "error", rg: "gru1", rt: "GET /api/stock", st: "504", ms: 9412, msg: "upstream timed out after 9.4 s", b: "8f2c41" },
+        { t: "14:02:40.402", lv: "info", rg: "sin1", rt: "GET /p/HL-3390", st: "200", ms: 112, msg: "cold start 8.4 ms included", b: "8f2c41" },
+        { t: "14:02:40.233", lv: "debug", rg: "fra1", rt: "GET /", st: "200", ms: 19, msg: "rule 3 matched: path /*", b: "8f2c41" },
+        { t: "14:02:40.019", lv: "info", rg: "lhr1", rt: "GET /checkout", st: "200", ms: 34, msg: "request completed", b: "8f2c41" },
+        { t: "14:02:39.884", lv: "warn", rg: "iad1", rt: "POST /api/cart", st: "429", ms: 6, msg: "rate limit, 120 rpm per session", b: "7c91de" },
+        { t: "14:02:39.601", lv: "info", rg: "ams1", rt: "GET /assets/app.css", st: "200", ms: 4, msg: "served from immutable cache", b: "8f2c41" },
+        { t: "14:02:39.442", lv: "error", rg: "gru1", rt: "POST /api/order", st: "500", ms: 212, msg: "TypeError: cannot read stock of undefined", b: "8f2c41" },
+        { t: "14:02:39.118", lv: "info", rg: "syd1", rt: "GET /", st: "200", ms: 74, msg: "request completed", b: "8f2c41" },
+        { t: "14:02:38.977", lv: "debug", rg: "fra1", rt: "GET /api/stock", st: "200", ms: 28, msg: "kv read hit, leader fra1", b: "8f2c41" },
+        { t: "14:02:38.640", lv: "info", rg: "yyz1", rt: "GET /p/HL-8802", st: "404", ms: 12, msg: "no product for that sku", b: "8f2c41" },
+        { t: "14:02:38.401", lv: "info", rg: "dub1", rt: "GET /", st: "200", ms: 31, msg: "request completed", b: "8f2c41" },
+        { t: "14:02:38.120", lv: "warn", rg: "cpt1", rt: "GET /api/stock", st: "200", ms: 640, msg: "kv read crossed region, leader fra1", b: "8f2c41" }
+    ]
+    state query = ""
+    state regex = false
+    state levels = []
+    state sel = ""
+    state follow = true
+    state levelColor = { error: "var(--danger)", warn: "var(--warning)", info: "var(--info)", debug: "var(--text-tertiary)" }
+    state levelLabel = { error: "Error", warn: "Warn", info: "Info", debug: "Debug" }
+
+    derived badRegex = regex && query != "" && !patternOk(query)
+    derived pattern = if regex && query != "" && !badRegex { RegExp(query, "i") } else { null }
+    derived q = query.toLowerCase()
+    derived matched = all.filter(r => inQuery(r) && (levels.length == 0 || levels.indexOf(r.lv) > -1))
+    derived rows = matched.map(r => shape(r))
+    derived shown = rows.length
+    derived empty = rows.length == 0 && !badRegex
+    derived placeholder = if regex { "Regular expression, case-insensitive" } else { "Plain text match" }
+    derived facets = ["error", "warn", "info", "debug"].map(id => { id: id, label: levelLabel[id], color: levelColor[id], count: "{all.filter(r => r.lv == id).length}", pressed: levels.indexOf(id) > -1 })
+    derived liveTone = if follow { "accent" } else { "neutral" }
+    derived liveLabel = if follow { "Following" } else { "Paused" }
+    derived picked = all.filter(r => r.t == sel)
+    derived hasSelection = picked.length > 0
+    derived current = if hasSelection { shape(picked[0]) } else { shape(all[0]) }
+    derived trace = "tr_" + current.time.split(":").join("").split(".").join("")
+    state spans = [
+        { name: "edge accept", left: "0%", width: "1.5%", color: "var(--viz-1)", ms: "2 ms" },
+        { name: "route match", left: "0.9%", width: "1.5%", color: "var(--viz-3)", ms: "2 ms" },
+        { name: "kv read stock", left: "1.9%", width: "8.5%", color: "var(--viz-2)", ms: "18 ms" },
+        { name: "upstream fetch", left: "10.4%", width: "79.2%", color: "var(--viz-4)", ms: "168 ms" },
+        { name: "render", left: "89.6%", width: "7.5%", color: "var(--viz-1)", ms: "16 ms" },
+        { name: "egress", left: "97.2%", width: "2.8%", color: "var(--viz-3)", ms: "6 ms" }
+    ]
+    derived headers = [
+        { k: "host", v: "storefront.example.com" }, { k: "user-agent", v: "Mozilla/5.0 (…)" }, { k: "cookie", v: "ht_beta=1; sid=…" },
+        { k: "x-halyard-region", v: current.region }, { k: "x-halyard-build", v: current.build }, { k: "x-halyard-rule", v: "3" }
+    ]
+
+    action inQuery(r: Map) {
+        if query == "" { return true }
+        hay = r.rt + " " + r.msg + " " + r.rg + " " + r.st
+        if regex {
+            if pattern == null { return true }
+            return pattern.test(hay)
+        }
+        return hay.toLowerCase().indexOf(q) > -1
+    }
+
+    action shape(r: Map) {
+        first = r.st.charAt(0)
+        return {
+            time: r.t, level: r.lv, levelWord: levelLabel[r.lv], color: levelColor[r.lv], region: r.rg, route: r.rt, status: r.st,
+            ms: r.ms + " ms", message: r.msg, build: r.b,
+            statusColor: if first == "5" { "var(--text-danger)" } else if first == "4" { "var(--text-warning)" } else { "var(--text-success)" },
+            msColor: if r.ms >= 1000 { "var(--text-warning)" } else { "var(--text-tertiary)" },
+            tone: if first == "5" { "danger" } else if first == "4" { "warning" } else { "success" },
+            selected: sel == r.t
+        }
+    }
+
+    // The scan: balanced ( ) and [ ], no trailing backslash, no quantifier
+    // without something before it. It is what a RegExp rejects most often.
+    action patternOk(p: String) {
+        end = p.split("").reduce((st, c) => step(st, c), { esc: false, cls: false, depth: 0, atom: false, lazy: false, bad: false })
+        return !end.bad && !end.esc && !end.cls && end.depth == 0
+    }
+    action step(st: Map, c: String) {
+        if st.bad { return st }
+        if st.esc { return { esc: false, cls: st.cls, depth: st.depth, atom: true, lazy: false, bad: false } }
+        if c == "\\" { return { esc: true, cls: st.cls, depth: st.depth, atom: st.atom, lazy: false, bad: false } }
+        if st.cls {
+            if c == "]" { return { esc: false, cls: false, depth: st.depth, atom: true, lazy: false, bad: false } }
+            return st
+        }
+        if c == "[" { return { esc: false, cls: true, depth: st.depth, atom: false, lazy: false, bad: false } }
+        if c == "(" { return { esc: false, cls: false, depth: st.depth + 1, atom: false, lazy: false, bad: false } }
+        if c == ")" {
+            if st.depth == 0 { return { esc: false, cls: false, depth: 0, atom: false, lazy: false, bad: true } }
+            return { esc: false, cls: false, depth: st.depth - 1, atom: true, lazy: false, bad: false }
+        }
+        if c == "*" || c == "+" {
+            if !st.atom { return { esc: false, cls: false, depth: st.depth, atom: false, lazy: false, bad: true } }
+            return { esc: false, cls: false, depth: st.depth, atom: false, lazy: true, bad: false }
+        }
+        if c == "?" {
+            if st.atom { return { esc: false, cls: false, depth: st.depth, atom: false, lazy: true, bad: false } }
+            if st.lazy { return { esc: false, cls: false, depth: st.depth, atom: false, lazy: false, bad: false } }
+            return { esc: false, cls: false, depth: st.depth, atom: false, lazy: false, bad: true }
+        }
+        if c == "|" { return { esc: false, cls: false, depth: st.depth, atom: false, lazy: false, bad: false } }
+        return { esc: false, cls: false, depth: st.depth, atom: true, lazy: false, bad: false }
+    }
+
+    action setQuery(v: String) { query = v }
+    action toggleRegex() { regex = !regex }
+    action toggleLevel(id: String) {
+        if levels.indexOf(id) > -1 { levels = levels.filter(l => l != id) } else { levels = levels.concat([id]) }
+    }
+    action toggleFollow() { follow = !follow }
+    action pick(t: String) { if sel == t { sel = "" } else { sel = t } }
+    action close() { sel = "" }
+    action reset() { query = ""  levels = []  regex = false }
+    action move(step: Number) {
+        keys = rows.map(r => r.time)
+        if keys.length == 0 { return }
+        at = keys.indexOf(sel)
+        next = Math.min(Math.max(at + step, 0), keys.length - 1)
+        sel = keys[next]
+    }
+}

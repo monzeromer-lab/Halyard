@@ -1,0 +1,11 @@
+// One span of a trace waterfall: the name, a bar placed by percentage of
+// the whole trace, the duration.
+Component SpanRow (name: String, left: String, width: String, color: String, ms: String) {
+    Row(align: center) {
+        style { gap: "10px"  flex-wrap: "nowrap" }
+        Text(name) { style { margin: "0"  width: "108px"  flex: "none"  font-size: "12px"  color: "var(--text-secondary)" } }
+        Container(role: "img", aria-label: "{name} {ms}") { style { flex-grow: "1"  position: "relative"  height: "14px"  background: "var(--surface-inset)"  border-radius: "3px"  padding: "0"  margin: "0"  width: "auto"  min-width: "0" }
+            Container { style { position: "absolute"  top: "0"  bottom: "0"  left: left  width: width  min-width: "3px"  background: color  border-radius: "3px"  padding: "0"  margin: "0" } } }
+        Num(text: ms, size: "11px", color: "var(--text-tertiary)", weight: "400")
+    }
+}
