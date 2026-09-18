@@ -1,7 +1,7 @@
 Component Th (text: String, numeric: Bool = false) {
     derived align = if numeric { "right" } else { "left" }
     derived family = if numeric { "var(--font-mono)" } else { "var(--font-sans)" }
-    Tcell(text, data-numeric: numeric) {
+    Tcell(text, header, data-numeric: numeric) {
         style { text-align: align  font: "700 12px/1.2 var(--font-sans)"  font-family: family  color: "var(--text-tertiary)"  padding: "10px 12px"  border-bottom: "1px solid var(--line-default)"  background: "var(--surface-raised)"  white-space: "nowrap" }
     }
 }

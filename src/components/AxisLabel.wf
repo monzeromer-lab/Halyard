@@ -1,0 +1,4 @@
+// A small mono axis label.
+Component AxisLabel (text: String, align: String = "left") {
+    Text(text) { style { margin: "0"  font: "400 10px/1 var(--font-mono)"  color: "var(--text-tertiary)"  text-align: align  white-space: "nowrap" } }
+}

@@ -1,7 +1,181 @@
 Page AppObservability (path: "/app/observability", title: "Observability", description: "Response time, status classes and traffic by route.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Observability", h1)
-        Text("Coming in a later milestone.", muted)
+    use MetricsStore
+
+    AppShell(crumb: "Observability") {
+        SrTitle(text: "Observability")
+        // Toolbar: range, region, environment, the table view, logs
+        Row(align: center) {
+            style { padding: "14px 28px"  flex-wrap: "nowrap"  gap: "12px"  border-bottom: "1px solid var(--line-hairline)"  @media (max-width: 1024px) { flex-wrap: "wrap" }  @media (max-width: 768px) { padding: "12px 16px" } }
+            SegGroup(label: "Time range") {
+                SegButton(label: "1h", pressed: MetricsStore.range == "1h") { MetricsStore.setRange("1h") }
+                SegButton(label: "24h", pressed: MetricsStore.range == "24h") { MetricsStore.setRange("24h") }
+                SegButton(label: "7d", pressed: MetricsStore.range == "7d") { MetricsStore.setRange("7d") }
+                SegButton(label: "30d", pressed: MetricsStore.range == "30d") { MetricsStore.setRange("30d") }
+            }
+            Text("Region", id: "obs-region-label") { style { margin: "0"  font: "600 12px/1.2 var(--font-sans)"  color: "var(--text-secondary)" } }
+            Select(id: "obs-region", aria-labelledby: "obs-region-label") {
+                style { width: "168px"  height: "30px"  font: "400 13px/1.2 var(--font-sans)"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 10px"  @media (max-width: 480px) { width: "100%" } }
+                on:change { MetricsStore.setRegion(event.target.value) }
+                Option("all", "All 19 regions")  Option("fra1", "fra1")  Option("iad1", "iad1")  Option("sin1", "sin1")  Option("gru1", "gru1")
+            }
+            Text("Environment", id: "obs-env-label") { style { margin: "0"  font: "600 12px/1.2 var(--font-sans)"  color: "var(--text-secondary)" } }
+            Select(id: "obs-env", aria-labelledby: "obs-env-label") {
+                style { width: "148px"  height: "30px"  font: "400 13px/1.2 var(--font-sans)"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 10px"  @media (max-width: 480px) { width: "100%" } }
+                on:change { MetricsStore.setEnv(event.target.value) }
+                Option("production", "production")  Option("preview", "preview")
+            }
+            Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+            FlButton(label: MetricsStore.tableLabel, variant: "secondary", size: "sm", icon: "grid") { MetricsStore.toggleTable() }
+            FlButton(label: "Open logs", variant: "ghost", size: "sm", icon: "menu", to: "/app/logs")
+        }
+
+        Grid(columns: 2) {
+            style { gap: "16px"  padding: "18px 28px 24px"  align-content: "start"  @media (max-width: 1024px) { grid-template-columns: "1fr" }  @media (max-width: 768px) { padding: "16px" } }
+
+            // 1. Response time p95 — grouped bars, one per region per bucket
+            ChartCard(title: "Response time, p95", lead: "Milliseconds at the edge. Four busiest regions; click a name to hide it.") {
+                Row(justify: end) { style { gap: "2px"  flex-wrap: "wrap"  padding: "0 0 8px" }
+                    for l in MetricsStore.legend { LegendButton(name: l.name, shown: l.shown, swatch: l.swatch) { MetricsStore.toggleSeries(l.name) } } }
+                Container(role: "img", aria-label: "Response time p95 by region over the selected range, as grouped bars") {
+                    style { position: "relative"  height: "236px"  margin: "0 0 0 44px"  padding: "0"  width: "auto" }
+                    for y, i in MetricsStore.yLabels {
+                        Container { style { position: "absolute"  left: "0"  right: "0"  top: "{i * 25}%"  border-top: "1px solid var(--line-hairline)"  padding: "0"  margin: "0"  width: "auto" }
+                            Container { style { position: "absolute"  right: "100%"  top: "0"  margin: "-5px 8px 0 0"  padding: "0"  width: "auto" }  AxisLabel(text: y, align: "right") } }
+                    }
+                    Row(align: end) { style { position: "absolute"  left: "0"  right: "0"  top: "0"  bottom: "0"  gap: "6px"  flex-wrap: "nowrap"  align-items: "flex-end"  @media (max-width: 480px) { gap: "3px" } }
+                        for b in MetricsStore.buckets {
+                            Row(align: end) {
+                                style { flex: "1 1 0"  height: "100%"  gap: "2px"  flex-wrap: "nowrap"  align-items: "flex-end"  justify-content: "center"  border-radius: "3px"  min-width: "0"  --hover-bg: "rgba(255, 255, 255, 0.04)"  hover { background: "var(--hover-bg)" } }
+                                on:mouseenter { MetricsStore.setHover(b.index) }
+                                on:mouseleave { MetricsStore.clearHover() }
+                                for bar in b.bars {
+                                    if bar.shown {
+                                        Container(title: "{bar.name} at {b.hour}:00 — {bar.value} ms") { style { flex: "1 1 0"  max-width: "10px"  min-height: "2px"  height: bar.height  background: bar.color  border-radius: "2px 2px 0 0"  padding: "0"  margin: "0"  transition: "height var(--d-base) var(--ease-standard)" } }
+                                    } else {
+                                        Container { style { flex: "1 1 0"  max-width: "10px"  min-height: "2px"  height: bar.height  background: bar.color  opacity: "0.12"  border-radius: "2px 2px 0 0"  padding: "0"  margin: "0" } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if MetricsStore.hasHover, animate(fadeIn, fast) {
+                        Stack(role: "status") {
+                            style { position: "absolute"  left: MetricsStore.tipLeft  top: "10px"  min-width: "150px"  gap: "4px"  background: "var(--surface-overlay)"  border: "1px solid var(--line-strong)"  border-radius: "var(--radius-sm)"  padding: "10px 12px"  box-shadow: "var(--shadow-md)"  pointer-events: "none"  z-index: "600" }
+                            Container { style { padding: "0 0 4px"  width: "auto" }  Overline(text: MetricsStore.tipTime) }
+                            for t in MetricsStore.tipRows {
+                                Row(align: center) { style { gap: "8px"  flex-wrap: "nowrap" }
+                                    Container { style { width: "8px"  height: "8px"  border-radius: "2px"  background: t.color  flex: "none"  padding: "0"  margin: "0" } }
+                                    Text(t.name) { style { margin: "0"  flex-grow: "1"  font-size: "12px"  color: "var(--text-secondary)" } }
+                                    Num(text: t.value, size: "12px", color: "var(--text-primary)", weight: "500") }
+                            }
+                        }
+                    }
+                }
+                Row { style { margin: "8px 0 0 44px"  gap: "6px"  flex-wrap: "nowrap"  @media (max-width: 480px) { gap: "3px" } }
+                    for b in MetricsStore.buckets {
+                        Container { style { flex: "1 1 0"  min-width: "0"  padding: "0"  margin: "0"  text-align: "center" }
+                            if b.labelled { AxisLabel(text: b.hour, align: "center") } }
+                    }
+                }
+            }
+
+            // 2. Responses by status class — stacked bars
+            ChartCard(title: "Responses by status class", lead: "Thousands of responses per two-hour bucket, last 24 hours.") {
+                Row(align: end) { style { flex-wrap: "nowrap"  gap: "0"  align-items: "stretch" }
+                    Stack { style { width: "34px"  flex: "none"  justify-content: "space-between"  height: "180px"  gap: "0" }
+                        AxisLabel(text: MetricsStore.statusTop)
+                        AxisLabel(text: "0") }
+                    Container(role: "img", aria-label: "Responses by status class per two-hour bucket, as stacked bars") {
+                        style { flex-grow: "1"  height: "180px"  padding: "0"  width: "auto"  min-width: "0" }
+                        Row(align: end) { style { height: "100%"  gap: "12px"  flex-wrap: "nowrap"  align-items: "flex-end"  @media (max-width: 480px) { gap: "4px" } }
+                            for s in MetricsStore.statusBuckets {
+                                Stack(title: s.title) { style { flex: "1 1 0"  height: "100%"  gap: "0"  justify-content: "flex-end"  min-width: "0"  max-width: "30px"  cursor: "default" }
+                                    Container { style { height: s.worse  min-height: "1px"  background: "var(--danger)"  border: "1px solid var(--surface-raised)"  border-radius: "2px"  padding: "0"  margin: "0"  width: "auto" } }
+                                    Container { style { height: s.bad  min-height: "1px"  background: "var(--warning)"  border: "1px solid var(--surface-raised)"  border-radius: "2px"  padding: "0"  margin: "0"  width: "auto" } }
+                                    Container { style { height: s.ok  background: "var(--success)"  border: "1px solid var(--surface-raised)"  border-radius: "2px"  padding: "0"  margin: "0"  width: "auto" } }
+                                }
+                            }
+                        }
+                    }
+                }
+                Row { style { margin: "6px 0 0 34px"  gap: "12px"  flex-wrap: "nowrap"  @media (max-width: 480px) { gap: "4px" } }
+                    for s in MetricsStore.statusBuckets {
+                        Container { style { flex: "1 1 0"  max-width: "30px"  min-width: "0"  padding: "0"  margin: "0"  text-align: "center" }  AxisLabel(text: s.hour, align: "center") }
+                    }
+                }
+                Row { style { gap: "18px"  margin: "10px 0 0 34px"  flex-wrap: "wrap" }
+                    for c in MetricsStore.statusShares {
+                        Row(align: center) { style { gap: "7px"  flex-wrap: "nowrap"  font-size: "12px"  color: "var(--text-secondary)" }
+                            Container { style { width: "10px"  height: "10px"  border-radius: "3px"  background: c.color  flex: "none"  padding: "0"  margin: "0" } }
+                            Text(c.name) { style { margin: "0"  font-size: "12px"  color: "var(--text-secondary)" } }
+                            Num(text: c.share, size: "12px", color: "var(--text-tertiary)", weight: "400") }
+                    }
+                }
+            }
+
+            // 3. Latency by hour of week — a 7 × 24 heatmap of boxes
+            ChartCard(title: "Latency by hour of week", lead: "p95 across all regions. The Wednesday afternoon band is the weekly catalogue import.") {
+                Stack(role: "img", aria-label: "Response time p95 by weekday and hour of day, as a heatmap; the Wednesday 13:00 to 16:00 band peaks at 114 ms") {
+                    style { gap: "2px" }
+                    for d in MetricsStore.heatRows {
+                        Row(align: center) { style { gap: "2px"  flex-wrap: "nowrap" }
+                            Container { style { width: "34px"  flex: "none"  padding: "0"  margin: "0" }  AxisLabel(text: d.day) }
+                            for c in d.cells {
+                                Container(title: c.title) { style { flex: "1 1 0"  height: "20px"  min-width: "0"  border-radius: "2px"  background: c.color  padding: "0"  margin: "0"  border: "1px solid transparent"  transition: "border-color var(--d-fast) var(--ease-standard)"  hover { border-color: "var(--text-primary)" } } }
+                            }
+                        }
+                    }
+                }
+                Row { style { margin: "6px 0 0 36px"  gap: "0"  flex-wrap: "nowrap" }
+                    for h in MetricsStore.heatHours {
+                        Container { style { flex: "1 1 0"  min-width: "0"  padding: "0"  margin: "0" }  AxisLabel(text: h) }
+                    }
+                }
+                Row(align: center) { style { gap: "8px"  margin: "8px 0 0 34px"  flex-wrap: "wrap" }
+                    AxisLabel(text: "22 ms")
+                    for c in MetricsStore.heatRamp {
+                        Container { style { width: "26px"  height: "9px"  border-radius: "2px"  background: c  padding: "0"  margin: "0"  flex: "none" } }
+                    }
+                    AxisLabel(text: "130 ms")
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                    Text("One hue, light to dark. Hover a cell for the value.") { style { margin: "0"  font-size: "11px"  color: "var(--text-tertiary)" } }
+                }
+            }
+
+            // 4. Share of requests by route — horizontal bars with the value beside each
+            ChartCard(title: "Share of requests by route", lead: "One series, so the values are labelled directly and there is no legend.") {
+                Stack { style { gap: "10px"  padding: "0 0 2px" }
+                    for r in MetricsStore.routeRows {
+                        Row(align: center) { style { gap: "12px"  flex-wrap: "nowrap" }
+                            Text(r.route) { style { margin: "0"  width: "152px"  flex: "none"  font: "400 12px/1.2 var(--font-mono)"  color: "var(--text-secondary)"  white-space: "nowrap"  overflow: "hidden"  text-overflow: "ellipsis"  @media (max-width: 480px) { width: "104px" } } }
+                            Container(role: "img", aria-label: "{r.route} {r.label}") { style { flex-grow: "1"  height: "16px"  background: "var(--surface-inset)"  border-radius: "3px"  overflow: "hidden"  padding: "0"  margin: "0"  width: "auto"  min-width: "0" }
+                                Container { style { width: r.width  height: "100%"  background: r.color  border-radius: "0 4px 4px 0"  padding: "0"  margin: "0"  transition: "opacity var(--d-fast) var(--ease-standard)"  hover { opacity: "0.82" } } } }
+                            Num(text: r.label, size: "12px", color: "var(--text-primary)", weight: "500") }
+                    }
+                }
+            }
+        }
+
+        // The table view: the same p95 series as a real table
+        if MetricsStore.table, animate(fadeIn, fast) {
+            Container { style { padding: "0 28px 20px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 16px" } }
+                Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  background: "var(--surface-raised)"  padding: "0"  width: "100%"  max-width: "100%" }
+                    Text("The same p95 series as a table, for readers who cannot use the chart.", id: "p95-caption") { style { margin: "0"  padding: "12px 14px"  font-size: "12px"  color: "var(--text-tertiary)"  background: "var(--surface-raised)" } }
+                    Table(aria-labelledby: "p95-caption") {
+                        style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)" }
+                        Thead { Trow {
+                            Th(text: "Hour")
+                            for l in MetricsStore.legend { Th(text: l.name, numeric: true) } } }
+                        Tbody {
+                            for row in MetricsStore.tableRows {
+                                Trow {
+                                    Td(text: row.hour, mono: true, color: "var(--text-secondary)")
+                                    for c in row.cells { Td(text: c.value, numeric: true) } }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

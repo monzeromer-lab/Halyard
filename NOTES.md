@@ -153,3 +153,23 @@ the library uses `pressed`, `checked` and `note`.
 - Compiler fixes this milestone needed: `IconButton` dropped every named
   argument but `icon`/`label` in the SPA and painted its label as visible
   text in the static backends; `Tcell(header)` added.
+
+## Milestone 9 — observability
+
+- **Every chart is boxes.** The p95 line chart is grouped vertical bars (13
+  buckets × 4 regions) with the same y-axis, gridlines, legend toggles and
+  hover tooltip as the artboard; the crosshair and the dashed line styles
+  are gone with the lines. Responses by status class are stacked bars,
+  which unknown #2 (reactive style values) made possible. The hour-of-week
+  heatmap is 168 boxes on the artboard's seven-step ramp, each with a
+  `title`. Route share is the artboard's own horizontal bars.
+- **The table view is real**: a `Table` named by the visible caption
+  (`aria-labelledby`), 13 rows × 4 regions, following the range and the
+  legend. Each chart container has `role="img"` and a name that says what
+  it shows; the numbers behind it are in the table or beside the bar.
+- **Hover state lives in the store** (`hover`), not in the bar rows, so the
+  bars are not re-rendered under the cursor; only the tooltip is.
+- A string with a `,` inside `{ }` is not interpolated (`Math.min(a, b)`), so
+  the tooltip's `left` is computed in an action.
+- Compiler fix this milestone needed: `Option("value", "Label")` dropped the
+  label and used the value as text, in all three backends.

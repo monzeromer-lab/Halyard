@@ -7,6 +7,6 @@ Component Panel (title: String, note: String = "", link: String = "", to: String
             Heading(title, h2) { style { margin: "0"  font-size: "17px"  font-weight: "700"  flex-grow: "1" } }
             if note != "" { Text(note) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
             if link != "" { Link(link, to: to) { style { font: "600 13px/1 var(--font-sans)"  color: "var(--text-brand)"  text-decoration: "none"  white-space: "nowrap"  hover { color: "var(--brand-hover)" } } } } }
-        Container { style { padding: bodyPadding  width: "auto"  max-width: "100%"  min-width: "0" }  children }
+        Container { style { padding: bodyPadding  width: "100%"  max-width: "100%"  min-width: "0"  margin: "0" }  children }
     }
 }

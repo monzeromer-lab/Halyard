@@ -19,8 +19,97 @@ Store MetricsStore {
     ]
     derived tiles = tileMeta.map(m => { label: m.label, unit: m.unit, delta: m.delta, tone: m.tone, note: m.note, color: m.color, bars: m.bars, value: tileValues[range][tileMeta.indexOf(m)] })
 
-    action setRange(r: String) { range = r }
+    // Response time p95: four regions over 13 two-hourly buckets, scaled per
+    // range as the artboard does. `off` holds the series the legend hid.
+    state hover = -1
+    state hours = ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22", "24"]
+    state series = [
+        { name: "fra1", color: "var(--viz-1)", v: [34, 33, 32, 34, 38, 41, 44, 46, 43, 40, 37, 35, 34] },
+        { name: "iad1", color: "var(--viz-2)", v: [44, 42, 40, 39, 41, 47, 53, 58, 55, 51, 47, 45, 43] },
+        { name: "sin1", color: "var(--viz-3)", v: [62, 60, 58, 61, 66, 69, 72, 70, 68, 66, 64, 63, 61] },
+        { name: "gru1", color: "var(--viz-4)", v: [88, 84, 82, 90, 118, 164, 198, 176, 132, 104, 96, 92, 89] }
+    ]
+    state scales = { "1h": 0.72, "24h": 1, "7d": 1.18, "30d": 1.34 }
+    derived scaled = series.map(s => { name: s.name, color: s.color, shown: off.indexOf(s.name) < 0, v: s.v.map(x => Math.round(x * scales[range])) })
+    derived live = scaled.filter(s => s.shown)
+    derived pool = if live.length > 0 { live } else { scaled }
+    derived hi = ceilTo(pool.reduce((m, s) => Math.max(m, s.v.reduce((a, b) => Math.max(a, b), 0)), 0), 50)
+    derived yLabels = [0, 1, 2, 3, 4].map(g => "{Math.round(hi - hi * g / 4)}")
+    derived legend = scaled.map(s => { name: s.name, shown: s.shown, swatch: swatchOf(s) })
+    derived buckets = hours.map((h, i) => { hour: h, index: i, labelled: i % 2 == 0, bars: scaled.map(s => { name: s.name, color: s.color, shown: s.shown, value: s.v[i], height: pctOf(s.v[i], hi) }) })
+    derived hasHover = hover >= 0
+    derived tipTime = if hasHover { hours[hover] + ":00" } else { "" }
+    derived tipRows = if hasHover { live.map(s => { name: s.name, color: s.color, value: s.v[hover] + " ms" }) } else { [] }
+    derived tipLeft = leftOf(hover)
+    derived tableRows = hours.map((h, i) => { hour: h + ":00", cells: scaled.map(s => { name: s.name, value: s.v[i] + " ms" }) })
+    derived tableLabel = if table { "Hide table view" } else { "Table view" }
+
+    // Responses by status class per two-hour bucket, thousands. The tallest
+    // bucket sets the scale.
+    state statusHours = ["00", "02", "04", "06", "08", "10", "12", "14", "16", "18", "20", "22"]
+    state ok = [88, 91, 94, 96, 99, 104, 112, 118, 114, 106, 98, 92]
+    state clientErr = [6, 5, 6, 7, 6, 8, 9, 11, 10, 8, 7, 6]
+    state serverErr = [1, 1, 0, 1, 2, 3, 7, 12, 5, 2, 1, 1]
+    derived statusMax = statusHours.reduce((m, h, i) => Math.max(m, ok[i] + clientErr[i] + serverErr[i]), 0)
+    derived statusTop = "{statusMax}k"
+    derived statusBuckets = statusHours.map((h, i) => { hour: h, ok: pctOf(ok[i], statusMax), bad: pctOf(clientErr[i], statusMax), worse: pctOf(serverErr[i], statusMax), title: h + ":00 — 2xx " + ok[i] + " k, 4xx " + clientErr[i] + " k, 5xx " + serverErr[i] + " k" })
+    derived statusTotals = { ok: sumOf(ok), bad: sumOf(clientErr), worse: sumOf(serverErr) }
+    derived statusAll = statusTotals.ok + statusTotals.bad + statusTotals.worse
+    derived statusShares = [
+        { name: "2xx", color: "var(--success)", share: shareOf(statusTotals.ok, statusAll) },
+        { name: "4xx", color: "var(--warning)", share: shareOf(statusTotals.bad, statusAll) },
+        { name: "5xx", color: "var(--danger)", share: shareOf(statusTotals.worse, statusAll) }
+    ]
+
+    // Latency by hour of week: 7 × 24 p95 values, one hue light to dark.
+    state days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    state heat = [
+        [22, 28, 35, 34, 41, 39, 47, 45, 52, 50, 56, 63, 60, 65, 61, 66, 61, 65, 59, 62, 65, 58, 59, 52],
+        [28, 26, 33, 32, 39, 37, 45, 52, 50, 57, 54, 61, 58, 63, 59, 64, 68, 63, 66, 60, 63, 56, 57, 50],
+        [26, 24, 31, 39, 37, 44, 43, 50, 48, 55, 52, 59, 65, 109, 114, 110, 114, 61, 64, 58, 61, 63, 55, 57],
+        [24, 31, 29, 37, 35, 42, 41, 48, 55, 53, 59, 57, 63, 59, 64, 60, 64, 68, 62, 65, 59, 61, 53, 55],
+        [22, 29, 27, 35, 42, 40, 48, 46, 53, 51, 57, 55, 61, 66, 62, 67, 62, 66, 60, 63, 57, 59, 60, 53],
+        [22, 22, 22, 22, 26, 24, 32, 30, 37, 44, 41, 48, 45, 50, 46, 51, 46, 50, 53, 47, 50, 43, 44, 37],
+        [22, 22, 22, 22, 24, 31, 30, 37, 35, 42, 39, 46, 43, 48, 53, 49, 53, 48, 51, 45, 48, 41, 42, 44]
+    ]
+    state heatRamp = ["#1a1416", "#3a1c10", "#5e2a12", "#8a3c14", "#b84f17", "#e0621d", "#ff8a4c"]
+    derived heatRows = days.map((d, r) => { day: d, cells: heat[r].map((v, h) => { color: heatRamp[heatBand(v)], title: d + " " + pad(h) + ":00 — " + v + " ms p95" }) })
+    state heatHours = ["00", "04", "08", "12", "16", "20"]
+
+    // Share of requests by route: one series, the widest bar is full width.
+    state routeShares = [
+        { route: "GET /", pct: 31.4 }, { route: "GET /p/:sku", pct: 24.8 }, { route: "GET /api/stock", pct: 16.2 },
+        { route: "POST /api/cart", pct: 11.5 }, { route: "GET /checkout", pct: 9.3 }, { route: "Other, 42 routes", pct: 6.8, other: true }
+    ]
+    derived routeRows = routeShares.map(r => { route: r.route, label: r.pct + "%", width: pctOf(r.pct, 31.4), color: if r.other { "var(--viz-8)" } else { "var(--viz-1)" } })
+
+    action ceilTo(n: Number, step: Number) { return Math.max(Math.ceil(n / step) * step, step) }
+    action pctOf(v: Number, top: Number) { return "{Math.round(v / top * 1000) / 10}%" }
+    action shareOf(v: Number, total: Number) { return "{Math.round(v / total * 1000) / 10}%" }
+    action sumOf(xs: List) { return xs.reduce((a, b) => a + b, 0) }
+    action leftOf(i: Number) {
+        at = Math.min(i * 100 / 12 + 3, 72)
+        return "{at}%"
+    }
+    action pad(n: Number) { return if n < 10 { "0" + n } else { "" + n } }
+    action swatchOf(s: Map) { return if s.shown { s.color } else { "var(--surface-active)" } }
+    action heatBand(v: Number) {
+        if v <= 37 { return 0 }
+        if v <= 53 { return 1 }
+        if v <= 68 { return 2 }
+        if v <= 84 { return 3 }
+        if v <= 100 { return 4 }
+        if v <= 116 { return 5 }
+        return 6
+    }
+
+    action setRange(r: String) { range = r  hover = -1 }
     action setRegion(r: String) { region = r }
     action setEnv(e: String) { env = e }
     action toggleTable() { table = !table }
+    action toggleSeries(name: String) {
+        if off.indexOf(name) > -1 { off = off.filter(n => n != name) } else { off = off.concat([name]) }
+    }
+    action setHover(i: Number) { hover = i }
+    action clearHover() { hover = -1 }
 }
