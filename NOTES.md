@@ -255,3 +255,67 @@ the library uses `pressed`, `checked` and `note`.
   options use an explicit `on:click { }`.
 - Compiler fixes this milestone needed: an icon button drew its glyph twice
   (runtime); `data-state:` was a parse error because `state` is a keyword.
+
+## Milestone 13 — polish
+
+- **Every route in §5 exists** and is reachable: the marketing nav, the
+  rail and the phone tab bar, the command palette (⌘K on every product
+  page), the launchers on `/ui`, and `/patterns` from the footer. The
+  catch-all page carries the site nav and three ways out.
+- **Build is clean**: zero warnings. The last one (A13, a white label on
+  `--color-primary`) was a lint that checked a variant the site never
+  writes; the lint now looks for the modifier before it warns.
+- **SEO**: the five marketing pages are in `sitemap.xml`; every `/app/*`
+  page, `/new`, `/ui`, `/patterns` and the catch-all carry
+  `noindex, follow`; the dynamic build route is not pre-rendered.
+- **Accessibility sweep** on every route: one `h1` per page, every icon
+  button and empty link named, every input and select labelled (a `label`,
+  `aria-labelledby` or `aria-label`), every icon drawn (none falls back to
+  its name as text), state in `aria-*` (pressed, checked, selected,
+  current, expanded, invalid, sort) with a word beside every colour. Not
+  done: focus is not trapped in or restored after an overlay (see 12).
+- **Responsive pass** at 1440, 768 and 375 on every route: no horizontal
+  overflow; marketing grids 3→2→1; product tables become card lists or
+  scroll inside their card; side panels (trace detail, inspector, resolved
+  routing, settings sub-nav, explorer rail, onboarding steps) wrap below
+  the content; overlays become sheets under 480px; the rail becomes the
+  Mobile artboard's tab bar under 768px.
+
+## Compiler changes made for this design, in order
+
+Each is one commit in the WebFluent repository with its own tests.
+
+Fixes of documented behaviour: `Icon("home")`; component `children`; the
+modifier vocabulary (`fluid circle multiple ordered xs sm md lg xl header`);
+`Row(gap:/align:/justify:)` CSS; `Tcell` in `Thead` → `th`, `Tcell(header)`,
+`Table(caption:)`; `Link(active:)` + `aria-current`; `Progress(value:)`
+reactive; lambda parameters; V01/V02 and semantic checks in `wf build`;
+`404.html`; `wf serve` directory index; `document.title` on route; keywords
+after a dot; `Number`/`String`/`Boolean`/`Map` as globals; two-parameter
+lambdas; map literal as arrow body; store derived reading derived/actions;
+action order in `createStore`; else-if chains; Slider/Input bind + handler;
+sub-component style/attrs/handlers; Button block mixing content and
+actions; A11/A12 through components; A03 via `aria-labelledby`;
+`IconButton` named arguments and label; `Option(value, label)`; an action
+parameter shadowing a store member; known attributes (`placeholder`,
+`disabled`, `src`…) following state; a select's value after its options
+(runtime and codegen); an icon button drawing its glyph once; `data-state:`
+(a keyword after a hyphen); A13 scoped to used variants.
+
+Features: hyphenated named arguments → attributes (reactive); pseudo-state
+blocks (`hover focus active disabled placeholder focus-within current
+pressed selected checked expanded invalid`) and `@media` compiled into
+`styles.css`; custom properties in style blocks; reactive style values;
+`meta.fonts` / `meta.stylesheets`; digit-leading token segments;
+`props` as live getters with declared defaults; handlers on component
+calls attached to the root.
+
+## Still not possible, and how the site lives with it
+
+- No inline SVG, no `@keyframes`, no `try/catch`, no `new`, no regex
+  literals, no `for` inside an action body, no way to call `focus()` after a
+  render, no `indeterminate` property, no call-site `style { }` on a
+  component, positional arguments to components, an `if` inside a
+  component call's handler block, a `,` or `:` inside `{ }` in a string, a
+  prop or key named `on`/`use`/`state`/`token`.
+- Each has a workaround recorded in the milestone it came up in.

@@ -1,7 +1,15 @@
 Page NotFound (path: "*", title: "Not found", description: "No build claims this path.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Not found", h1)
-        Text("Coming in a later milestone.", muted)
+    SiteNav()
+    Wrap(top: "96px", bottom: "128px", maxWidth: "760px") {
+        Stack(align: start) { style { gap: "18px"  align-items: "flex-start" }
+            Overline(text: "404 · NO RULE MATCHED")
+            Heading("No build claims this path.", h1) { style { margin: "0"  font-family: "var(--font-display)"  font-size: "56px"  line-height: "1.05"  letter-spacing: "-0.02em"  font-weight: "500"  @media (max-width: 768px) { font-size: "38px" } } }
+            Text("The rule engine evaluated every rule in order and none of them wanted this request. That is what a 404 is at the edge: a routing decision, not a missing file.") { style { margin: "0"  font-size: "18px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "56ch" } }
+            Row { style { gap: "10px"  flex-wrap: "wrap"  margin: "8px 0 0" }
+                FlButton(label: "Back to the front page", variant: "primary", to: "/")
+                FlButton(label: "Open the dashboard", variant: "secondary", to: "/app")
+                FlButton(label: "Read the docs", variant: "ghost", to: "/docs") }
+        }
     }
+    SiteFooter()
 }

@@ -18,7 +18,7 @@ Page Onboarding (path: "/new", title: "New project", description: "Connect a rep
         }
 
         Stack { style { flex-grow: "1"  min-width: "0"  gap: "0"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" } }
-            Stack { style { flex-grow: "1"  gap: "0"  padding: "48px 48px 32px"  @media (max-width: 768px) { padding: "24px 16px" } }
+            Stack { style { flex-grow: "1"  gap: "0"  padding: "48px 48px 32px"  overflow-x: "hidden"  @media (max-width: 768px) { padding: "24px 16px" } }
                 Heading("{OnboardStore.stepTitle}", h1) { style { margin: "0 0 8px"  font-size: "34px"  line-height: "1.15"  letter-spacing: "-0.02em"  font-weight: "700"  @media (max-width: 768px) { font-size: "28px" } } }
                 Text("{OnboardStore.stepLead}") { style { margin: "0 0 24px"  font-size: "16px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "62ch" } }
                 // 1. Repository
