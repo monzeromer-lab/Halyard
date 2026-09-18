@@ -1,7 +1,140 @@
 Page AppDeployments (path: "/app/deployments", title: "Deployments", description: "Every deployment of storefront-edge, newest first.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Deployments", h1)
-        Text("Coming in a later milestone.", muted)
+    use DeployStore
+    state query = ""
+
+    AppShell(crumb: "Deployments") {
+        SrTitle(text: "Deployments")
+        // Toolbar
+        Row(align: center) {
+            style { padding: "16px 28px"  flex-wrap: "nowrap"  gap: "12px"  border-bottom: "1px solid var(--line-hairline)"  @media (max-width: 1024px) { flex-wrap: "wrap" }  @media (max-width: 768px) { padding: "12px 16px" } }
+            Container { style { position: "relative"  width: "300px"  flex: "none"  padding: "0"  @media (max-width: 768px) { width: "100%" } }
+                Icon("search") { style { position: "absolute"  left: "11px"  top: "11px"  color: "var(--text-tertiary)"  pointer-events: "none"  display: "inline-flex"  font-size: "16px"  z-index: "1" } }
+                Input(search, bind: query, id: "dep-q", placeholder: "Hash, message or branch", aria-label: "Search deployments") {
+                    style { height: "38px"  width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px 0 34px"  font: "400 14px/1.2 var(--font-sans)"
+                            hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" }  focus { border-color: "var(--focus-ring)" } }
+                    on:input { DeployStore.setQuery(query) }
+                } }
+            Row { style { gap: "8px"  flex-grow: "1" }
+                FacetChip(label: "Ready", id: "ready", color: "var(--success)", count: DeployStore.counts.ready)
+                FacetChip(label: "Building", id: "building", color: "var(--info)", count: DeployStore.counts.building)
+                FacetChip(label: "Failed", id: "failed", color: "var(--danger)", count: DeployStore.counts.failed)
+                FacetChip(label: "Canceled", id: "canceled", color: "var(--text-tertiary)", count: DeployStore.counts.canceled) }
+            SegGroup(label: "Row density") {
+                SegButton(label: "Comfortable", pressed: !DeployStore.dense) { DeployStore.setDense(false) }
+                SegButton(label: "Dense", pressed: DeployStore.dense) { DeployStore.setDense(true) } }
+            FlButton(label: "Export CSV", variant: "secondary", size: "sm", icon: "download")
+        }
+
+        Container { style { padding: "20px 28px 0"  width: "100%"  max-width: "100%"  position: "relative"  @media (max-width: 768px) { padding: "12px 16px 0" } }
+            // The table (hidden on phones, where the rows become cards)
+            Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  background: "var(--surface-raised)"  padding: "0"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { display: "none" } }
+                Table(caption: "Deployments of storefront-edge, newest first", data-dense: DeployStore.densityWord) {
+                    style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "960px" }
+                    Thead { Trow {
+                        Tcell("", header) { style { width: "44px"  padding: "10px 12px"  border-bottom: "1px solid var(--line-default)"  background: "var(--surface-raised)"  position: "sticky"  top: "0" }
+                            CheckBtn(checked: DeployStore.allState, label: "Select all deployments") { DeployStore.toggleAll() } }
+                        SortTh(label: "Build", key: "build", width: "88px")
+                        SortTh(label: "Message", key: "message")
+                        SortTh(label: "Branch", key: "branch", width: "148px")
+                        SortTh(label: "Environment", key: "environment", width: "112px")
+                        SortTh(label: "Status", key: "status", width: "108px")
+                        SortTh(label: "Duration", key: "duration", numeric: true, width: "94px")
+                        SortTh(label: "Regions", key: "regions", numeric: true, width: "84px")
+                        SortTh(label: "Created", key: "created", width: "104px")
+                        Tcell("", header) { style { width: "52px"  padding: "10px 12px"  border-bottom: "1px solid var(--line-default)"  background: "var(--surface-raised)"  position: "sticky"  top: "0" }
+                            Text("Row actions") { style { position: "absolute"  width: "1px"  height: "1px"  overflow: "hidden"  clip: "rect(0 0 0 0)"  margin: "0" } } }
+                    } }
+                    Tbody {
+                        for r in DeployStore.rows {
+                            Trow(aria-selected: r.selected) {
+                                style { height: DeployStore.rowHeight  transition: "background var(--d-instant) var(--ease-standard)"  hover { background: "var(--surface-hover)" }  selected { background: "var(--brand-soft)" } }
+                                Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }
+                                    if r.selected { CheckBtn(checked: "true", label: "Deselect build {r.h}") { DeployStore.toggleRow(r.h) } }
+                                    else { CheckBtn(checked: "false", label: "Select build {r.h}") { DeployStore.toggleRow(r.h) } } }
+                                Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }
+                                    Link(r.h, to: "/app/builds/{r.h}") { style { font-family: "var(--font-mono)"  font-size: "13px"  color: "var(--text-brand)"  text-decoration: "none"  hover { color: "var(--brand-hover)" } } } }
+                                Td(text: r.msg, color: "var(--text-primary)")
+                                Td(text: r.br)
+                                Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  OutlineBadge(label: r.env) }
+                                Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: r.status, tone: r.tone) }
+                                Td(text: r.duration, numeric: true)
+                                Td(text: r.regions, numeric: true)
+                                Td(text: r.when)
+                                Tcell("") { style { padding: "6px 12px"  border-bottom: "1px solid var(--line-hairline)"  position: "relative"  text-align: "right" }
+                                    IconBtn(icon: "menu", label: "Actions for build {r.h}", size: 30, popup: true, expanded: r.menuOpen) { DeployStore.openMenu(r.h) }
+                                    if r.menuOpen, animate(fadeIn, fast) {
+                                        Stack(role: "menu") {
+                                            on:keydown { if event.key == "Escape" { DeployStore.closeMenu() } }
+                                            style { position: "absolute"  top: "34px"  right: "12px"  z-index: "600"  min-width: "196px"  background: "var(--surface-overlay)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "6px"  box-shadow: "var(--shadow-md)"  gap: "0"  text-align: "left" }
+                                            MenuItem(label: "Open build", icon: "eye") { DeployStore.closeMenu()  navigate("/app/builds/{r.h}") }
+                                            MenuItem(label: "Promote to production", icon: "upload") { DeployStore.closeMenu() }
+                                            MenuItem(label: "Copy build hash", icon: "copy") { DeployStore.closeMenu()  navigator.clipboard.writeText(r.h) }
+                                            MenuItem(label: "Redeploy", icon: "settings") { DeployStore.closeMenu() }
+                                            Container { style { padding: "5px 0"  width: "auto" }  Rule() }
+                                            MenuItem(label: "Delete deployment", icon: "trash", tone: "danger") { DeployStore.closeMenu() }
+                                        }
+                                    } }
+                            }
+                        }
+                    }
+                }
+                if DeployStore.empty {
+                    Stack(align: center) { style { padding: "64px 24px"  gap: "10px"  text-align: "center" }
+                        Icon("search") { style { color: "var(--text-disabled)"  font-size: "22px"  display: "inline-flex" } }
+                        Text("No deployments match") { style { margin: "0"  font: "700 17px/1.3 var(--font-sans)" } }
+                        Text("Nothing in the last 128 deployments matches that search and those filters. Clear them to see the full list again.") { style { margin: "0"  font-size: "14px"  color: "var(--text-tertiary)"  max-width: "46ch" } }
+                        FlButton(label: "Clear filters", variant: "secondary", size: "sm") { DeployStore.reset()  query = "" } }
+                }
+            }
+
+            // Phone: the same rows as cards
+            Stack { style { display: "none"  gap: "8px"  @media (max-width: 768px) { display: "flex" } }
+                for r in DeployStore.rows {
+                    Link(to: "/app/builds/{r.h}") {
+                        style { display: "flex"  flex-direction: "column"  gap: "6px"  padding: "12px 14px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  text-decoration: "none" }
+                        Row(align: center) { style { flex-wrap: "nowrap"  gap: "10px" }
+                            Num(text: r.h, size: "13px", color: "var(--text-brand)")
+                            Text(r.when) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+                            StatusBadge(label: r.status, tone: r.tone) }
+                        Text(r.msg) { style { margin: "0"  font-size: "14px"  color: "var(--text-primary)" } }
+                        Row(align: center) { style { flex-wrap: "wrap"  gap: "10px" }
+                            Text(r.br) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } }
+                            OutlineBadge(label: r.env)
+                            Num(text: r.duration, size: "12px", color: "var(--text-tertiary)")
+                            Num(text: r.regions, size: "12px", color: "var(--text-tertiary)") }
+                    }
+                }
+                if DeployStore.empty {
+                    EmptyState(title: "No deployments match", body: "Nothing in the last 128 deployments matches that search and those filters.") {
+                        FlButton(label: "Clear filters", variant: "secondary", size: "sm") { DeployStore.reset()  query = "" } }
+                }
+            }
+        }
+
+        // Pagination
+        Row(align: center) {
+            style { padding: "14px 28px 20px"  flex-wrap: "nowrap"  gap: "14px"  @media (max-width: 768px) { padding: "12px 16px 20px"  flex-wrap: "wrap" } }
+            Text("Showing {DeployStore.shownCount} of 128 deployments") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+            Row(align: center, role: "navigation", aria-label: "Pagination") { style { flex-wrap: "nowrap"  gap: "6px" }
+                FlButton(label: "Previous", variant: "ghost", size: "sm", disabled: DeployStore.atFirst) { DeployStore.prevPage() }
+                PageButton(n: 1)  PageButton(n: 2)  PageButton(n: 3)  PageButton(n: 4)
+                Text("…") { style { margin: "0"  color: "var(--text-tertiary)"  padding: "0 4px" } }
+                PageButton(n: 11)
+                FlButton(label: "Next", variant: "ghost", size: "sm", disabled: DeployStore.atLast) { DeployStore.nextPage() } }
+        }
+
+        // Bulk action bar
+        if DeployStore.anySelected, animate(slideUp, fadeOut) {
+            Row(align: center, role: "region", aria-label: "Bulk actions") {
+                style { position: "fixed"  left: "50%"  bottom: "28px"  transform: "translateX(-50%)"  z-index: "500"  flex-wrap: "nowrap"  gap: "12px"  padding: "10px 12px 10px 18px"  background: "var(--surface-overlay)"  border: "1px solid var(--line-strong)"  border-radius: "var(--radius-pill)"  box-shadow: "var(--shadow-lg)"
+                        @media (max-width: 768px) { bottom: "72px"  left: "16px"  right: "16px"  transform: "none"  flex-wrap: "wrap" } }
+                Num(text: "{DeployStore.selectedCount} selected", size: "13px")
+                Container { style { width: "1px"  height: "20px"  background: "var(--line-strong)"  padding: "0"  margin: "0" } }
+                FlButton(label: "Promote", variant: "ghost", size: "sm", icon: "upload")
+                FlButton(label: "Export", variant: "ghost", size: "sm", icon: "download")
+                FlButton(label: "Delete {DeployStore.selectedCount}", variant: "danger", size: "sm")
+                IconBtn(icon: "close", label: "Clear selection", size: 30) { DeployStore.clearSelection() }
+            }
+        }
     }
 }

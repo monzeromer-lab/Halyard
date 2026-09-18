@@ -419,7 +419,7 @@ Link(to: "/about") { Text("About") } // Declarative
 | Component | Usage |
 |-----------|-------|
 | `Card` | `Card(elevated) { Card.Header { ... } Card.Body { ... } Card.Footer { ... } }` |
-| `Table` | `Table(caption: "Deployments") { Thead { Trow { Tcell("Col") } } Tbody { Trow { Tcell("Val") } } }` — cells inside `Thead` are `<th scope="col">`; `caption` is the table's accessible name, rendered visually hidden |
+| `Table` | `Table(caption: "Deployments") { Thead { Trow { Tcell("Col") } } Tbody { Trow { Tcell("Val") } } }` — cells inside `Thead` are `<th scope="col">`, as is `Tcell("Build", header)` anywhere (a header cell a component renders); `caption` is the table's accessible name, rendered visually hidden |
 | `List` | `List { Text("Item 1") Text("Item 2") }` — `List(ordered)` for numbered |
 | `Badge` | `Badge("Label", primary)` — variants: primary, success, danger, warning, info |
 | `Tag` | `Tag("JavaScript")` |
@@ -572,9 +572,10 @@ Icon-only button with aria-label:
 ```wf
 IconButton(icon: "close", label: "Close")
 IconButton(icon: "edit", label: "Edit", primary) { editItem() }
+IconButton(icon: "menu", label: "Actions", aria-haspopup: "menu", aria-expanded: open) { toggleMenu() }
 ```
 
-Modifiers: `small`, `large`, `primary`, `danger`
+Modifiers: `small`, `large`, `primary`, `danger`. The `label` is the accessible name (`aria-label` and `title`), never visible text; every other named argument (`type`, `disabled`, `aria-*`, `data-*`) is an attribute as on `Button`.
 
 #### Slider
 

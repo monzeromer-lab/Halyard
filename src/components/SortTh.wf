@@ -1,0 +1,19 @@
+// A sortable column header: a th carrying aria-sort, with a button that
+// calls the store. The arrow shows on the sorted column and flips.
+Component SortTh (label: String, key: String, numeric: Bool = false, width: String = "auto") {
+    use DeployStore
+    derived sort = DeployStore.sortState(key)
+    derived on = DeployStore.sortKey == key
+    derived arrowOpacity = if on { "1" } else { "0" }
+    derived arrowRot = if on && DeployStore.sortDir == "desc" { "rotate(180deg)" } else { "rotate(0deg)" }
+    derived align = if numeric { "right" } else { "left" }
+    derived justify = if numeric { "flex-end" } else { "flex-start" }
+    Tcell("", header, aria-sort: sort, data-numeric: numeric) {
+        style { text-align: align  width: width  font: "700 12px/1.2 var(--font-sans)"  color: "var(--text-tertiary)"  padding: "10px 12px"  border-bottom: "1px solid var(--line-default)"  background: "var(--surface-raised)"  white-space: "nowrap"  position: "sticky"  top: "0" }
+        Button(label, type: "button") {
+            style { background: "none"  border: "0"  padding: "0"  color: "inherit"  font: "inherit"  cursor: "pointer"  display: "inline-flex"  align-items: "center"  gap: "6px"  width: "100%"  justify-content: justify  hover { color: "var(--text-primary)" } }
+            Icon("chevron-down") { style { color: "var(--brand)"  opacity: arrowOpacity  display: "inline-flex"  transform: arrowRot  font-size: "12px"  transition: "transform var(--d-fast) var(--ease-standard)" } }
+            DeployStore.sortBy(key)
+        }
+    }
+}

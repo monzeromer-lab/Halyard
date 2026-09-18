@@ -1,7 +1,10 @@
 // An icon-only button always carries an accessible name.
-Component IconBtn (icon: String, label: String, variant: String = "ghost", size: Number = 38) {
+// `popup` marks a menu trigger: aria-haspopup plus aria-expanded following `expanded`.
+Component IconBtn (icon: String, label: String, variant: String = "ghost", size: Number = 38, popup: Bool = false, expanded: Bool = false) {
     derived edge = if variant == "outline" { "var(--line-default)" } else { "transparent" }
-    IconButton(icon: icon, label: label, type: "button", data-variant: variant) {
+    derived haspopup = if popup { "menu" } else { null }
+    derived isOpen = if popup { expanded } else { null }
+    IconButton(icon: icon, label: label, type: "button", data-variant: variant, aria-haspopup: haspopup, aria-expanded: isOpen) {
         style {
             --edge: edge
             display: "inline-flex"  align-items: "center"  justify-content: "center"

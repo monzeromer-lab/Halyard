@@ -1,0 +1,12 @@
+// A checkbox drawn as a button with role=checkbox; its state — true, false
+// or mixed — lives in aria-checked and the fill keys off it.
+Component CheckBtn (checked: String, label: String) {
+    derived on = checked != "false"
+    derived bg = if on { "var(--brand)" } else { "var(--surface-inset)" }
+    derived edge = if on { "var(--brand)" } else { "var(--border-control)" }
+    Button("", type: "button", role: "checkbox", aria-checked: checked, aria-label: label) {
+        style { width: "16px"  height: "16px"  flex: "none"  border-radius: "var(--radius-xs)"  border: "1px solid var(--edge)"  --edge: edge  background: bg  display: "inline-flex"  align-items: "center"  justify-content: "center"  cursor: "pointer"  padding: "0"  color: "var(--on-brand)"  font-size: "11px" }
+        if checked == "true" { Icon("check") { style { display: "inline-flex" } } }
+        if checked == "mixed" { Icon("minus") { style { display: "inline-flex" } } }
+    }
+}

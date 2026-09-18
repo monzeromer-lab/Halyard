@@ -1,0 +1,7 @@
+Component PageButton (n: Number) {
+    use DeployStore
+    derived here = DeployStore.page == n
+    derived variant = if here { "primary" } else { "ghost" }
+    derived cur = if here { "page" } else { "" }
+    FlButton(label: "{n}", variant: variant, size: "sm", current: cur) { DeployStore.goTo(n) }
+}

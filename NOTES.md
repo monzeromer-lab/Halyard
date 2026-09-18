@@ -128,3 +128,28 @@ the library uses `pressed`, `checked` and `note`.
   custom property.
 - Sort comparators needed two-parameter lambdas, `Number.isFinite` and
   `Array.from`, none of which parsed; all three are compiler fixes.
+
+## Milestone 8 — deployments
+
+- **The checkbox is a `Button` with `role="checkbox"`** (`CheckBtn`). The
+  builtin `Checkbox` has no `indeterminate`, and the select-all control needs
+  the third state; `aria-checked="mixed"` carries it and draws the minus
+  glyph. The spec's `effect` over `document.getElementById` was not needed.
+- **Sortable headers are `Tcell(header)`**, a new modifier: the `<th>`
+  detection is contextual and cannot see through a component call, so
+  `SortTh` used to render a `<td>`. `aria-sort` on the `th`, the sort key and
+  direction in `DeployStore`; a new column sorts ascending first, except
+  Created, which is newest-first.
+- **The row menu is a `Stack(role: "menu")`** under an `if`, not the builtin
+  `Menu`: it closes on Escape (a `keydown` handler on the menu), on any
+  choice, and on any other change to the table. The trigger carries
+  `aria-haspopup`/`aria-expanded` through `IconBtn`'s `popup`/`expanded`
+  props, because a component only forwards the props it declares.
+- **The pager is decorative data** (`page` state, 11 pages, the same 12 rows):
+  the design shows "12 of 128" and the seed has 12. The current page carries
+  `aria-current="page"` via `FlButton(current:)`.
+- **Under 768px the table is a card list** — both are rendered, one hidden
+  by `@media` — with the same selection, badges and menu.
+- Compiler fixes this milestone needed: `IconButton` dropped every named
+  argument but `icon`/`label` in the SPA and painted its label as visible
+  text in the static backends; `Tcell(header)` added.

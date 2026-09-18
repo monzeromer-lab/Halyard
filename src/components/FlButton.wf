@@ -1,8 +1,10 @@
 // The button contract: variant and size live in data attributes, the outcome
 // in the label. One primary per viewport. A `to` makes it a link that looks
 // the same; a handler written on the call reaches the root either way.
-Component FlButton (label: String, variant: String = "secondary", size: String = "md", to: String = "", icon: String = "", disabled: Bool = false, submit: Bool = false) {
+// `current: "page"` marks the button for the page it stands on (a pager).
+Component FlButton (label: String, variant: String = "secondary", size: String = "md", to: String = "", icon: String = "", disabled: Bool = false, submit: Bool = false, current: String = "") {
     derived btnType = if submit { "submit" } else { "button" }
+    derived ariaCurrent = if current == "" { null } else { current }
     derived bg = if variant == "primary" { "var(--brand)" } else if variant == "secondary" { "var(--surface-raised)" } else if variant == "danger" { "var(--danger)" } else if variant == "accent" { "var(--accent)" } else { "transparent" }
     derived fg = if variant == "primary" { "var(--on-brand)" } else if variant == "secondary" { "var(--text-primary)" } else if variant == "danger" { "var(--on-danger)" } else if variant == "accent" { "var(--on-accent)" } else { "var(--text-secondary)" }
     derived edge = if variant == "secondary" { "var(--line-strong)" } else { "transparent" }
@@ -31,7 +33,7 @@ Component FlButton (label: String, variant: String = "secondary", size: String =
             }
         }
     } else {
-        Button(label, type: btnType, data-variant: variant, data-size: size, disabled: disabled) {
+        Button(label, type: btnType, data-variant: variant, data-size: size, disabled: disabled, aria-current: ariaCurrent) {
             style {
                 --bg: bg  --fg: fg  --edge: edge  --hover-bg: hoverBg  --hover-fg: hoverFg  --hover-edge: hoverEdge  --hover-glow: hoverGlow
                 display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"

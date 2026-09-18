@@ -36,6 +36,7 @@ Store DeployStore {
     derived anySelected = selected.length > 0
     derived allOn = selected.length > 0 && selected.length == rows.length
     derived someOn = selected.length > 0 && selected.length < rows.length
+    derived allState = if allOn { "true" } else if someOn { "mixed" } else { "false" }
     derived counts = { ready: countOf("ready"), building: countOf("building"), failed: countOf("failed"), canceled: countOf("canceled") }
     derived atFirst = page == 1
     derived atLast = page == pages
@@ -73,7 +74,7 @@ Store DeployStore {
         copy = list.slice()
         dir = if sortDir == "asc" { 1 } else { -1 }
         if sortKey == "created" {
-            copy.sort((a, b) => (a.age - b.age) * dir)
+            copy.sort((a, b) => (b.age - a.age) * dir)
             return copy
         }
         key = sortField(sortKey)
@@ -105,7 +106,7 @@ Store DeployStore {
     }
 
     action sortBy(k: String) {
-        if sortKey == k && sortDir == "desc" { sortDir = "asc" } else { sortDir = "desc" }
+        if sortKey == k { sortDir = if sortDir == "asc" { "desc" } else { "asc" } } else { sortDir = if k == "created" { "desc" } else { "asc" } }
         sortKey = k
         menu = ""
     }

@@ -1,0 +1,9 @@
+Component MenuItem (label: String, icon: String = "", tone: String = "") {
+    derived fg = if tone == "danger" { "var(--text-danger)" } else { "var(--text-secondary)" }
+    derived hoverBg = if tone == "danger" { "var(--danger-soft)" } else { "var(--surface-hover)" }
+    Button(label, type: "button", role: "menuitem", data-tone: tone) {
+        style { display: "flex"  align-items: "center"  gap: "10px"  width: "100%"  background: "none"  border: "0"  padding: "8px 10px"  border-radius: "var(--radius-sm)"  color: fg  font: "400 13px/1.2 var(--font-sans)"  cursor: "pointer"  text-align: "left"
+                --hover-bg: hoverBg  hover { background: "var(--hover-bg)"  color: "var(--text-primary)" } }
+        if icon != "" { Icon(icon) { style { display: "inline-flex"  font-size: "14px"  color: "var(--text-tertiary)" } } }
+    }
+}
