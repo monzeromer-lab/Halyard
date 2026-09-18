@@ -1,17 +1,24 @@
-# Halyard
+# Halyard — a WebFluent demo
 
-Halyard is a fictional edge-deploy platform — "an edge runtime that treats a
-deploy as a routing change" — built entirely in [WebFluent](https://github.com/monzeromer-lab/WebFluent),
-from a 19-artboard design on the Fluant Ink design system.
+**Halyard is not a real product.** It is a demo application for the
+[WebFluent](https://github.com/monzeromer-lab/WebFluent) language: a
+fictional edge-deploy platform ("an edge runtime that treats a deploy as a
+routing change") with made-up regions, builds, traces, prices and customers.
+Nothing here deploys anything, and none of the numbers, hostnames or company
+names refer to anything that exists.
 
-It exists to answer one question honestly: can a real product design be
-implemented *in the language*, without escaping to hand-written HTML, CSS or
-JavaScript? Every page, component, store and style in `src/` is `.wf`. Where
-the language could not do what the design does, the gap is written down in
-[NOTES.md](NOTES.md), together with what was done instead — and, in most
-cases, the compiler commit that closed it.
+What is real is the code. The app is built entirely in WebFluent from a
+19-artboard design on the Fluant Ink design system, to answer one question
+honestly: can a full product design be implemented *in the language*, without
+escaping to hand-written HTML, CSS or JavaScript? Every page, component, store
+and style in `src/` is `.wf`. Where the language could not do what the design
+does, the gap is written down in [NOTES.md](NOTES.md), together with what was
+done instead — and, in most cases, the compiler commit that closed it.
 
 ## What is in here
+
+All data on every screen is seed data lifted from the design, held in the
+stores under `src/stores/`; there is no backend.
 
 | Route | Page |
 |---|---|
