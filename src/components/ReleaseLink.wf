@@ -1,0 +1,15 @@
+Component ReleaseLink (id: String, date: String, title: String, tags: List, current: Bool) {
+    use ContentStore
+    derived numColor = if current { "var(--text-brand)" } else { "var(--text-primary)" }
+    derived bg = if current { "var(--surface-raised)" } else { "transparent" }
+    derived cur = if current { "page" } else { "false" }
+    Link(to: "/changelog", aria-current: cur) {
+        style { display: "block"  padding: "10px 12px"  border-radius: "var(--radius-sm)"  text-decoration: "none"  background: bg  hover { background: "var(--surface-hover)" } }
+        Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "10px" }
+            Num(text: id, size: "13px", color: numColor)
+            Text(date) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+        Text(title) { style { display: "block"  margin: "4px 0 0"  font-size: "13px"  line-height: "1.45"  color: "var(--text-secondary)" } }
+        Row { style { gap: "6px"  margin-top: "8px" }
+            for t in tags { StatusBadge(label: ContentStore.tagLabel(t), tone: ContentStore.tagTone(t), dot: false) } }
+    }
+}

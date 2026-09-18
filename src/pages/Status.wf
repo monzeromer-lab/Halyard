@@ -1,7 +1,123 @@
 Page Status (path: "/status", title: "Halyard status", description: "Live status of the edge runtime, builds, edge KV, queues and the dashboard, across 19 regions.") {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Halyard status", h1)
-        Text("Coming in a later milestone.", muted)
+    use StatusStore
+    state email = ""
+
+    derived emailOk = email.indexOf("@") > 0 && email.lastIndexOf(".") > email.indexOf("@") + 1
+
+    // The status page has its own minimal header.
+    Row(align: center, role: "banner") {
+        style { height: "68px"  flex-wrap: "nowrap"  gap: "16px"  padding: "0 64px"  border-bottom: "1px solid var(--line-hairline)"  max-width: "1200px"  margin: "0 auto"  width: "100%"  @media (max-width: 768px) { padding: "0 16px"  gap: "12px" } }
+        Link(to: "/") { style { display: "flex"  align-items: "center"  gap: "10px"  color: "var(--text-primary)"  text-decoration: "none" }
+            Mark(size: 22)
+            Text("Halyard status") { style { margin: "0"  font: "700 18px/1 var(--font-sans)"  letter-spacing: "-0.02em"  color: "var(--text-primary)" } } }
+        Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+        NavLink(label: "Changelog", to: "/changelog")
+        NavLink(label: "Docs", to: "/docs")
+        FlButton(label: "Dashboard", variant: "secondary", size: "sm", to: "/app")
+    }
+
+    Stack {
+        style { max-width: "1200px"  margin: "0 auto"  width: "100%"  gap: "0" }
+
+        // Banner
+        Container { style { padding: "48px 64px 32px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "24px 16px" } }
+            Row(align: center, role: "status") {
+                style { flex-wrap: "nowrap"  gap: "20px"  padding: "26px 30px"  background: "var(--warning-soft)"  border: "1px solid var(--warning)"  border-radius: "var(--radius-lg)"  @media (max-width: 768px) { flex-wrap: "wrap"  padding: "20px" } }
+                Container { style { width: "48px"  height: "48px"  border-radius: "50%"  flex: "none"  background: "rgba(245,181,60,.16)"  color: "var(--warning)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  padding: "0"  margin: "0"  font-size: "22px" }
+                    Icon("warning") { style { display: "inline-flex" } } }
+                Stack { style { flex-grow: "1"  gap: "6px" }
+                    Heading("One region is degraded, everything else is operational", h1) { style { margin: "0"  font-size: "26px"  line-height: "1.2"  font-weight: "700"  letter-spacing: "-0.015em"  color: "var(--text-warning)" } }
+                    Text("gru1 is answering slowly. Requests are being served in every region. Last checked 30 seconds ago.") { style { margin: "0"  font-size: "14px"  color: "var(--text-secondary)" } } }
+                Stack(align: end) { style { flex: "none"  gap: "4px"  text-align: "right" }
+                    Overline(text: "UPTIME, 90 DAYS")
+                    Num(text: "99.975%", size: "28px", weight: "500") }
+            }
+        }
+
+        // Components
+        Container { style { padding: "0 64px 44px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 32px" } }
+            Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "16px"  margin-bottom: "16px" }
+                Heading("Components", h2) { style { margin: "0"  font-size: "20px"  font-weight: "700"  flex-grow: "1" } }
+                Text("Each bar is one day. Hover for the detail.") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+            Stack { style { gap: "0"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  background: "var(--surface-raised)"  padding: "4px 24px"  @media (max-width: 768px) { padding: "4px 12px" } }
+                for c in StatusStore.rows {
+                    Stack { style { gap: "12px"  padding: "20px 0"  border-bottom: "1px solid var(--line-hairline)" }
+                        Row(align: center) { style { flex-wrap: "nowrap"  gap: "12px" }
+                            Dot(color: "var(--success)", size: 8)
+                            Text(c.name) { style { margin: "0"  flex-grow: "1"  font: "700 15px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                            Num(text: "{c.uptime} uptime", size: "13px", color: "var(--text-tertiary)")
+                            StatusBadge(label: "Operational", tone: "success") }
+                        Row { style { gap: "3px"  height: "32px"  flex-wrap: "nowrap"  align-items: "stretch"  overflow: "hidden" }
+                            for d in c.days {
+                                Container(title: d.title) { style { flex: "1 1 0"  min-width: "3px"  border-radius: "2px"  background: d.color  padding: "0"  margin: "0"  height: "100%"  transition: "transform var(--d-fast) var(--ease-standard)"  hover { transform: "scaleY(1.14)" } } }
+                            } }
+                        Row { style { flex-wrap: "nowrap"  justify-content: "space-between" }
+                            Text("90 days ago") { style { margin: "0"  font-size: "11px"  color: "var(--text-disabled)" } }
+                            Text("today") { style { margin: "0"  font-size: "11px"  color: "var(--text-disabled)" } } }
+                    }
+                }
+            }
+        }
+
+        // Regions
+        Container { style { padding: "0 64px 44px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 32px" } }
+            Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "16px"  margin-bottom: "16px" }
+                Heading("Regions", h2) { style { margin: "0"  font-size: "20px"  font-weight: "700"  flex-grow: "1" } }
+                Text("p95 response, milliseconds, last 5 minutes") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+            Grid(columns: 5) { style { gap: "10px"  @media (max-width: 1024px) { grid-template-columns: "repeat(3, minmax(0, 1fr))" }  @media (max-width: 480px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" } }
+                for r in StatusStore.regionCards {
+                    RegionCard(code: r.code, p95: r.p95, label: r.label, tone: r.tone, degraded: r.degraded)
+                }
+            }
+        }
+
+        // Incident history
+        Container { style { padding: "0 64px 44px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 32px" } }
+            Row(align: center) { style { flex-wrap: "nowrap"  gap: "16px"  margin-bottom: "16px"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+                Heading("Incident history", h2) { style { margin: "0"  font-size: "20px"  font-weight: "700"  flex-grow: "1" } }
+                Row { style { gap: "8px" }
+                    Chip(label: "All", pressed: StatusStore.filter == "all", count: "{StatusStore.counts.all}") { StatusStore.setFilter("all") }
+                    Chip(label: "Active", pressed: StatusStore.filter == "active", count: "{StatusStore.counts.active}") { StatusStore.setFilter("active") }
+                    Chip(label: "Resolved", pressed: StatusStore.filter == "resolved", count: "{StatusStore.counts.resolved}") { StatusStore.setFilter("resolved") } } }
+            Stack { style { gap: "10px" }
+                for inc in StatusStore.shown {
+                    IncidentCard(id: inc.id, status: inc.state, tone: inc.tone, title: inc.title, when: inc.when, updates: inc.updates, open: StatusStore.open == inc.id)
+                }
+                if StatusStore.shown.length == 0 {
+                    EmptyState(title: "No incidents of that kind in 90 days", body: "Change the filter to see the rest of the history.") {
+                        FlButton(label: "Show all", variant: "secondary", size: "sm") { StatusStore.setFilter("all") }
+                    }
+                }
+            }
+        }
+
+        // Subscribe
+        Container { style { padding: "0 64px 44px"  width: "100%"  max-width: "100%"  @media (max-width: 768px) { padding: "0 16px 32px" } }
+            Row(align: center) {
+                style { gap: "40px"  padding: "32px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  flex-wrap: "nowrap"  @media (max-width: 1024px) { flex-wrap: "wrap"  padding: "24px" } }
+                Stack { style { flex-grow: "1"  gap: "8px" }
+                    Heading("Get told before you notice", h2) { style { margin: "0"  font-size: "20px"  font-weight: "700" } }
+                    Text("One email when an incident opens, one when it is resolved, and nothing in between unless the status changes.") { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "52ch" } } }
+                Form {
+                    style { width: "360px"  flex: "none"  @media (max-width: 1024px) { width: "100%" } }
+                    SubscribeForm(id: "st-sub", label: "Email", help: StatusStore.helpText, helpColor: StatusStore.helpColor, button: StatusStore.subLabel, invalid: StatusStore.invalid) {
+                        Input(email, bind: email, id: "st-sub", placeholder: "you@company.com", aria-labelledby: "st-sub-label", aria-invalid: StatusStore.invalid) {
+                            style { height: "38px"  flex-grow: "1"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px"  font: "400 14px/1.2 var(--font-sans)"
+                                    hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" }  focus { border-color: "var(--focus-ring)" } }
+                            on:input { StatusStore.setEmail(email) }
+                        }
+                    }
+                    on:submit { StatusStore.subscribe() }
+                }
+            }
+        }
+
+        Row(align: center) {
+            style { flex-wrap: "nowrap"  gap: "16px"  padding: "24px 64px 40px"  border-top: "1px solid var(--line-hairline)"  @media (max-width: 768px) { padding: "16px"  flex-wrap: "wrap" } }
+            Text("Checks run every 30 seconds from 6 independent locations") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+            NavLink(label: "Status API", to: "/docs")
+            NavLink(label: "Halyard", to: "/")
+            Text("© [YEAR] [YOUR COMPANY]") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } }
+        }
     }
 }

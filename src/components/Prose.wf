@@ -1,0 +1,4 @@
+// A paragraph of running text at the docs measure.
+Component Prose (text: String, size: String = "16px", maxWidth: String = "72ch", color: String = "var(--text-secondary)") {
+    Text(text) { style { margin: "0 0 20px"  font-size: size  line-height: "1.7"  color: color  max-width: maxWidth } }
+}

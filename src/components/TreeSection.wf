@@ -1,0 +1,24 @@
+// A docs nav section: a disclosure button with a count, then its pages. The
+// current page carries aria-current.
+Component TreeSection (name: String, count: String, open: Bool, items: List, current: String) {
+    derived rot = if open { "rotate(90deg)" } else { "rotate(0deg)" }
+    Stack {
+        style { gap: "0"  margin-bottom: "8px" }
+        Button("", type: "button", aria-expanded: open) {
+            style { width: "100%"  background: "none"  border: "0"  display: "flex"  align-items: "center"  gap: "8px"  padding: "8px"  color: "var(--text-primary)"
+                    font: "700 12px/1.2 var(--font-sans)"  letter-spacing: "0.06em"  cursor: "pointer"  text-transform: "uppercase"  border-radius: "6px"  hover { background: "var(--surface-hover)" } }
+            Icon("chevron-right") { style { color: "var(--text-tertiary)"  transform: rot  display: "inline-flex"  transition: "transform var(--d-fast) var(--ease-standard)"  font-size: "13px" } }
+            Text(name) { style { margin: "0"  flex-grow: "1"  text-align: "left"  font: "inherit"  color: "inherit" } }
+            Num(text: count, size: "11px", color: "var(--text-disabled)")
+        }
+        if open {
+            for item in items {
+                if item == current {
+                    Link(item, to: "/docs", aria-current: "page") { style { display: "block"  padding: "7px 10px 7px 26px"  border-radius: "6px"  font: "600 13px/1.4 var(--font-sans)"  background: "var(--brand-soft)"  color: "var(--text-brand)"  text-decoration: "none" } }
+                } else {
+                    Link(item, to: "/docs") { style { display: "block"  padding: "7px 10px 7px 26px"  border-radius: "6px"  font: "400 13px/1.4 var(--font-sans)"  color: "var(--text-tertiary)"  text-decoration: "none"  hover { background: "var(--surface-hover)"  color: "var(--text-primary)" } } }
+                }
+            }
+        }
+    }
+}

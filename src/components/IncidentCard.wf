@@ -1,0 +1,32 @@
+// An incident: a disclosure row with its state badge, then the updates,
+// each phase in its own colour beside the word.
+Component IncidentCard (id: Number, status: String, tone: String, title: String, when: String, updates: List, open: Bool) {
+    use StatusStore
+    derived edge = if status == "active" { "var(--warning)" } else { "var(--line-default)" }
+    derived label = if status == "active" { "Active" } else { "Resolved" }
+    derived badgeTone = if status == "active" { "warning" } else { "neutral" }
+    derived rot = if open { "rotate(180deg)" } else { "rotate(0deg)" }
+    Stack {
+        style { gap: "0"  border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-md)"  background: "var(--surface-raised)"  overflow: "hidden" }
+        Button("", type: "button", aria-expanded: open) {
+            style { width: "100%"  display: "flex"  align-items: "center"  gap: "14px"  padding: "16px 18px"  background: "none"  border: "0"  cursor: "pointer"  text-align: "left"  color: "var(--text-primary)"  hover { background: "var(--surface-hover)" } }
+            StatusBadge(label: label, tone: badgeTone)
+            Stack { style { flex-grow: "1"  gap: "3px" }
+                Text(title) { style { margin: "0"  font: "700 15px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                Text("{when} · {updates.length} updates") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+            Icon("chevron-down") { style { color: "var(--text-tertiary)"  display: "inline-flex"  transform: rot  transition: "transform var(--d-base) var(--ease-standard)" } }
+            StatusStore.toggle(id)
+        }
+        if open {
+            Stack { style { gap: "0"  padding: "4px 18px 18px"  border-top: "1px solid var(--line-hairline)" }
+                for u in updates {
+                    Row { style { flex-wrap: "nowrap"  gap: "14px"  padding: "14px 0"  border-bottom: "1px solid var(--line-hairline)" }
+                        Stack { style { width: "120px"  flex: "none"  gap: "2px" }
+                            Text(u.phase) { style { margin: "0"  font: "700 12px/1.3 var(--font-sans)"  color: StatusStore.phaseColor(u.phase) } }
+                            Num(text: "{u.time} UTC", size: "11px", color: "var(--text-tertiary)") }
+                        Text(u.body) { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)" } } }
+                }
+            }
+        }
+    }
+}

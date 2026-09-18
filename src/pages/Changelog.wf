@@ -1,7 +1,128 @@
-Page Changelog (path: "/changelog", title: "Changelog", description: "Every change to the Halyard runtime, newest first, with the breaking ones marked.") {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Changelog", h1)
-        Text("Coming in a later milestone.", muted)
+Page Changelog (path: "/changelog", title: "Changelog", description: "Every change to the Halyard runtime, newest first, with the breaking ones marked.", type: "article") {
+    use ContentStore
+    use StatusStore
+    state email = ""
+    state sent = false
+    state invalid = false
+
+    derived helpText = if sent { "Check your inbox. The first email arrives with the next release." } else if invalid { "That address is missing an @ or a domain. Fix it and try again." } else { "One email per release. Unsubscribe from any of them." }
+    derived helpColor = if sent { "var(--text-success)" } else if invalid { "var(--text-danger)" } else { "var(--text-tertiary)" }
+    derived subLabel = if sent { "Subscribed" } else { "Subscribe" }
+    derived emailOk = email.indexOf("@") > 0 && email.lastIndexOf(".") > email.indexOf("@") + 1
+
+    SiteNav()
+
+    Wrap(top: "72px", bottom: "40px") {
+        Row(align: center) { style { flex-wrap: "nowrap"  gap: "14px"  margin-bottom: "22px"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            StatusBadge(label: "v9.4", tone: "brand", dot: false)
+            Overline(text: "CHANGELOG · 18 SEPTEMBER")
+            Rule(grow: true)
+            Text("7 minute read") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  white-space: "nowrap" } } }
+        Heading("Routing rules now ship inside the build.", h1) {
+            style { margin: "0 0 24px"  max-width: "18ch"  font-family: "var(--font-display)"  font-size: "72px"  line-height: "0.94"  letter-spacing: "-0.025em"  font-weight: "600"  @media (max-width: 768px) { font-size: "40px" } }
+        }
+        Row(align: center) { style { flex-wrap: "nowrap"  gap: "14px"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            Text("[IMG]") { style { width: "40px"  height: "40px"  border-radius: "50%"  background: "var(--surface-inset)"  border: "1px dashed var(--line-strong)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "600 11px/1 var(--font-mono)"  color: "var(--text-tertiary)"  margin: "0"  flex: "none" } }
+            Stack { style { gap: "0" }
+                Text("[AUTHOR NAME]") { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                Text("[ROLE], runtime team") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } } }
+            Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+            FlButton(label: "Copy link", variant: "ghost", size: "sm", icon: "link") { navigator.clipboard.writeText(window.location.href) }
+            FlButton(label: "Read the reference", variant: "secondary", size: "sm", to: "/docs")
+        }
     }
+
+    Wrap(bottom: "0") {
+        Row {
+            style { flex-wrap: "nowrap"  align-items: "flex-start"  gap: "0"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+            // Left rail: filter chips and the release list
+            Stack {
+                style { width: "300px"  flex: "none"  padding-right: "48px"  gap: "16px"  position: "sticky"  top: "100px"  @media (max-width: 1024px) { width: "100%"  position: "static"  padding-right: "0"  margin-bottom: "40px" } }
+                Overline(text: "FILTER RELEASES")
+                Row { style { gap: "8px" }
+                    Chip(label: "Everything", pressed: ContentStore.releaseFilter == "all", count: "{ContentStore.releaseCounts.all}") { ContentStore.setReleaseFilter("all") }
+                    Chip(label: "Added", pressed: ContentStore.releaseFilter == "added", count: "{ContentStore.releaseCounts.added}") { ContentStore.setReleaseFilter("added") }
+                    Chip(label: "Changed", pressed: ContentStore.releaseFilter == "changed", count: "{ContentStore.releaseCounts.changed}") { ContentStore.setReleaseFilter("changed") }
+                    Chip(label: "Fixed", pressed: ContentStore.releaseFilter == "fixed", count: "{ContentStore.releaseCounts.fixed}") { ContentStore.setReleaseFilter("fixed") }
+                    Chip(label: "Security", pressed: ContentStore.releaseFilter == "security", count: "{ContentStore.releaseCounts.security}") { ContentStore.setReleaseFilter("security") } }
+                Rule()
+                Stack(role: "navigation", aria-label: "Releases") { style { gap: "2px" }
+                    for r in ContentStore.filteredReleases {
+                        ReleaseLink(id: r.id, date: r.date, title: r.title, tags: r.tags, current: r.current)
+                    }
+                    if ContentStore.filteredReleases.length == 0 {
+                        EmptyState(title: "No releases of that kind", body: "Nothing in the last ten releases carried that tag.") {
+                            FlButton(label: "Show everything", variant: "secondary", size: "sm") { ContentStore.setReleaseFilter("all") }
+                        }
+                    }
+                }
+            }
+
+            // The article
+            Stack {
+                style { flex-grow: "1"  min-width: "0"  max-width: "780px"  gap: "0" }
+                Prose(text: "Until this release, a routing rule was something you changed in a dashboard, and it took effect on whatever build happened to be live. That is a reasonable design right up to the first incident, when the rollback restores the code and leaves the routing exactly as broken as it was.", size: "20px", maxWidth: "62ch", color: "var(--text-primary)")
+                Prose(text: "From v9.4 the rules are a file in your repository. They are compiled into the artifact, signed with it, and evaluated at the edge before any of your code runs. A rollback restores both, because there is only one thing to restore.", size: "18px", maxWidth: "62ch")
+                Stack(align: center) {
+                    style { gap: "10px"  margin: "12px 0 32px"  padding: "48px 24px"  border: "1px dashed var(--line-strong)"  border-radius: "var(--radius-lg)"  background: "var(--surface-raised)"  text-align: "center" }
+                    Placeholder(text: "[DIAGRAM: rule evaluation at the edge]")
+                    Text("Replace with the real diagram. The one we ship shows the four evaluation stages and where the 2 ms budget is spent.") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  max-width: "48ch" } }
+                }
+                DisplayHeading(text: "What changed", size: "md", margin: "24px 0 18px")
+                Prose(text: "Three things, and the third is the one that will cost you an afternoon if you skip it. ¹", size: "18px", maxWidth: "62ch")
+                List(ordered) { style { margin: "0 0 22px"  padding-left: "24px"  color: "var(--text-secondary)"  font-size: "18px"  line-height: "1.7"  max-width: "62ch" }
+                    List.Item { style { margin: "0 0 8px"  display: "list-item" }  Text("Rules are read from routes.halyard.ts at build time and embedded in the artifact.") { style { margin: "0"  font-size: "18px"  color: "var(--text-secondary)" } } }
+                    List.Item { style { margin: "0 0 8px"  display: "list-item" }  Text("The dashboard rule editor is now read-only, and shows which file and line a rule came from.") { style { margin: "0"  font-size: "18px"  color: "var(--text-secondary)" } } }
+                    List.Item { style { margin: "0 0 8px"  display: "list-item" }  Text("Weighted splits must sum to exactly 100. Groups that do not are refused at deploy with HL-4021.") { style { margin: "0"  font-size: "18px"  color: "var(--text-secondary)" } } }
+                }
+                Container { style { padding: "8px 0 32px"  width: "auto"  max-width: "100%" }
+                    PullQuote(text: "If it is not in the artifact, it cannot be rolled back. That sentence is the whole design.", name: "— from the design note", role: "that started this work") }
+                DisplayHeading(text: "Migrating", size: "md", margin: "24px 0 18px")
+                Prose(text: "Your existing rules are exported to routes.halyard.ts the first time you deploy on v9.4. Nothing is deleted, and v2 routes.json is still read and translated on import. ²", size: "18px", maxWidth: "62ch")
+                Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  padding: "0"  width: "100%"  max-width: "100%"  margin: "0 0 32px" }
+                    Table(caption: "What happens to each kind of existing rule on upgrade") {
+                        style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "520px" }
+                        Thead { Trow { Th(text: "What you have today")  Th(text: "What happens on upgrade")  Th(text: "Action") } }
+                        Tbody {
+                            for m in ContentStore.migration {
+                                Trow { style { hover { background: "var(--surface-hover)" } }
+                                    Td(text: m.have, color: "var(--text-primary)")
+                                    Td(text: m.then)
+                                    Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: m.action, tone: m.tone, dot: false) } }
+                            }
+                        }
+                    }
+                }
+                DisplayHeading(text: "What we are doing next", size: "md", margin: "24px 0 18px")
+                Prose(text: "Rules can currently only choose between builds, functions and preferred regions. The next release opens the same evaluation to cache keys, so a rule can decide what a response is stored under rather than only who answers it. If you are relying on a header-derived cache key today, that work is for you.", size: "18px", maxWidth: "62ch")
+                Rule()
+                Container { style { padding: "24px 0 0"  width: "auto" }  Overline(text: "FOOTNOTES") }
+                Stack { style { gap: "8px"  margin: "12px 0 0" }
+                    Text("1. The afternoon is the weighted split check. Every group we saw in the beta that summed to 99 had been that way for months without anyone noticing the missing 1%.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-tertiary)"  max-width: "62ch" } }
+                    Text("2. Translation is lossy in exactly one place: a v2 rule with no target inherited the project default. On import it is written out with an explicit build hash.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-tertiary)"  max-width: "62ch" } } }
+            }
+        }
+    }
+
+    Wrap(top: "72px", bottom: "88px") {
+        Row(align: center) {
+            style { gap: "48px"  padding: "40px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-xl)"  flex-wrap: "nowrap"  @media (max-width: 1024px) { flex-wrap: "wrap"  padding: "24px" } }
+            Stack { style { flex-grow: "1"  gap: "8px" }
+                Heading("Every release, in one short email.", h2) { style { margin: "0"  font-size: "26px"  font-weight: "700"  letter-spacing: "-0.015em" } }
+                Text("Roughly twice a month, and never anything that is not a change to the runtime. Breaking changes are in the subject line.") { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "52ch" } } }
+            Form {
+                style { width: "360px"  flex: "none"  @media (max-width: 1024px) { width: "100%" } }
+                SubscribeForm(id: "sub", label: "Work email", help: helpText, helpColor: helpColor, button: subLabel, invalid: invalid) {
+                    Input(email, bind: email, id: "sub", placeholder: "you@company.com", aria-labelledby: "sub-label", aria-invalid: invalid) {
+                        style { height: "38px"  flex-grow: "1"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px"  font: "400 14px/1.2 var(--font-sans)"
+                                --edge: "var(--border-control)"  hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" }  focus { border-color: "var(--focus-ring)" } }
+                        on:input { invalid = false  sent = false }
+                    }
+                }
+                on:submit { sent = emailOk  invalid = !emailOk }
+            }
+        }
+    }
+
+    SiteFooter()
 }

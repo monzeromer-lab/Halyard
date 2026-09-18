@@ -1,0 +1,10 @@
+Component RegionCard (code: String, p95: String, label: String, tone: String, degraded: Bool) {
+    derived edge = if degraded { "var(--warning)" } else { "var(--line-default)" }
+    Stack {
+        style { gap: "8px"  padding: "14px 16px"  background: "var(--surface-raised)"  border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-md)" }
+        Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "8px" }
+            Text(code) { style { margin: "0"  flex-grow: "1"  font: "600 13px/1 var(--font-mono)"  color: "var(--text-primary)" } }
+            Num(text: p95, size: "13px", color: "var(--text-secondary)") }
+        StatusBadge(label: label, tone: tone)
+    }
+}

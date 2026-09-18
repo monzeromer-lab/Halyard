@@ -1,0 +1,15 @@
+// The subscribe form shared by the changelog and the status page. The page
+// owns the email state (an Input binds to page state) and the store owns
+// the validation; the form's label, button text and help line are props.
+Component SubscribeForm (id: String, label: String, help: String, helpColor: String, button: String, invalid: Bool) {
+    derived edge = if invalid { "var(--danger)" } else { "var(--border-control)" }
+    Stack {
+        style { gap: "0" }
+        Text(label, id: "{id}-label") { style { display: "block"  font: "600 14px/1.2 var(--font-sans)"  color: "var(--text-secondary)"  margin: "0 0 8px" } }
+        Row { style { flex-wrap: "nowrap"  gap: "8px"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+            children
+            FlButton(label: button, variant: "primary", submit: true)
+        }
+        Text(help, role: "status") { style { font: "400 12px/1.5 var(--font-sans)"  color: helpColor  margin: "8px 0 0" } }
+    }
+}

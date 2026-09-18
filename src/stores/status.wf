@@ -1,0 +1,76 @@
+// The public status page: five components with 90 days of history, the 19
+// regions, three incidents, the history filter and the subscribe form.
+Store StatusStore {
+    state components = [
+        { name: "Edge runtime", uptime: "100.000%", bad: [] },
+        { name: "Builds", uptime: "99.981%", bad: [{ day: 56, kind: "partial" }, { day: 55, kind: "partial" }, { day: 19, kind: "partial" }] },
+        { name: "Edge KV", uptime: "99.997%", bad: [{ day: 38, kind: "partial" }] },
+        { name: "Queues", uptime: "99.902%", bad: [{ day: 72, kind: "major" }, { day: 71, kind: "partial" }, { day: 70, kind: "partial" }] },
+        { name: "Dashboard and API", uptime: "99.994%", bad: [{ day: 29, kind: "partial" }, { day: 6, kind: "partial" }] }
+    ]
+    state dayIndex = Array.from(Array(90).keys())
+
+    derived rows = components.map(c => { name: c.name, uptime: c.uptime, days: dayIndex.map(i => dayOf(c, 89 - i)) })
+
+    state regions = [
+        { code: "fra1", p95: 34 }, { code: "iad1", p95: 41 }, { code: "cdg1", p95: 36 }, { code: "sfo1", p95: 52 }, { code: "gru1", p95: 148 },
+        { code: "hnd1", p95: 61 }, { code: "syd1", p95: 74 }, { code: "bom1", p95: 88 }, { code: "jnb1", p95: 96 }, { code: "arn1", p95: 44 },
+        { code: "dub1", p95: 39 }, { code: "sin1", p95: 67 }, { code: "yyz1", p95: 45 }, { code: "icn1", p95: 63 }, { code: "cpt1", p95: 104 },
+        { code: "lhr1", p95: 34 }, { code: "ams1", p95: 35 }, { code: "nrt1", p95: 59 }, { code: "pdx1", p95: 49 }
+    ]
+    derived regionCards = regions.map(r => { code: r.code, p95: r.p95 + " ms", degraded: r.code == "gru1", label: if r.code == "gru1" { "Degraded" } else { "Operational" }, tone: if r.code == "gru1" { "warning" } else { "success" } })
+
+    state incidents = [
+        { id: 0, state: "active", tone: "warning", title: "Elevated response time in gru1", when: "18 September, 11:06 UTC", updates: [
+            { phase: "Monitoring", time: "13:48", body: "p95 in gru1 is back under 200 ms. We are leaving this open for another hour before we call it resolved." },
+            { phase: "Identified", time: "12:14", body: "An upstream transit provider in São Paulo is dropping about 3% of packets. We have shifted gru1 traffic onto a second path." },
+            { phase: "Investigating", time: "11:06", body: "p95 in gru1 crossed 200 ms for five consecutive minutes. Requests are still being served. No other region is affected." } ] },
+        { id: 1, state: "resolved", tone: "danger", title: "Queue consumers stalled for 41 minutes", when: "14 September, 02:17 UTC", updates: [
+            { phase: "Resolved", time: "02:58", body: "Consumers drained the backlog. No messages were lost; 18,402 were delivered late, the oldest by 41 minutes." },
+            { phase: "Identified", time: "02:31", body: "A leader election in the queue coordinator did not complete after a routine node replacement." },
+            { phase: "Investigating", time: "02:17", body: "Queue consumers stopped acknowledging messages in all regions. Publishing was unaffected." } ] },
+        { id: 2, state: "resolved", tone: "warning", title: "Builds queued behind a cache rebuild", when: "08 September, 09:40 UTC", updates: [
+            { phase: "Resolved", time: "10:22", body: "The queue drained. Build times are back to a 22 second median." },
+            { phase: "Investigating", time: "09:40", body: "A build cache migration is holding new builds in the queue for up to six minutes." } ] }
+    ]
+    state filter = "all"
+    state open = 0
+
+    derived shown = incidents.filter(i => filter == "all" || i.state == filter)
+    derived counts = { all: incidents.length, active: incidents.filter(i => i.state == "active").length, resolved: incidents.filter(i => i.state == "resolved").length }
+
+    // Subscribe form
+    state email = ""
+    state sent = false
+    state invalid = false
+    derived subLabel = if sent { "Subscribed" } else { "Subscribe" }
+    derived helpText = if sent { "Confirmed. You will hear from us the next time something opens." } else if invalid { "That address is missing an @ or a domain. Fix it and try again." } else { "Two emails per incident. Unsubscribe from any of them." }
+    derived helpColor = if sent { "var(--text-success)" } else if invalid { "var(--text-danger)" } else { "var(--text-tertiary)" }
+
+    action dayOf(c: Map, age: Number) {
+        hit = c.bad.filter(b => b.day == age)
+        if hit.length == 0 {
+            return { color: "var(--success)", title: age + " days ago — no incidents" }
+        }
+        if hit[0].kind == "major" {
+            return { color: "var(--danger)", title: age + " days ago — major outage" }
+        }
+        return { color: "var(--warning)", title: age + " days ago — partially degraded" }
+    }
+
+    action phaseColor(phase: String) {
+        if phase == "Investigating" { return "var(--text-warning)" }
+        if phase == "Identified" { return "var(--text-info)" }
+        if phase == "Monitoring" { return "var(--text-accent)" }
+        return "var(--text-success)"
+    }
+
+    action setFilter(f: String) { filter = f }
+    action toggle(id: Number) { if open == id { open = -1 } else { open = id } }
+    action setEmail(v: String) { email = v  invalid = false  sent = false }
+    action subscribe() {
+        ok = email.indexOf("@") > 0 && email.indexOf(".", email.indexOf("@")) > email.indexOf("@") + 1
+        sent = ok
+        invalid = !ok
+    }
+}

@@ -92,3 +92,21 @@ the library uses `pressed`, `checked` and `note`.
   and `on:input` kept only one; the heading-outline lint could not see the
   headings inside components; a component named `Section` was silently the
   builtin `Section` (renamed `Wrap`).
+
+## Milestone 5 — docs, changelog, status
+
+- **Inline `<code>` in prose.** A paragraph cannot mix a `Text` run with a code
+  span, so tokens like `match.fn` sit in the running text unstyled. The
+  parameter table and the code blocks are styled as the design draws them.
+- **Footnote superscripts** are the Unicode ¹ ² characters in the sentence,
+  not a link to the note.
+- **The 90-day bars** are 450 `Container`s, five `for` loops of 90, rendered
+  from `StatusStore.rows` (a derived list built with `Array.from` and an
+  index map). They render instantly; the 30-day fallback was not needed.
+- Prop and argument names cannot be `state` (keyword): `IncidentCard` takes
+  `status`.
+- Compiler fixes this milestone needed: a keyword after a dot (`Array.from`)
+  was a parse error; a map literal returned from an arrow was a block; a
+  sub-component dropped its style block, attributes and handlers in the SPA;
+  an Input with both `bind:` and `on:input` lost its binding; a Button's
+  block that mixed content with an action ran the action at render time.

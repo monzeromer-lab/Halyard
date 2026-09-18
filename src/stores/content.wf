@@ -97,6 +97,88 @@ Store ContentStore {
         { q: "Can I move between plans mid-month?", a: "Yes. Upgrades apply immediately and are prorated; downgrades apply at the next renewal so you keep what you have already paid for." }
     ]
 
+    // Docs: the nav tree, the on-page contents, the rule parameters and the
+    // three formats of the same rules.
+    state docsTree = [
+        { name: "Start", items: ["Install the CLI", "Your first deploy", "Project layout", "Environment variables"] },
+        { name: "Runtime", items: ["Edge functions", "Routing rules", "Middleware", "Edge KV", "Queues", "Limits"] },
+        { name: "Builds", items: ["Build pipeline", "Reproducible builds", "Caching", "Monorepos"] },
+        { name: "Operate", items: ["Traces", "Log drains", "Alerts", "Rollback"] },
+        { name: "Reference", items: ["CLI commands", "REST API", "Config schema", "Error codes"] }
+    ]
+    state docsToc = [
+        { id: "match", label: "The match object" }, { id: "order", label: "Evaluation order" }, { id: "targets", label: "Targets" },
+        { id: "compute", label: "Computed rules" }, { id: "params", label: "Rule parameters" }, { id: "errors", label: "What goes wrong" }
+    ]
+    state ruleParams = [
+        { key: "match.path", type: "string | string[]", def: "—", note: "Glob against the pathname. A trailing /* matches any depth; /*.js matches one segment." },
+        { key: "match.header", type: "Record<string, string>", def: "—", note: "All listed headers must match. Values are compared case-insensitively after trimming." },
+        { key: "match.cookie", type: "Record<string, string>", def: "—", note: "Exact cookie value match. Absent cookies never match, including against an empty string." },
+        { key: "match.geo", type: "\{ country?, region?, asn? \}", def: "—", note: "Resolved at the edge from the client address. Falls through when the lookup is unavailable." },
+        { key: "match.fn", type: "(req) => boolean", def: "—", note: "A pure function evaluated in under 2 ms. Throwing counts as no match and is logged." },
+        { key: "build", type: "string", def: "current", note: "A build hash, or current. Pinning a hash freezes this rule until you change it." },
+        { key: "fn", type: "string", def: "—", note: "Name of an edge function in this project. Mutually exclusive with build." },
+        { key: "timeout", type: "number", def: "10000", note: "Milliseconds before the request is cut and a 504 is returned to the client." },
+        { key: "weight", type: "number", def: "100", note: "Share of matching traffic, 0 to 100. Weighted rules must sum to 100 or the deploy is refused." }
+    ]
+    state ruleErrors = [
+        { code: "HL-4019", text: "A rule after the fallback can never match." },
+        { code: "HL-4021", text: "Weighted rules in a group do not sum to 100." },
+        { code: "HL-4033", text: "match.fn exceeded the 2 ms budget during the deploy check." }
+    ]
+    state docsCodes = {
+        ts: "import \{ defineRoutes \} from 'halyard'\n\nexport default defineRoutes([\n  // pin the beta cohort to a known build\n  \{ match: \{ cookie: \{ ht_beta: '1' \} \}, build: '8f2c41' \},\n\n  // EU traffic prefers fra1, then falls through\n  \{ match: \{ geo: \{ country: ['DE', 'FR', 'NL'] \} \}, region: 'fra1' \},\n\n  \{ match: \{ path: '/api/*' \}, fn: 'api', timeout: 10_000 \},\n  \{ match: \{ path: '/*' \}, build: 'current' \},\n])",
+        json: "\{\n  \"version\": 3,\n  \"routes\": [\n    \{ \"match\": \{ \"cookie\": \{ \"ht_beta\": \"1\" \} \}, \"build\": \"8f2c41\" \},\n    \{ \"match\": \{ \"path\": \"/api/*\" \}, \"fn\": \"api\" \}\n  ]\n\}",
+        cli: "$ halyard routes list --project hl-2201\n  1  cookie ht_beta=1          → build 8f2c41\n  2  geo.country in DE,FR,NL   → region fra1\n  3  path /api/*               → fn api\n  4  path /*                   → build current\n\n$ halyard routes test GET /api/cart --cookie ht_beta=1\n→ rule 1 matched, served by build 8f2c41 in fra1"
+    }
+
+    // Changelog: ten releases, newest first. Tag tones: added → success,
+    // changed → info, fixed → warning, security → brand.
+    state releases = [
+        { id: "v9.4", date: "18 Sep", title: "Routing rules ship with the build", tags: ["added", "changed"], current: true },
+        { id: "v9.3", date: "04 Sep", title: "Queues leave preview", tags: ["added"], current: false },
+        { id: "v9.2", date: "27 Aug", title: "Cold start cut to 8.1 ms", tags: ["changed"], current: false },
+        { id: "v9.1", date: "19 Aug", title: "Trace export to your own sink", tags: ["added"], current: false },
+        { id: "v9.0", date: "05 Aug", title: "Reproducible builds by default", tags: ["changed", "security"], current: false },
+        { id: "v8.9", date: "22 Jul", title: "Region fra1 capacity doubled", tags: ["changed"], current: false },
+        { id: "v8.8", date: "11 Jul", title: "Fix: cookie rules ignored trailing spaces", tags: ["fixed"], current: false },
+        { id: "v8.7", date: "01 Jul", title: "Signed artifacts, SLSA level 3", tags: ["security"], current: false },
+        { id: "v8.6", date: "18 Jun", title: "Monorepo project detection", tags: ["added"], current: false },
+        { id: "v8.5", date: "06 Jun", title: "Fix: 504 on slow upstream kept the isolate warm", tags: ["fixed"], current: false }
+    ]
+    state releaseFilter = "all"
+    derived filteredReleases = releases.filter(r => releaseFilter == "all" || r.tags.indexOf(releaseFilter) > -1)
+    derived releaseCounts = {
+        all: releases.length,
+        added: releases.filter(r => r.tags.indexOf("added") > -1).length,
+        changed: releases.filter(r => r.tags.indexOf("changed") > -1).length,
+        fixed: releases.filter(r => r.tags.indexOf("fixed") > -1).length,
+        security: releases.filter(r => r.tags.indexOf("security") > -1).length
+    }
+    state migration = [
+        { have: "Rules in the dashboard", then: "Exported to routes.halyard.ts on first deploy", action: "Automatic", tone: "success" },
+        { have: "Rules edited after a deploy", then: "Refused; edit the file and redeploy", action: "Breaking", tone: "danger" },
+        { have: "Weighted splits", then: "Must now sum to exactly 100", action: "Breaking", tone: "danger" },
+        { have: "match.fn", then: "New. No action needed", action: "New", tone: "info" },
+        { have: "routes.json v2", then: "Still read, translated on import", action: "Automatic", tone: "success" }
+    ]
+
+    action setReleaseFilter(f: String) { releaseFilter = f }
+
+    action tagTone(tag: String) {
+        if tag == "added" { return "success" }
+        if tag == "changed" { return "info" }
+        if tag == "fixed" { return "warning" }
+        return "brand"
+    }
+
+    action tagLabel(tag: String) {
+        if tag == "added" { return "Added" }
+        if tag == "changed" { return "Changed" }
+        if tag == "fixed" { return "Fixed" }
+        return "Security"
+    }
+
     state plans = [
         { id: "hobby", name: "Hobby", badge: "", price: "0", per: "forever", monthly: "0", annual: "0", lead: "One person, one project, and the same runtime everyone else gets.", cta: "Choose Hobby", variant: "secondary", featured: false,
           items: ["100k requests a month", "1 concurrent build", "7-day traces", "1 custom domain", "Community support"] },

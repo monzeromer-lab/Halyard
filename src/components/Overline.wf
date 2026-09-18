@@ -1,6 +1,6 @@
 // Section eyebrow. Typed uppercase in the source, never text-transform.
 Component Overline (text: String, color: String = "var(--text-tertiary)") {
     Text(text) {
-        style { font: "700 11px/1.2 var(--font-sans)"  letter-spacing: "0.14em"  color: color  margin: "0" }
+        style { font: "700 11px/1.2 var(--font-sans)"  letter-spacing: "0.14em"  color: color  margin: "0"  white-space: "nowrap" }
     }
 }

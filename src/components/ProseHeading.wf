@@ -1,0 +1,3 @@
+Component ProseHeading (text: String, id: String) {
+    Heading(text, h2, id: id) { style { margin: "44px 0 16px"  font-size: "26px"  line-height: "1.2"  font-weight: "700"  letter-spacing: "-0.015em"  color: "var(--text-primary)"  scroll-margin-top: "140px" } }
+}
