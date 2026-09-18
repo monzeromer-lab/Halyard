@@ -1,0 +1,14 @@
+Component HeroStat (label: String, value: String, unit: String, note: String, noteColor: String, bars: List, color: String) {
+    Stack(data-interactive: "true") {
+        style { gap: "12px"  padding: "20px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"
+                transition: "border-color var(--d-base) var(--ease-standard), box-shadow var(--d-base) var(--ease-standard), transform var(--d-base) var(--ease-standard)"
+                hover { border-color: "var(--line-strong)"  box-shadow: "var(--shadow-md)"  transform: "translateY(-2px)" } }
+        Overline(text: label)
+        Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "8px" }
+            Num(text: value, size: "34px", weight: "500")
+            Text(unit) { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } } }
+        Row(align: end) { style { flex-wrap: "nowrap"  gap: "4px"  height: "30px"  margin-top: "auto"  align-items: "flex-end" }
+            for h in bars { Container { style { flex: "1 1 0"  height: "{h}%"  min-height: "2px"  background: color  opacity: "0.7"  border-radius: "1px"  padding: "0"  margin: "0" } } } }
+        Text(note) { style { margin: "0"  font-size: "12px"  color: noteColor } }
+    }
+}

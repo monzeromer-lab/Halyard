@@ -1,0 +1,3 @@
+Component Lead (text: String, size: String = "18px", maxWidth: String = "62ch") {
+    Text(text) { style { margin: "0"  font-size: size  line-height: "1.6"  color: "var(--text-secondary)"  max-width: maxWidth } }
+}

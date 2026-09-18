@@ -1,0 +1,62 @@
+// Marketing content: the landing page's panels, code samples and FAQ, the
+// plans, the changelog and the docs tree. All of it is the design's seed
+// data; nothing here is invented.
+Store ContentStore {
+    state regions = ["fra1", "iad1", "cdg1", "sfo1", "gru1", "hnd1", "syd1", "bom1", "jnb1", "arn1", "dub1", "sin1", "yyz1", "icn1", "cpt1", "lhr1", "ams1", "nrt1", "pdx1"]
+
+    state features = [
+        { tone: "var(--text-brand)", icon: "upload", title: "Atomic global deploys", body: "Every build lands in all 19 regions in the same second. There is no region flag to set and no staged rollout to configure, because there is no staged rollout." },
+        { tone: "var(--text-accent)", icon: "check", title: "Signed, reproducible builds", body: "Each build is content-addressed and signed at the end of the pipeline. Rebuild the same commit next year and the hash matches or the deploy is refused." },
+        { tone: "var(--text-brass)", icon: "filter", title: "Request-level routing", body: "Route on header, cookie, geo or a value you compute in a 2 ms middleware. Rules are versioned with the deploy, not with a dashboard toggle." },
+        { tone: "var(--text-info)", icon: "copy", title: "Edge state that is not a cache", body: "Strongly consistent KV and queues that read in the region the request landed in. Writes replicate in under 90 ms p95 between any two regions." },
+        { tone: "var(--text-accent)", icon: "eye", title: "A trace on every request", body: "Not a sample. Every request carries a trace with the build hash, the region, the route rule that matched and the cold-start cost, kept for 30 days." },
+        { tone: "var(--text-brand)", icon: "arrow-left", title: "Rollback by hash", body: "Any build that ever ran is one command away. Rollback is a routing change, not a rebuild, so it completes in about 400 ms worldwide." }
+    ]
+
+    state panels = {
+        build: { cmd: "halyard build", note: "The pipeline is a list of named steps. Each one is cacheable on its own, so a dependency change does not re-run the compile.", cta: "Open a build", to: "/app/builds/8f2c41", rows: [
+            { label: "Resolved 412 modules from the lockfile", meta: "0.9 s", dot: "var(--success)" },
+            { label: "Compiled 38 routes to the edge target", meta: "14.2 s", dot: "var(--success)" },
+            { label: "Signed artifact sha256:8f2c41…a7", meta: "0.4 s", dot: "var(--success)" },
+            { label: "Packed 6.8 MB, 2.1 MB gzipped", meta: "1.1 s", dot: "var(--success)" },
+            { label: "Uploading to 19 regions", meta: "5.8 s", dot: "var(--brand)" }
+        ] },
+        route: { cmd: "routes.halyard.ts", note: "Rules are evaluated top to bottom and the first match answers. The fallback is always the last line, and it is always a build hash.", cta: "Edit the rules", to: "/app/editor", rows: [
+            { label: "/api/* → edge function api, 3 regions pinned", meta: "match: path", dot: "var(--success)" },
+            { label: "cookie ht_beta=1 → build 8f2c41", meta: "match: cookie", dot: "var(--success)" },
+            { label: "geo.country in [DE, FR] → fra1 first", meta: "match: geo", dot: "var(--success)" },
+            { label: "/assets/* → immutable, 1 year", meta: "match: path", dot: "var(--success)" },
+            { label: "* → build 7c91de, all regions", meta: "fallback", dot: "var(--brand)" }
+        ] },
+        observe: { cmd: "halyard trace --follow", note: "Every line here is one real request with its own trace. Click through to filter by region, status or route rule.", cta: "Open the log stream", to: "/app/logs", rows: [
+            { label: "GET /checkout — fra1 — 38 ms — warm", meta: "200", dot: "var(--success)" },
+            { label: "POST /api/cart — iad1 — 61 ms — warm", meta: "201", dot: "var(--success)" },
+            { label: "GET /p/HL-2201 — sin1 — 112 ms — cold", meta: "200", dot: "var(--warning)" },
+            { label: "GET /api/stock — gru1 — 9.4 s — upstream", meta: "504", dot: "var(--danger)" },
+            { label: "GET / — cdg1 — 24 ms — warm", meta: "200", dot: "var(--brand)" }
+        ] }
+    }
+
+    state codes = {
+        cfg: "export default defineConfig(\{\n  runtime: 'edge',\n  regions: 'all',  // 19 today, more as they open\n  build: \{ command: 'pnpm build', reproducible: true \},\n  routes: [\n    \{ match: '/api/*', fn: 'api', timeout: 10_000 \},\n    \{ match: \{ cookie: \{ ht_beta: '1' \} \}, build: '8f2c41' \},\n  ],\n\})",
+        cli: "$ halyard deploy --wait\n✓ build 8f2c41 signed in 22.4 s\n✓ 19/19 regions acknowledged in 412 ms\n✓ routing switched, 0 requests dropped\n\n$ halyard rollback --to 7c91de\n! 7c91de last ran 4 days ago\n✓ routing switched in 388 ms",
+        api: "# promote a build without rebuilding\nPOST https://api.halyard.dev/v1/projects/hl-2201/releases\n  -H 'authorization: bearer $HALYARD_TOKEN'\n  -d '\{\"build\":\"8f2c41\",\"traffic\":100\}'\n\n# response\n\{ \"release\": \"rl_4a91\", \"regions\": 19, \"ms\": 412 \}"
+    }
+
+    state faqs = [
+        { id: "q1", q: "What happens to in-flight requests during a deploy?", a: "They finish on the build they started on. Halyard switches routing, not processes: the old build keeps serving anything already in its queue and is drained once the last response leaves, usually inside two seconds." },
+        { id: "q2", q: "Can I keep a region out?", a: "Yes, but it is a routing rule, not a build flag. The artifact still lands everywhere so a rollback or a geo change does not need a rebuild — the rule decides who is allowed to answer." },
+        { id: "q3", q: "Is the edge KV eventually consistent?", a: "No. Reads are served from the region the request landed in and writes are linearised through a per-key leader. Cross-region write visibility is 90 ms p95; if you need it faster, pin the key's leader to the region that writes most." },
+        { id: "q4", q: "How do you price a request that fans out?", a: "One request in, one request billed. Internal calls between your own functions, KV reads and queue operations are counted separately and shown per route in the usage view." },
+        { id: "q5", q: "What do I have to change to move an existing app?", a: "A config file and, usually, your session store. Node built-ins that touch the filesystem are the common blocker — the CLI reports them before the first deploy rather than at runtime." }
+    ]
+
+    state plans = [
+        { id: "hobby", name: "Hobby", badge: "", price: "0", per: "forever", monthly: "0", annual: "0", lead: "One person, one project, and the same runtime everyone else gets.", cta: "Choose Hobby", variant: "secondary", featured: false,
+          items: ["100k requests a month", "1 concurrent build", "7-day traces", "1 custom domain", "Community support"] },
+        { id: "team", name: "Team", badge: "Most teams", price: "[YOUR PRICE]", per: "per seat, per month", monthly: "[YOUR PRICE]", annual: "[YOUR PRICE − 20%]", lead: "Pooled request volume across every project your team owns.", cta: "Start a 14-day trial", variant: "primary", featured: true,
+          items: ["2M pooled requests a month", "8 concurrent builds", "30-day traces", "Preview deploy per pull request", "Routing rules, edge KV and queues", "Deploy approvals and audit log"] },
+        { id: "enterprise", name: "Enterprise", badge: "", price: "Talk to us", per: "billed annually", monthly: "Talk to us", annual: "Talk to us", lead: "Dedicated capacity, your compliance paperwork, a named engineer.", cta: "Choose Enterprise", variant: "secondary", featured: false,
+          items: ["Negotiated request volume", "Unlimited builds", "1-year traces and export", "Dedicated regions or your own cloud", "SSO, SCIM and a 3-year audit log", "Named support engineer"] }
+    ]
+}

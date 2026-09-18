@@ -1,0 +1,11 @@
+// A marketing section: the 80/32/16 gutters and the container width.
+Component Wrap (bottom: String = "96px", top: String = "0", maxWidth: String = "1280px") {
+    Container {
+        style {
+            width: "100%"  max-width: maxWidth  margin: "0 auto"  padding-top: top  padding-bottom: bottom  padding-left: "80px"  padding-right: "80px"
+            @media (max-width: 1024px) { padding-left: "32px"  padding-right: "32px" }
+            @media (max-width: 768px) { padding-left: "16px"  padding-right: "16px"  padding-bottom: "64px" }
+        }
+        children
+    }
+}

@@ -1,0 +1,13 @@
+// A display heading, marketing and editorial only: lg 56, md 40, xl 72.
+// An h1 or an h2; the outline lint reads the component body in order.
+Component DisplayHeading (text: String, size: String = "lg", level: String = "h2", maxWidth: String = "none") {
+    derived fs = if size == "xl" { "72px" } else if size == "md" { "40px" } else { "56px" }
+    derived lh = if size == "xl" { "0.94" } else if size == "md" { "1.08" } else { "1.0" }
+    derived ls = if size == "xl" { "-0.025em" } else if size == "md" { "-0.015em" } else { "-0.02em" }
+    derived mobile = if size == "md" { "28px" } else { "36px" }
+    if level == "h1" {
+        Heading(text, h1) { style { margin: "0"  font-family: "var(--font-display)"  font-size: fs  line-height: lh  letter-spacing: ls  font-weight: "600"  max-width: maxWidth  --mobile: mobile  @media (max-width: 768px) { font-size: "var(--mobile)" } } }
+    } else {
+        Heading(text, h2) { style { margin: "0"  font-family: "var(--font-display)"  font-size: fs  line-height: lh  letter-spacing: ls  font-weight: "600"  max-width: maxWidth  --mobile: mobile  @media (max-width: 768px) { font-size: "var(--mobile)" } } }
+    }
+}

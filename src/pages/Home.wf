@@ -1,7 +1,254 @@
 Page Home (path: "/", title: "Ship to every region at once", description: "Halyard builds your app once, signs it, and switches routing in all 19 regions in the same second.") {
+    use ContentStore
+    state tab = "build"
+    state code = "cfg"
+    state faq = "q1"
+
+    derived panel = ContentStore.panels[tab]
+    derived codeText = ContentStore.codes[code]
+
+    SiteNav()
+
+    // 2. Hero — the one gradient on the whole site, brand fading into canvas.
     Container {
-        style { padding: "64px 24px" }
-        Heading("Ship to every region at once", h1)
-        Text("Coming in a later milestone.", muted)
+        style {
+            position: "relative"  overflow: "hidden"  padding: "0"  max-width: "100%"  width: "100%"
+            background: "radial-gradient(60% 70% at 28% 20%, rgba(255,106,43,.19), rgba(11,12,14,0) 68%), radial-gradient(45% 55% at 82% 8%, rgba(53,224,176,.09), rgba(11,12,14,0) 70%)"
+        }
+        Wrap(top: "96px", bottom: "0") {
+            Row {
+                style { gap: "64px"  flex-wrap: "nowrap"  align-items: "flex-start"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+                Stack(fadeIn) {
+                    style { width: "700px"  max-width: "100%"  flex: "none"  gap: "28px"  @media (max-width: 1024px) { width: "100%" } }
+                    Overline(text: "EDGE RUNTIME · 19 REGIONS · ONE ARTIFACT")
+                    Heading("Ship to every region at once.", h1, slideUp) {
+                        style { margin: "0"  font-family: "var(--font-display)"  font-size: "96px"  line-height: "0.92"  letter-spacing: "-0.03em"  font-weight: "600"  max-width: "12ch"
+                                @media (max-width: 1024px) { font-size: "64px" }  @media (max-width: 768px) { font-size: "44px" } }
+                    }
+                    Lead(text: "Halyard builds your app once, signs the artifact, and switches routing in all 19 regions in the same second. No region flags, no staged rollout to configure, no cache to warm afterwards.")
+                    Row(align: center) {
+                        style { gap: "12px" }
+                        FlButton(label: "Start building", variant: "primary", size: "lg", to: "/new")
+                        FlButton(label: "Read the runtime docs", variant: "secondary", size: "lg", to: "/docs")
+                    }
+                    Text("Free under 100k requests a month. No card until you cross it.") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+                }
+                Stack(fadeIn) {
+                    style { flex-grow: "1"  min-width: "0"  gap: "0"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-xl)"  overflow: "hidden"  box-shadow: "var(--shadow-xl)" }
+                    Row(align: center) {
+                        style { height: "44px"  flex-wrap: "nowrap"  gap: "10px"  padding: "0 16px"  border-bottom: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)" }
+                        Icon("chevron-right") { style { color: "var(--text-tertiary)"  font-size: "14px"  display: "inline-flex" } }
+                        Text("halyard deploy --wait") { style { margin: "0"  flex-grow: "1"  font-family: "var(--font-mono)"  font-size: "12px"  color: "var(--text-tertiary)" } }
+                        StatusBadge(label: "live", tone: "accent")
+                    }
+                    Stack {
+                        style { gap: "0"  padding: "20px 18px"  background: "var(--surface-sunken)"  font-family: "var(--font-mono)"  font-size: "13px"  line-height: "1.9"  color: "var(--text-secondary)" }
+                        TermLine(mark: "✓", tone: "var(--success)", text: "resolved 412 modules")
+                        TermLine(mark: "✓", tone: "var(--success)", text: "compiled 38 routes → edge")
+                        TermLine(mark: "✓", tone: "var(--success)", text: "signed sha256:8f2c41…a7")
+                        TermLine(mark: "✓", tone: "var(--success)", text: "packed 2.1 MB gzipped")
+                        TermLine(mark: "✓", tone: "var(--success)", text: "19/19 regions acknowledged")
+                        TermLine(mark: "→", tone: "var(--brand)", text: "live in 412 ms", bright: true)
+                    }
+                    Row {
+                        style { flex-wrap: "nowrap"  gap: "0"  border-top: "1px solid var(--line-hairline)" }
+                        TermStat(label: "BUILD", value: "22.4 s", color: "var(--text-primary)")
+                        TermStat(label: "PROPAGATE", value: "412 ms", color: "var(--text-accent)")
+                        TermStat(label: "DROPPED", value: "0", color: "var(--text-success)")
+                    }
+                }
+            }
+            // The 19 regions. The design scrolls these as a marquee; there is no
+            // @keyframes in a style block, so they sit still (NOTES.md).
+            Row(align: center, aria-label: "Regions Halyard deploys to") {
+                style { margin-top: "64px"  border-top: "1px solid var(--line-hairline)"  border-bottom: "1px solid var(--line-hairline)"  padding: "18px 0"  gap: "0"  overflow: "hidden"  flex-wrap: "nowrap"
+                        mask-image: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)" }
+                for r in ContentStore.regions {
+                    Row(align: center) {
+                        style { display: "inline-flex"  flex-wrap: "nowrap"  gap: "10px"  padding: "0 26px"  font-family: "var(--font-mono)"  font-size: "13px"  color: "var(--text-tertiary)"  white-space: "nowrap" }
+                        Dot(color: "var(--accent)", size: 5)
+                        Text(r) { style { margin: "0"  font: "inherit"  color: "inherit" } }
+                    }
+                }
+            }
+        }
     }
+
+    // 3. Stat row
+    Wrap(top: "56px", bottom: "56px") {
+        Row(align: baseline) {
+            style { flex-wrap: "nowrap"  gap: "16px"  margin-bottom: "24px"  @media (max-width: 768px) { flex-wrap: "wrap"  gap: "8px" } }
+            Overline(text: "THE HALYARD DEMO PROJECT, LAST 24 HOURS")
+            Rule(grow: true)
+            Link("Open the live view", to: "/app/observability") { style { font: "600 13px/1 var(--font-sans)"  color: "var(--text-brand)"  white-space: "nowrap"  hover { color: "var(--brand-hover)" } } }
+        }
+        Grid(columns: 4) {
+            style { gap: "24px"  @media (max-width: 1024px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" }  @media (max-width: 480px) { grid-template-columns: "1fr" } }
+            HeroStat(label: "MEDIAN BUILD", value: "22.4", unit: "s", note: "− 18% vs last week", noteColor: "var(--text-success)", bars: [64, 58, 66, 52, 56, 48, 50, 44, 46, 40, 42, 38], color: "var(--viz-1)")
+            HeroStat(label: "GLOBAL PROPAGATION", value: "412", unit: "ms p95", note: "steady, last 24h", noteColor: "var(--text-tertiary)", bars: [50, 52, 48, 51, 50, 49, 52, 50, 51, 49, 50, 51], color: "var(--viz-2)")
+            HeroStat(label: "COLD START", value: "8.1", unit: "ms", note: "− 2.4 ms since v9", noteColor: "var(--text-success)", bars: [70, 66, 64, 60, 58, 54, 50, 46, 44, 42, 40, 38], color: "var(--viz-3)")
+            HeroStat(label: "ROLLBACKS COMPLETED", value: "1,204", unit: "this quarter", note: "all under 600 ms", noteColor: "var(--text-tertiary)", bars: [20, 26, 30, 36, 40, 46, 50, 56, 60, 66, 70, 76], color: "var(--viz-4)")
+        }
+    }
+
+    // 4. Customer proof strip — placeholders, no invented companies.
+    Wrap(bottom: "72px") {
+        Row(align: center) {
+            style { flex-wrap: "nowrap"  gap: "32px"  padding: "28px 32px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  @media (max-width: 768px) { flex-wrap: "wrap"  padding: "20px" } }
+            Text("Replace these with your customer wordmarks.") { style { margin: "0"  width: "180px"  flex: "none"  font-size: "13px"  line-height: "1.5"  color: "var(--text-tertiary)" } }
+            Grid(columns: 5) {
+                style { flex-grow: "1"  gap: "16px"  @media (max-width: 1024px) { grid-template-columns: "repeat(3, minmax(0, 1fr))" }  @media (max-width: 480px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" } }
+                LogoSlot(label: "[LOGO 1]")  LogoSlot(label: "[LOGO 2]")  LogoSlot(label: "[LOGO 3]")  LogoSlot(label: "[LOGO 4]")  LogoSlot(label: "[LOGO 5]")
+            }
+        }
+    }
+
+    // 5. Feature grid
+    Wrap {
+        Stack { style { max-width: "720px"  gap: "16px"  margin-bottom: "48px" }
+            Overline(text: "WHAT THE RUNTIME DOES")
+            DisplayHeading(text: "Six things, and none of them are a dashboard toggle.", size: "lg")
+            Lead(text: "Everything that changes how a request is answered lives in the repository and ships with the build. If it is not in the artifact, it cannot break production.") }
+        Grid(columns: 3) {
+            style { gap: "24px"  @media (max-width: 1024px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" }  @media (max-width: 768px) { grid-template-columns: "1fr" } }
+            for f in ContentStore.features {
+                FeatureTile(icon: f.icon, tone: f.tone, title: f.title, body: f.body)
+            }
+        }
+    }
+
+    // 6. Tabbed product preview
+    Wrap {
+        Stack {
+            style { gap: "0"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-2xl)"  overflow: "hidden" }
+            Row(align: end) {
+                style { padding: "40px 40px 0"  flex-wrap: "nowrap"  gap: "32px"  @media (max-width: 768px) { flex-wrap: "wrap"  padding: "24px 20px 0" } }
+                Stack { style { flex-grow: "1"  gap: "12px" }
+                    Overline(text: "ONE PIPELINE, THREE VIEWS")
+                    DisplayHeading(text: "Watch the same release from three sides.", size: "md") }
+                Row(role: "tablist", aria-label: "Release views") {
+                    style { gap: "28px"  flex-wrap: "nowrap" }
+                    TabButton(label: "Build", selected: tab == "build") { tab = "build" }
+                    TabButton(label: "Route", selected: tab == "route") { tab = "route" }
+                    TabButton(label: "Observe", selected: tab == "observe") { tab = "observe" }
+                }
+            }
+            Container { style { padding: "20px 0 0"  width: "auto" }  Rule() }
+            Row {
+                style { flex-wrap: "nowrap"  min-height: "360px"  gap: "0"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+                Stack {
+                    style { flex-grow: "1"  min-width: "0"  padding: "28px 40px"  gap: "10px"  @media (max-width: 768px) { padding: "20px" } }
+                    Text("{panel.cmd}") { style { margin: "0 0 8px"  font-family: "var(--font-mono)"  font-size: "12px"  color: "var(--text-tertiary)" } }
+                    for r in panel.rows {
+                        Row(align: center) {
+                            style { flex-wrap: "nowrap"  gap: "14px"  padding: "12px 14px"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-sm)"  background: "var(--surface-inset)" }
+                            Dot(color: r.dot, size: 8)
+                            Text(r.label) { style { margin: "0"  flex-grow: "1"  font-size: "14px"  color: "var(--text-secondary)" } }
+                            Num(text: r.meta, size: "12px", color: "var(--text-tertiary)")
+                        }
+                    }
+                }
+                Stack {
+                    style { width: "340px"  flex: "none"  border-left: "1px solid var(--line-hairline)"  padding: "28px 32px"  background: "var(--surface-sunken)"  gap: "18px"  @media (max-width: 1024px) { width: "100%"  border-left: "0"  border-top: "1px solid var(--line-hairline)" } }
+                    Overline(text: "WHAT YOU ARE LOOKING AT")
+                    Text("{panel.note}") { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)" } }
+                    Container { style { padding: "0"  width: "auto"  align-self: "flex-start" }  FlButton(label: panel.cta, variant: "secondary", size: "sm", to: panel.to) }
+                    Stack { style { margin-top: "auto"  gap: "8px" }
+                        Overline(text: "RELEASE")
+                        Text("sha256:8f2c41…a7") { style { margin: "0"  font-family: "var(--font-mono)"  font-size: "13px"  color: "var(--text-accent)" } }
+                        Text("Promoted 14:02 UTC by [YOUR NAME]") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+                }
+            }
+        }
+    }
+
+    // 7. Interface section
+    Wrap {
+        Row {
+            style { gap: "64px"  flex-wrap: "nowrap"  align-items: "flex-start"  @media (max-width: 1024px) { flex-wrap: "wrap"  gap: "32px" } }
+            Stack { style { width: "420px"  flex: "none"  gap: "20px"  @media (max-width: 1024px) { width: "100%" } }
+                Overline(text: "THE WHOLE INTERFACE")
+                DisplayHeading(text: "A config file, a CLI, and one REST route.", size: "md")
+                Text("Anything the dashboard can do, the CLI can do, and anything the CLI can do is one HTTP call. The dashboard is a reader of the same API you get.") { style { margin: "0"  font-size: "16px"  line-height: "1.6"  color: "var(--text-secondary)" } }
+                Container { style { padding: "0"  width: "auto"  align-self: "flex-start" }  FlButton(label: "Full API reference", variant: "ghost", size: "sm", to: "/docs") } }
+            Stack {
+                style { flex-grow: "1"  min-width: "0"  gap: "0"  background: "var(--surface-sunken)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  overflow: "hidden" }
+                Row(role: "tablist", aria-label: "Interface", align: center) {
+                    style { flex-wrap: "nowrap"  gap: "4px"  padding: "8px 8px 0"  border-bottom: "1px solid var(--line-hairline)" }
+                    CodeTab(label: "halyard.config.ts", selected: code == "cfg") { code = "cfg" }
+                    CodeTab(label: "Terminal", selected: code == "cli") { code = "cli" }
+                    CodeTab(label: "REST", selected: code == "api") { code = "api" }
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                    IconBtn(icon: "copy", label: "Copy snippet", size: 34) { navigator.clipboard.writeText(codeText) }
+                }
+                Code("{codeText}", block) { style { display: "block"  margin: "0"  padding: "24px 26px"  font-family: "var(--font-mono)"  font-size: "13px"  line-height: "1.75"  color: "var(--text-secondary)"  white-space: "pre-wrap"  min-height: "280px"  background: "transparent"  border: "0" } }
+            }
+        }
+    }
+
+    // 8. Pull quote
+    Wrap {
+        PullQuote(text: "[Replace with a real customer quote. Keep it to one claim about one measurable change — a number before and a number after — rather than a sentence about how much they enjoy the product.]", name: "[NAME]", role: "[ROLE] at [COMPANY]")
+    }
+
+    // 9. Pricing teaser
+    Wrap {
+        Row(align: end, justify: between) {
+            style { margin-bottom: "40px"  gap: "32px"  flex-wrap: "nowrap"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            Stack { style { max-width: "620px"  gap: "12px" }
+                Overline(text: "PRICING")
+                DisplayHeading(text: "Pay for requests, not for seats you forgot.", size: "lg") }
+            FlButton(label: "Compare every line", variant: "secondary", to: "/pricing")
+        }
+        Grid(columns: 3) {
+            style { gap: "24px"  align-items: "stretch"  @media (max-width: 1024px) { grid-template-columns: "1fr" } }
+            for p in ContentStore.plans {
+                PlanCard(name: p.name, badge: p.badge, price: p.price, per: p.per, items: p.items, cta: p.cta, variant: p.variant, featured: p.featured)
+            }
+        }
+    }
+
+    // 10. FAQ
+    Wrap {
+        Row {
+            style { gap: "80px"  flex-wrap: "nowrap"  align-items: "flex-start"  @media (max-width: 1024px) { flex-wrap: "wrap"  gap: "32px" } }
+            Stack { style { width: "360px"  flex: "none"  gap: "12px"  @media (max-width: 1024px) { width: "100%" } }
+                Overline(text: "QUESTIONS WE ACTUALLY GET")
+                DisplayHeading(text: "The five that decide it.", size: "md") }
+            Stack { style { flex-grow: "1"  min-width: "0"  gap: "0" }
+                for f in ContentStore.faqs {
+                    Stack { style { gap: "0"  border-bottom: "1px solid var(--line-hairline)" }
+                        Button("", type: "button", aria-expanded: faq == f.id) {
+                            style { width: "100%"  background: "none"  border: "0"  padding: "20px 0"  display: "flex"  align-items: "center"  gap: "16px"  cursor: "pointer"  color: "var(--text-primary)"  font: "700 20px/1.3 var(--font-sans)"  text-align: "left"  letter-spacing: "-0.01em"
+                                    hover { color: "var(--text-brand)" }  @media (max-width: 768px) { font-size: "17px" } }
+                            Text(f.q) { style { margin: "0"  flex-grow: "1"  font: "inherit"  color: "inherit" } }
+                            if faq == f.id { Icon("chevron-down") { style { color: "var(--text-tertiary)"  display: "inline-flex"  transform: "rotate(180deg)"  transition: "transform var(--d-base) var(--ease-standard)" } } }
+                            else { Icon("chevron-down") { style { color: "var(--text-tertiary)"  display: "inline-flex"  transition: "transform var(--d-base) var(--ease-standard)" } } }
+                            on:click { if faq == f.id { faq = "" } else { faq = f.id } }
+                        }
+                        if faq == f.id, animate(fadeIn) {
+                            Text(f.a) { style { margin: "0 0 24px"  padding-right: "60px"  font-size: "15px"  line-height: "1.65"  color: "var(--text-secondary)"  max-width: "72ch"  @media (max-width: 768px) { padding-right: "0" } } }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 11. Closing CTA
+    Wrap {
+        Row(align: center) {
+            style { position: "relative"  overflow: "hidden"  border-radius: "var(--radius-2xl)"  border: "1px solid var(--line-default)"  background: "var(--surface-raised)"  padding: "72px 64px"  gap: "48px"  flex-wrap: "nowrap"
+                    @media (max-width: 1024px) { flex-wrap: "wrap"  padding: "40px 24px" } }
+            Container { style { position: "absolute"  right: "-100px"  bottom: "-240px"  width: "620px"  height: "620px"  border-radius: "50%"  background: "radial-gradient(circle, rgba(255,106,43,.26), rgba(11,12,14,0) 66%)"  pointer-events: "none"  padding: "0"  margin: "0"  max-width: "none" } }
+            Stack { style { position: "relative"  flex-grow: "1"  gap: "16px" }
+                DisplayHeading(text: "Your first deploy takes about four minutes.", size: "lg")
+                Lead(text: "Point Halyard at a repository. It detects the framework, imports your environment, and tells you what will break before it builds.") }
+            Stack { style { position: "relative"  gap: "12px"  flex: "none" }
+                FlButton(label: "Connect a repository", variant: "primary", size: "lg", to: "/new")
+                FlButton(label: "Read the docs first", variant: "ghost", size: "lg", to: "/docs") }
+        }
+    }
+
+    SiteFooter()
 }

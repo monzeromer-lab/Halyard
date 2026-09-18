@@ -1,0 +1,6 @@
+Component TermLine (mark: String, tone: String, text: String, bright: Bool = false) {
+    derived fg = if bright { "var(--text-primary)" } else { "var(--text-secondary)" }
+    Row { style { flex-wrap: "nowrap"  gap: "8px"  color: fg }
+        Text(mark) { style { margin: "0"  font: "inherit"  color: tone } }
+        Text(text) { style { margin: "0"  font: "inherit"  color: "inherit" } } }
+}

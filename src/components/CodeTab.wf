@@ -1,0 +1,7 @@
+Component CodeTab (label: String, selected: Bool) {
+    derived bg = if selected { "var(--surface-raised)" } else { "transparent" }
+    derived fg = if selected { "var(--text-primary)" } else { "var(--text-tertiary)" }
+    Button(label, type: "button", role: "tab", aria-selected: selected) {
+        style { background: bg  color: fg  border: "0"  border-radius: "6px 6px 0 0"  padding: "10px 16px"  font-family: "var(--font-mono)"  font-size: "12px"  cursor: "pointer"  hover { color: "var(--text-secondary)" } }
+    }
+}

@@ -1,0 +1,5 @@
+Component TermStat (label: String, value: String, color: String) {
+    Stack { style { flex-grow: "1"  gap: "4px"  padding: "14px 18px"  border-right: "1px solid var(--line-hairline)" }
+        Overline(text: label)
+        Num(text: value, size: "20px", color: color) }
+}

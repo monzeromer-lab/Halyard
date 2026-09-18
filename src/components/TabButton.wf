@@ -1,0 +1,9 @@
+// The underline tab: selection in aria-selected, the underline in brand.
+Component TabButton (label: String, selected: Bool) {
+    derived fg = if selected { "var(--text-primary)" } else { "var(--text-tertiary)" }
+    derived line = if selected { "var(--brand)" } else { "transparent" }
+    Button(label, type: "button", role: "tab", aria-selected: selected) {
+        style { background: "none"  border: "0"  border-bottom: "2px solid var(--line)"  --line: line  padding: "0 2px 12px"  margin-bottom: "-1px"  color: fg  font: "600 14px/1.2 var(--font-sans)"  cursor: "pointer"
+                transition: "color var(--d-fast) var(--ease-standard)"  hover { color: "var(--text-secondary)" } }
+    }
+}

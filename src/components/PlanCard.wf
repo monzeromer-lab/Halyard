@@ -1,0 +1,36 @@
+// A plan card. The featured plan carries the brand edge and the one primary
+// button on the page.
+Component PlanCard (name: String, badge: String, price: String, per: String, items: List, cta: String, variant: String, featured: Bool, lead: String = "") {
+    derived edge = if featured { "var(--brand)" } else { "var(--line-default)" }
+    derived glow = if featured { "0 0 0 1px rgba(255,106,43,.5), 0 12px 40px rgba(255,106,43,.16)" } else { "none" }
+    Stack {
+        style {
+            gap: "20px"  padding: "28px"  background: "var(--surface-raised)"  border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-md)"  box-shadow: glow  height: "100%"
+            transition: "border-color var(--d-base) var(--ease-standard), transform var(--d-base) var(--ease-standard)"
+            hover { border-color: "var(--line-strong)"  transform: "translateY(-3px)" }
+        }
+        Row(align: center) {
+            style { flex-wrap: "nowrap"  gap: "10px" }
+            Heading(name, h3) { style { margin: "0"  font-size: "20px"  font-weight: "700" } }
+            if badge != "" { StatusBadge(label: badge, tone: "brand", dot: false) }
+        }
+        Row(align: baseline) {
+            style { flex-wrap: "wrap"  gap: "8px" }
+            Num(text: price, size: "40px", weight: "500")
+            Text(per) { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+        }
+        if lead != "" {
+            Text(lead) { style { margin: "0"  font-size: "14px"  line-height: "1.55"  color: "var(--text-secondary)" } }
+        }
+        Rule()
+        Stack {
+            style { gap: "10px" }
+            for item in items {
+                Row { style { flex-wrap: "nowrap"  gap: "10px"  font-size: "14px"  line-height: "1.5"  color: "var(--text-secondary)" }
+                    Icon("check") { style { color: "var(--accent)"  flex: "none"  font-size: "15px"  display: "inline-flex"  margin-top: "3px" } }
+                    Text(item) { style { margin: "0"  font-size: "14px"  line-height: "1.5"  color: "var(--text-secondary)" } } }
+            }
+        }
+        Container { style { margin-top: "auto"  padding: "0"  width: "auto" }  FlButton(label: cta, variant: variant, to: "/pricing") }
+    }
+}
