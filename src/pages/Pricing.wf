@@ -1,7 +1,139 @@
 Page Pricing (path: "/pricing", title: "Pricing", description: "Pay for requests, not for seats. Every plan gets all 19 regions, atomic deploys and rollback by hash.") {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Pricing", h1)
-        Text("Coming in a later milestone.", muted)
+    use ContentStore
+    use PricingStore
+    state req = 4
+    state build = 3
+    state kv = 2
+    state seats = 6
+
+    SiteNav()
+
+    Wrap(top: "80px", bottom: "40px") {
+        Container { style { padding: "0 0 16px"  width: "auto" }  Overline(text: "PRICING") }
+        Row(align: end) {
+            style { gap: "48px"  flex-wrap: "nowrap"  @media (max-width: 1024px) { flex-wrap: "wrap"  gap: "24px" } }
+            Stack { style { flex-grow: "1"  gap: "16px" }
+                Heading("Pay for requests, not for seats.", h1) {
+                    style { margin: "0"  font-family: "var(--font-display)"  font-size: "72px"  line-height: "0.94"  letter-spacing: "-0.025em"  font-weight: "600"  max-width: "14ch"  @media (max-width: 768px) { font-size: "40px" } }
+                }
+                Lead(text: "Every plan gets all 19 regions, atomic deploys and rollback by hash. What changes is how much you can run through them and how long the traces are kept.") }
+            Stack(align: end) { style { flex: "none"  gap: "10px"  @media (max-width: 1024px) { align-items: "flex-start" } }
+                SegGroup(label: "Billing period") {
+                    SegButton(label: "Monthly", pressed: PricingStore.period == "monthly") { PricingStore.setPeriod("monthly") }
+                    SegButton(label: "Annual", pressed: PricingStore.period == "annual") { PricingStore.setPeriod("annual") }
+                }
+                Text("Annual billing takes 20% off the per-seat price.") { style { margin: "0"  font-size: "12px"  color: "var(--text-accent)" } } }
+        }
     }
+
+    Wrap(bottom: "72px") {
+        Grid(columns: 3) {
+            style { gap: "24px"  align-items: "stretch"  @media (max-width: 1024px) { grid-template-columns: "1fr" } }
+            for p in ContentStore.plans {
+                if p.id == "team" {
+                    PlanCard(name: p.name, badge: p.badge, price: PricingStore.seatPrice, per: p.per, items: p.items, cta: p.cta, variant: p.variant, featured: p.featured, lead: p.lead, top: true)
+                } else {
+                    PlanCard(name: p.name, badge: p.badge, price: p.price, per: p.per, items: p.items, cta: p.cta, variant: p.variant, featured: p.featured, lead: p.lead, top: true)
+                }
+            }
+        }
+    }
+
+    // The estimator. Four sliders drive a live total in billing units.
+    Wrap(bottom: "88px") {
+        Row {
+            style { flex-wrap: "nowrap"  gap: "0"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-xl)"  overflow: "hidden"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+            Stack {
+                style { flex-grow: "1"  min-width: "0"  padding: "40px"  gap: "28px"  @media (max-width: 768px) { padding: "24px 20px" } }
+                Stack { style { gap: "10px" }
+                    Overline(text: "ESTIMATOR")
+                    DisplayHeading(text: "Move the sliders, watch the bill.", size: "md") }
+                Dial(id: "d-req", label: "Requests a month", display: PricingStore.reqDisplay, cost: "{PricingStore.cReq} units", help: "Counted at the edge. Internal function calls are billed separately.") {
+                    Slider(bind: req, min: 0, max: 8, step: 1, aria-labelledby: "d-req", aria-valuetext: PricingStore.reqDisplay) { on:input { PricingStore.setReq(req) } }
+                }
+                Dial(id: "d-build", label: "Build minutes", display: PricingStore.buildDisplay, cost: "{PricingStore.cBuild} units", help: "Cached steps are free. Only wall-clock time inside a cold step counts.") {
+                    Slider(bind: build, min: 0, max: 6, step: 1, aria-labelledby: "d-build", aria-valuetext: PricingStore.buildDisplay) { on:input { PricingStore.setBuild(build) } }
+                }
+                Dial(id: "d-kv", label: "Edge KV stored", display: PricingStore.kvDisplay, cost: "{PricingStore.cKv} units", help: "Replicated to all 19 regions. Reads in-region are not metered.") {
+                    Slider(bind: kv, min: 0, max: 6, step: 1, aria-labelledby: "d-kv", aria-valuetext: PricingStore.kvDisplay) { on:input { PricingStore.setKv(kv) } }
+                }
+                Dial(id: "d-seats", label: "Team members", display: PricingStore.seatsDisplay, cost: "{PricingStore.cSeat} units", help: "Read-only members, including anyone who only opens the status page, are free.") {
+                    Slider(bind: seats, min: 1, max: 40, step: 1, aria-labelledby: "d-seats", aria-valuetext: PricingStore.seatsDisplay) { on:input { PricingStore.setSeats(seats) } }
+                }
+            }
+            Stack {
+                style { width: "400px"  flex: "none"  background: "var(--surface-sunken)"  border-left: "1px solid var(--line-hairline)"  padding: "40px 36px"  gap: "20px"
+                        @media (max-width: 1024px) { width: "100%"  border-left: "0"  border-top: "1px solid var(--line-hairline)" }  @media (max-width: 768px) { padding: "24px 20px" } }
+                Overline(text: "ESTIMATED MONTHLY")
+                Row(align: baseline) { style { flex-wrap: "nowrap"  gap: "10px" }
+                    Num(text: PricingStore.totalText, size: "56px", color: "var(--text-brand)")
+                    Text("units / month") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } } }
+                Text("Shown in billing units so you can drop your own rate card in. One unit is whatever you set [YOUR UNIT PRICE] to be.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+                Rule()
+                for b in PricingStore.breakdown {
+                    Row(align: center) { style { flex-wrap: "nowrap"  gap: "10px" }
+                        Container { style { width: "8px"  height: "8px"  border-radius: "2px"  flex: "none"  background: b.color  padding: "0"  margin: "0" } }
+                        Text(b.label) { style { margin: "0"  flex-grow: "1"  font-size: "13px"  color: "var(--text-secondary)" } }
+                        Num(text: b.value, size: "13px") }
+                }
+                Row { style { height: "10px"  border-radius: "999px"  overflow: "hidden"  flex-wrap: "nowrap"  gap: "0"  background: "var(--surface-inset)" }
+                    for b in PricingStore.breakdown {
+                        Container { style { height: "100%"  width: "{b.pct}%"  background: b.color  padding: "0"  margin: "0"  transition: "width var(--d-base) var(--ease-standard)" } }
+                    } }
+                Text("{PricingStore.recommend}") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } }
+                Container { style { margin-top: "auto"  padding: "0"  width: "auto" }  FlButton(label: "Start on {PricingStore.plan}", variant: "primary", to: "/new") }
+            }
+        }
+    }
+
+    // The comparison matrix
+    Wrap(bottom: "88px") {
+        Row(align: end) { style { gap: "24px"  margin-bottom: "24px"  flex-wrap: "nowrap"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            Stack { style { flex-grow: "1" }  DisplayHeading(text: "Every line, side by side.", size: "md") }
+            Text("24 rows. Nothing hidden behind “contact us” except the enterprise numbers.") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } } }
+        Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  overflow: "auto"  padding: "0"  max-width: "100%"  width: "100%" }
+            Table(caption: "Feature comparison across the Hobby, Team and Enterprise plans") {
+                style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "640px" }
+                Thead { Trow { Th(text: "Capability")  Th(text: "Hobby", numeric: true)  Th(text: "Team", numeric: true)  Th(text: "Enterprise", numeric: true) } }
+                Tbody {
+                    for g in ContentStore.matrix {
+                        Trow { Tcell(g.group, colspan: "4") { style { padding: "10px 12px"  font: "700 11px/1.2 var(--font-sans)"  letter-spacing: "0.14em"  text-transform: "uppercase"  color: "var(--text-tertiary)"  background: "var(--surface-sunken)"  border-bottom: "1px solid var(--line-hairline)" } } }
+                        for r in g.rows {
+                            Trow { style { hover { background: "var(--surface-hover)" } }
+                                Td(text: r.name, color: "var(--text-primary)")
+                                MatrixCell(value: r.hobby)
+                                MatrixCell(value: r.team)
+                                MatrixCell(value: r.enterprise) }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Add-ons
+    Wrap(bottom: "88px") {
+        Container { style { padding: "0 0 16px"  width: "auto" }  Overline(text: "ADD-ONS") }
+        Grid(columns: 3) { style { gap: "24px"  @media (max-width: 1024px) { grid-template-columns: "1fr" } }
+            for a in ContentStore.addons {
+                Stack { style { gap: "12px"  padding: "24px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)" }
+                    Icon(a.icon) { style { color: "var(--text-brand)"  font-size: "20px"  display: "inline-flex" } }
+                    Heading(a.title, h3) { style { margin: "0"  font-size: "17px"  font-weight: "700" } }
+                    Text(a.body) { style { margin: "0"  font-size: "14px"  line-height: "1.55"  color: "var(--text-secondary)" } }
+                    Placeholder(text: a.price, size: "12px") }
+            }
+        }
+    }
+
+    Wrap(bottom: "88px") {
+        Grid(columns: 3) { style { gap: "32px"  @media (max-width: 1024px) { grid-template-columns: "1fr" } }
+            for f in ContentStore.pricingFaqs {
+                Stack { style { gap: "8px" }
+                    Heading(f.q, h3) { style { margin: "0"  font-size: "17px"  font-weight: "700" } }
+                    Text(f.a) { style { margin: "0"  font-size: "14px"  line-height: "1.6"  color: "var(--text-secondary)" } } }
+            }
+        }
+    }
+
+    SiteFooter()
 }

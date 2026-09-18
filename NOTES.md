@@ -74,3 +74,21 @@ fixed in the compiler rather than worked around:
 
 A prop cannot be called `on` (`on:` is the event syntax) or `use` (keyword);
 the library uses `pressed`, `checked` and `note`.
+
+## Milestones 3–4 — landing page and pricing
+
+- **No `@keyframes`**: the region strip does not scroll and the `live` badge
+  does not pulse. The hero uses the built-in `fadeIn`/`slideUp` mount motion.
+- **Range slider thumb.** The design draws a 20px brand thumb with a ring
+  through `::-webkit-slider-thumb`, a pseudo-element no style block reaches.
+  The compiler now paints range inputs with `accent-color` from the palette;
+  the thumb is the browser's, in brand.
+- **The estimator's dial positions** live in page state (a `Slider` binds to
+  page state only) and are forwarded to `PricingStore`, which owns the math.
+- Compiler fixes this pair of pages needed: store derived values could not
+  read other derived values, call actions or use if-expressions; a store's
+  actions were bound after its derived values ran; an `else if` chain lost
+  every branch when a final `else` was present; a `Slider` with both `bind:`
+  and `on:input` kept only one; the heading-outline lint could not see the
+  headings inside components; a component named `Section` was silently the
+  builtin `Section` (renamed `Wrap`).

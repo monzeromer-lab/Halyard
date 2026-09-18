@@ -1,6 +1,6 @@
 // A plan card. The featured plan carries the brand edge and the one primary
 // button on the page.
-Component PlanCard (name: String, badge: String, price: String, per: String, items: List, cta: String, variant: String, featured: Bool, lead: String = "") {
+Component PlanCard (name: String, badge: String, price: String, per: String, items: List, cta: String, variant: String, featured: Bool, lead: String = "", top: Bool = false) {
     derived edge = if featured { "var(--brand)" } else { "var(--line-default)" }
     derived glow = if featured { "0 0 0 1px rgba(255,106,43,.5), 0 12px 40px rgba(255,106,43,.16)" } else { "none" }
     Stack {
@@ -11,7 +11,12 @@ Component PlanCard (name: String, badge: String, price: String, per: String, ite
         }
         Row(align: center) {
             style { flex-wrap: "nowrap"  gap: "10px" }
-            Heading(name, h3) { style { margin: "0"  font-size: "20px"  font-weight: "700" } }
+            // On the pricing page the plans sit directly under the h1.
+            if top {
+                Heading(name, h2) { style { margin: "0"  font-size: "22px"  font-weight: "700"  letter-spacing: "-0.01em" } }
+            } else {
+                Heading(name, h3) { style { margin: "0"  font-size: "20px"  font-weight: "700" } }
+            }
             if badge != "" { StatusBadge(label: badge, tone: "brand", dot: false) }
         }
         Row(align: baseline) {

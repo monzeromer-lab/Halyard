@@ -1,0 +1,18 @@
+// A comparison cell: yes is a check in success, no a dash in text-disabled —
+// each with a word for assistive technology — anything else the value itself.
+Component MatrixCell (value: String) {
+    if value == "yes" {
+        Tcell("", data-numeric: "true") {
+            style { text-align: "right"  padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }
+            Icon("check", aria-label: "included", role: "img") { style { color: "var(--success)"  display: "inline-flex"  font-size: "16px" } }
+        }
+    } else if value == "no" {
+        Tcell("—", data-numeric: "true", aria-label: "not included") {
+            style { text-align: "right"  padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  color: "var(--text-disabled)"  font-family: "var(--font-mono)" }
+        }
+    } else {
+        Tcell(value, data-numeric: "true") {
+            style { text-align: "right"  padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  color: "var(--text-secondary)"  font-family: "var(--font-mono)"  font-variant-numeric: "tabular-nums" }
+        }
+    }
+}

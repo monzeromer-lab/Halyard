@@ -51,6 +51,52 @@ Store ContentStore {
         { id: "q5", q: "What do I have to change to move an existing app?", a: "A config file and, usually, your session store. Node built-ins that touch the filesystem are the common blocker — the CLI reports them before the first deploy rather than at runtime." }
     ]
 
+    // The comparison matrix: 24 rows in five groups. "yes"/"no" render as a
+    // check in success or a dash in text-disabled, each with a word for AT.
+    state matrix = [
+        { group: "Runtime", rows: [
+            { name: "Included requests a month", hobby: "100k", team: "2M pooled", enterprise: "Negotiated" },
+            { name: "Regions", hobby: "19", team: "19", enterprise: "19 + dedicated" },
+            { name: "Edge function timeout", hobby: "10 s", team: "60 s", enterprise: "300 s" },
+            { name: "Cold start p95", hobby: "8.1 ms", team: "8.1 ms", enterprise: "8.1 ms" },
+            { name: "Custom domains", hobby: "1", team: "Unlimited", enterprise: "Unlimited" } ] },
+        { group: "Builds", rows: [
+            { name: "Concurrent builds", hobby: "1", team: "8", enterprise: "Unlimited" },
+            { name: "Build minutes a month", hobby: "400", team: "6,000", enterprise: "Negotiated" },
+            { name: "Reproducible build attestation", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Preview deploy per pull request", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Bring your own build image", hobby: "no", team: "no", enterprise: "yes" } ] },
+        { group: "State and routing", rows: [
+            { name: "Edge KV storage", hobby: "256 MB", team: "50 GB", enterprise: "Negotiated" },
+            { name: "Queues", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Header, cookie and geo rules", hobby: "yes", team: "yes", enterprise: "yes" },
+            { name: "Computed routing middleware", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Leader pinning per key", hobby: "no", team: "no", enterprise: "yes" } ] },
+        { group: "Observability", rows: [
+            { name: "Trace retention", hobby: "7 days", team: "30 days", enterprise: "1 year" },
+            { name: "Trace export to your sink", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Log drains", hobby: "1", team: "10", enterprise: "Unlimited" },
+            { name: "Alert rules", hobby: "3", team: "50", enterprise: "Unlimited" } ] },
+        { group: "Team and governance", rows: [
+            { name: "Members", hobby: "1", team: "Unlimited", enterprise: "Unlimited" },
+            { name: "SSO and SCIM", hobby: "no", team: "no", enterprise: "yes" },
+            { name: "Audit log", hobby: "no", team: "30 days", enterprise: "3 years" },
+            { name: "Deploy approvals", hobby: "no", team: "yes", enterprise: "yes" },
+            { name: "Support", hobby: "Community", team: "Email, 1 business day", enterprise: "Named engineer" } ] }
+    ]
+
+    state addons = [
+        { icon: "settings", title: "Dedicated region", body: "Your own capacity in any region, with the leader for every key pinned to it.", price: "[YOUR PRICE] / region / month" },
+        { icon: "check", title: "Compliance pack", body: "SOC 2 report, DPA, subprocessor notifications and a signed BAA where it applies.", price: "[YOUR PRICE] / year" },
+        { icon: "eye", title: "Extended traces", body: "Keep every trace for a year instead of thirty days, queryable from the explorer.", price: "[YOUR PRICE] / 100M spans" }
+    ]
+
+    state pricingFaqs = [
+        { q: "What counts as a request?", a: "One request that enters Halyard from the internet. Internal calls between your own functions, KV reads and queue operations are counted separately and shown per route." },
+        { q: "What happens if I go over?", a: "Nothing is throttled. The overage appears on the next invoice at the published rate and an alert fires the first time you cross 80% of the included volume." },
+        { q: "Can I move between plans mid-month?", a: "Yes. Upgrades apply immediately and are prorated; downgrades apply at the next renewal so you keep what you have already paid for." }
+    ]
+
     state plans = [
         { id: "hobby", name: "Hobby", badge: "", price: "0", per: "forever", monthly: "0", annual: "0", lead: "One person, one project, and the same runtime everyone else gets.", cta: "Choose Hobby", variant: "secondary", featured: false,
           items: ["100k requests a month", "1 concurrent build", "7-day traces", "1 custom domain", "Community support"] },

@@ -1,0 +1,54 @@
+// The estimator: four dials in billing units (no currency is invented), the
+// breakdown, and the plan the volume points at. The dial positions are
+// indices into fixed steps, as the design's sliders are.
+Store PricingStore {
+    state period = "annual"
+    state req = 4
+    state build = 3
+    state kv = 2
+    state seats = 6
+
+    state reqSteps = [0.1, 0.5, 1, 2, 5, 10, 25, 50, 100]
+    state buildSteps = [200, 400, 1000, 2500, 6000, 12000, 30000]
+    state kvSteps = [1, 5, 10, 50, 100, 250, 500]
+
+    derived annual = period == "annual"
+    derived reqM = reqSteps[req]
+    derived buildMin = buildSteps[build]
+    derived kvGb = kvSteps[kv]
+
+    derived cReq = Math.round(reqM * 12)
+    derived cBuild = Math.round(buildMin / 200)
+    derived cKv = Math.round(kvGb * 0.6)
+    derived seatRate = if annual { 14 } else { 18 }
+    derived cSeat = Math.round(seats * seatRate)
+    derived total = cReq + cBuild + cKv + cSeat
+    derived totalText = total.toLocaleString("en-US")
+
+    derived reqDisplay = if reqM >= 1 { reqM + "M" } else { (reqM * 1000) + "k" }
+    derived buildDisplay = buildMin.toLocaleString("en-US")
+    derived kvDisplay = kvGb + " GB"
+    derived seatsDisplay = if seats == 1 { "1 seat" } else { seats + " seats" }
+
+    derived breakdown = [
+        { label: "Requests", value: cReq + " u", color: "var(--viz-1)", pct: pctOf(cReq) },
+        { label: "Builds", value: cBuild + " u", color: "var(--viz-2)", pct: pctOf(cBuild) },
+        { label: "Edge KV", value: cKv + " u", color: "var(--viz-3)", pct: pctOf(cKv) },
+        { label: "Seats", value: cSeat + " u", color: "var(--viz-4)", pct: pctOf(cSeat) }
+    ]
+
+    derived plan = if reqM > 20 || seats > 25 { "Enterprise" } else if reqM <= 0.1 && seats == 1 { "Hobby" } else { "Team" }
+    derived recommend = if plan == "Hobby" { "That volume fits inside the free tier. Nothing to pay until you pass it." } else if plan == "Team" { "Team pools this volume across every project, so one busy service does not push the others over." } else { "Past this point a negotiated commitment is cheaper than the list rate. Talk to us." }
+    derived seatPrice = if annual { "[YOUR PRICE − 20%]" } else { "[YOUR PRICE]" }
+
+    action pctOf(part: Number) {
+        if total == 0 { return 0 }
+        return Math.round(part / total * 100)
+    }
+
+    action setPeriod(p: String) { period = p }
+    action setReq(i: Number) { req = i }
+    action setBuild(i: Number) { build = i }
+    action setKv(i: Number) { kv = i }
+    action setSeats(n: Number) { seats = n }
+}

@@ -1,0 +1,15 @@
+// One estimator dial: label row with the formatted value and its cost, the
+// range input (its position is an index into fixed steps), help text.
+Component Dial (id: String, label: String, display: String, cost: String, help: String) {
+    Stack {
+        style { gap: "10px" }
+        Row(align: baseline) {
+            style { flex-wrap: "nowrap"  gap: "12px" }
+            Text(label, id: id) { style { margin: "0"  flex-grow: "1"  font: "600 14px/1.2 var(--font-sans)"  color: "var(--text-secondary)" } }
+            Num(text: display, size: "15px")
+            Num(text: cost, size: "13px", color: "var(--text-tertiary)") 
+        }
+        children
+        Text(help) { style { margin: "0"  font: "400 12px/1.5 var(--font-sans)"  color: "var(--text-tertiary)" } }
+    }
+}
