@@ -1,0 +1,17 @@
+// A settings section link: aria-current marks the open one; the danger
+// section is typed in danger.
+Component SubNavLink (label: String, icon: String, current: Bool = false, danger: Bool = false) {
+    derived bg = if current { "var(--surface-active)" } else { "transparent" }
+    derived fg = if danger { "var(--text-danger)" } else if current { "var(--text-primary)" } else { "var(--text-tertiary)" }
+    derived cur = if current { "true" } else { null }
+    Button(label, type: "button", aria-current: cur) {
+        style {
+            display: "flex"  align-items: "center"  gap: "10px"  width: "100%"  background: bg  border: "0"  padding: "9px 12px"
+            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  font: "600 13px/1.2 var(--font-sans)"  color: fg
+            white-space: "nowrap"  transition: "background var(--d-fast) var(--ease-standard)"
+            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+            @media (max-width: 768px) { width: "auto"  flex: "none" }
+        }
+        Icon(icon) { style { display: "inline-flex"  flex: "none"  opacity: "0.9"  font-size: "15px"  order: "-1" } }
+    }
+}

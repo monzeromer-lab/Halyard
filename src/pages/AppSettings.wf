@@ -1,7 +1,163 @@
 Page AppSettings (path: "/app/settings", title: "Settings", description: "Project settings, domains, environment, team and the danger zone.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Settings", h1)
-        Text("Coming in a later milestone.", muted)
+    use SettingsStore
+    state nameDraft = "storefront-edge"
+    state domainDraft = ""
+    state confirmDraft = ""
+    state invite = ""
+
+    AppShell(crumb: "Settings") {
+        SrTitle(text: "Settings")
+        Row(align: stretch) {
+            style { flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  flex-grow: "1"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            // Sub-nav
+            Stack { style { width: "232px"  flex: "none"  gap: "0"  border-right: "1px solid var(--line-hairline)"  padding: "20px 12px"  @media (max-width: 768px) { width: "100%"  border-right: "0"  border-bottom: "1px solid var(--line-hairline)"  padding: "12px 16px" } }
+                Container { style { padding: "0 12px 10px"  width: "auto"  margin: "0"  @media (max-width: 768px) { display: "none" } }  Overline(text: "PROJECT SETTINGS") }
+                Stack(role: "group", aria-label: "Settings sections") { style { gap: "2px"  @media (max-width: 768px) { flex-direction: "row"  overflow-x: "auto"  gap: "4px" } }
+                    for t in SettingsStore.tabs { SubNavLink(label: t.label, icon: t.icon, current: t.current, danger: t.danger) { SettingsStore.pick(t.id) } } }
+                Container { style { margin: "18px 0"  width: "auto"  padding: "0"  @media (max-width: 768px) { display: "none" } }  Rule() }
+                Text("Organisation-wide settings, including SSO and the audit log, live one level up.") { style { margin: "0"  padding: "0 12px"  font-size: "12px"  line-height: "1.6"  color: "var(--text-tertiary)"  @media (max-width: 768px) { display: "none" } } }
+            }
+
+            Stack { style { flex-grow: "1"  min-width: "0"  gap: "0"  padding: "28px 36px 40px"  @media (max-width: 768px) { padding: "16px 16px 32px"  flex-basis: "100%" } }
+                // General
+                if SettingsStore.isGeneral {
+                    Stack(aria-label: "General settings") { style { gap: "0" }
+                        SectionTitle(title: "General", lead: "Everything here is stored on the project, not on the build. Changing it takes effect on the next deploy.")
+                        SettingRow(title: "Project name", help: "Shown in the dashboard and used for preview URLs.") {
+                            Field(label: "Name", id: "s-name", help: SettingsStore.nameHelp, error: SettingsStore.nameError) {
+                                FlInput(id: "s-name", value: nameDraft, invalid: SettingsStore.nameBad, labelId: "s-name-label") { on:input { nameDraft = event.target.value  SettingsStore.setName(event.target.value) } } } }
+                        SettingRow(title: "Framework preset", help: "Detected from the repository. Override it only if detection is wrong.") {
+                            Field(label: "Preset", id: "s-fw", help: "Changing this clears the build cache once.") {
+                                FlSelect(id: "s-fw", labelId: "s-fw-label") { Option("next", "Detected: Next.js 15")  Option("astro", "Astro")  Option("sveltekit", "SvelteKit")  Option("remix", "Remix")  Option("none", "No framework") } } }
+                        SettingRow(title: "Root directory", help: "The folder inside the repository that Halyard builds.") {
+                            Field(label: "Path", id: "s-root") { FlInput(id: "s-root", value: "apps/storefront", mono: true, labelId: "s-root-label") } }
+                        SettingRow(title: "Build behaviour", help: "Two switches that change every future build.") {
+                            Stack { style { gap: "14px" }
+                                Row(align: start) { style { gap: "14px"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                                    FlSwitch(checked: SettingsStore.cache, label: "", id: "sw-cache-switch", labelId: "sw-cache") { SettingsStore.toggleCache() }
+                                    Stack { style { gap: "3px"  flex-grow: "1" }
+                                        Text("Reuse the build cache", id: "sw-cache") { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                                        Text("Unchanged steps are skipped. Turn this off only to prove a build is reproducible from nothing.") { style { margin: "0"  font-size: "13px"  line-height: "1.5"  color: "var(--text-tertiary)" } } } }
+                                Row(align: start) { style { gap: "14px"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                                    FlSwitch(checked: SettingsStore.attest, label: "", id: "sw-attest-switch", labelId: "sw-attest") { SettingsStore.toggleAttest() }
+                                    Stack { style { gap: "3px"  flex-grow: "1" }
+                                        Text("Require a matching attestation", id: "sw-attest") { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                                        Text("A build whose digest does not match a second independent run is refused rather than shipped.") { style { margin: "0"  font-size: "13px"  line-height: "1.5"  color: "var(--text-tertiary)" } } } } } }
+                        SettingRow(title: "Deploy approvals", help: "Who has to approve before traffic moves to a new build.", last: true) {
+                            Stack(role: "radiogroup", aria-label: "Deploy approvals") { style { gap: "10px" }
+                                for a in SettingsStore.approvalRows { RadioCard(label: a.label, help: a.help, checked: a.checked) { SettingsStore.setApproval(a.id) } } } }
+                        Row { style { gap: "10px"  padding: "22px 0 0" }
+                            FlButton(label: SettingsStore.saveLabel, variant: "primary") { SettingsStore.save() }
+                            FlButton(label: "Discard changes", variant: "ghost") }
+                    }
+                }
+
+                // Domains
+                if SettingsStore.isDomains {
+                    Stack(aria-label: "Domains") { style { gap: "0" }
+                        SectionTitle(title: "Domains", lead: "Certificates are issued and renewed automatically. A domain starts serving as soon as its record resolves.", margin: "0 0 20px")
+                        Form { style { max-width: "620px"  margin: "0 0 24px" }
+                            on:submit { event.preventDefault()  SettingsStore.addDomain() }
+                            Row(align: end) { style { gap: "10px"  flex-wrap: "nowrap"  align-items: "flex-end"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                                Container { style { flex-grow: "1"  padding: "0"  width: "auto"  min-width: "0" }
+                                    Field(label: "Add a domain", id: "s-domain", help: SettingsStore.domainHelp, error: SettingsStore.domainError) {
+                                        FlInput(id: "s-domain", value: domainDraft, placeholder: "shop.example.com", invalid: SettingsStore.domainBad, labelId: "s-domain-label") { on:input { domainDraft = event.target.value  SettingsStore.setDomain(event.target.value) } } } }
+                                Container { style { padding: "0 0 0"  width: "auto"  flex: "none"  align-self: "flex-start"  margin-top: "26px" }  FlButton(label: "Add domain", variant: "primary", submit: true) } } }
+                        Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  padding: "0"  width: "100%"  max-width: "100%" }
+                            Table(caption: "Domains attached to this project") {
+                                style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "640px" }
+                                Thead { Trow { Th(text: "Domain")  Th(text: "Role")  Th(text: "Environment")  Th(text: "Certificate")  Th(text: "Actions") } }
+                                Tbody {
+                                    for d in SettingsStore.domains {
+                                        Trow {
+                                            Td(text: d.host, mono: true, color: "var(--text-primary)")
+                                            Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: d.role, tone: d.tone, dot: false) }
+                                            Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  OutlineBadge(label: d.env) }
+                                            Td(text: d.cert)
+                                            Tcell("") { style { padding: "6px 12px"  border-bottom: "1px solid var(--line-hairline)"  text-align: "right"  width: "56px" }  IconBtn(icon: "menu", label: "Actions for {d.host}", size: 30) } }
+                                    } } } }
+                    }
+                }
+
+                // Environment
+                if SettingsStore.isEnv {
+                    Stack(aria-label: "Environment variables") { style { gap: "0" }
+                        Row(align: end) { style { gap: "16px"  flex-wrap: "wrap"  align-items: "flex-end"  margin: "0 0 8px" }
+                            Container { style { flex-grow: "1"  padding: "0"  width: "auto"  min-width: "0" }
+                                SectionTitle(title: "Environment", lead: "Secrets are encrypted at rest and decrypted in the region that serves the request. They are never written to a build log.", margin: "0") }
+                            FlButton(label: "Import .env", variant: "secondary", size: "sm", icon: "upload")
+                            FlButton(label: "Add variable", variant: "primary", size: "sm", icon: "plus") }
+                        Container { style { margin: "20px 0"  padding: "0"  width: "100%"  max-width: "100%" }
+                            Callout(tone: "info", title: "Three of these are referenced by a build that is live right now", body: "Changing one does not restart that build — the next deploy picks it up.") }
+                        Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  padding: "0"  width: "100%"  max-width: "100%" }
+                            Table(caption: "Environment variables and which environments they apply to") {
+                                style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "640px" }
+                                Thead { Trow { Th(text: "Key")  Th(text: "Value")  Th(text: "Applies to")  Th(text: "Actions") } }
+                                Tbody {
+                                    for v in SettingsStore.varRows {
+                                        Trow {
+                                            Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  white-space: "nowrap" }
+                                                Row(align: center) { style { gap: "8px"  flex-wrap: "nowrap"  display: "inline-flex" }
+                                                    Icon("eye") { style { color: v.lockColor  display: "inline-flex"  font-size: "13px" } }
+                                                    Text(v.key) { style { margin: "0"  font: "400 13px/1.4 var(--font-mono)"  color: "var(--text-primary)" } } } }
+                                            Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }
+                                                Text(v.shown) { style { margin: "0"  font: "400 12.5px/1.5 var(--font-mono)"  color: "var(--text-secondary)"  word-break: "break-all" } } }
+                                            Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  width: "15%" }  OutlineBadge(label: v.scope) }
+                                            Tcell("") { style { padding: "6px 12px"  border-bottom: "1px solid var(--line-hairline)"  text-align: "right"  white-space: "nowrap"  width: "96px" }
+                                                IconBtn(icon: v.revealIcon, label: v.revealLabel, size: 30, popup: false) { SettingsStore.toggleReveal(v.key) }
+                                                IconBtn(icon: "trash", label: v.deleteLabel, size: 30) } }
+                                    } } } }
+                    }
+                }
+
+                // Team
+                if SettingsStore.isTeam {
+                    Stack(aria-label: "Team") { style { gap: "0" }
+                        SectionTitle(title: "Team", lead: "Viewers are free and can open every read-only view, including the status page and traces.", margin: "0 0 22px")
+                        Form { style { max-width: "680px"  margin: "0 0 26px" }
+                            on:submit { event.preventDefault() }
+                            Row(align: end) { style { gap: "10px"  flex-wrap: "nowrap"  align-items: "flex-end"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+                                Container { style { flex-grow: "1"  padding: "0"  width: "auto"  min-width: "0" }
+                                    Field(label: "Invite by email", id: "s-invite") { FlInput(id: "s-invite", kind: "email", value: invite, placeholder: "name@company.com", labelId: "s-invite-label") { on:input { invite = event.target.value } } } }
+                                Container { style { width: "160px"  flex: "none"  padding: "0" }
+                                    Field(label: "Role", id: "s-role") { FlSelect(id: "s-role", labelId: "s-role-label") { Option("developer", "Developer")  Option("admin", "Admin")  Option("viewer", "Viewer") } } }
+                                Container { style { padding: "0"  width: "auto"  flex: "none"  align-self: "flex-start"  margin-top: "26px" }  FlButton(label: "Send invitation", variant: "primary", submit: true) } } }
+                        Stack { style { gap: "2px" }
+                            for m in SettingsStore.members {
+                                Row(align: center) { style { gap: "14px"  padding: "12px 14px"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-sm)"  flex-wrap: "nowrap"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                                    Text(m.initials, aria-hidden: "true") { style { width: "34px"  height: "34px"  border-radius: "50%"  flex: "none"  background: "var(--surface-active)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 12px/1 var(--font-sans)"  color: "var(--text-secondary)"  margin: "0" } }
+                                    Stack { style { flex-grow: "1"  min-width: "0"  gap: "2px" }
+                                        Text(m.name) { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+                                        Text(m.email) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } } }
+                                    FlSelect(id: "role-{m.initials}", label: "Role for {m.name}", width: "148px", height: "32px") { Option("owner", "Owner")  Option("admin", "Admin")  Option("developer", "Developer")  Option("viewer", "Viewer") }
+                                    IconBtn(icon: "close", label: "Remove {m.name}", size: 30) }
+                            } }
+                    }
+                }
+
+                // Danger zone
+                if SettingsStore.isDanger {
+                    Stack(aria-label: "Danger zone") { style { gap: "0" }
+                        SectionTitle(title: "Danger zone", lead: "Two of these cannot be undone. Both ask you to type the project name first, because a confirmation dialog on its own is not a decision.", margin: "0 0 24px")
+                        Row(align: center) { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "20px 22px"  margin: "0 0 16px"  gap: "24px"  flex-wrap: "nowrap"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                            Stack { style { flex-grow: "1"  gap: "5px" }
+                                Heading("Pause the project", h3) { style { margin: "0"  font: "700 16px/1.3 var(--font-sans)" } }
+                                Text("Every domain starts answering 503 and builds stop. The artifacts, traces and settings stay exactly as they are. Reversible at any time.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "62ch" } } }
+                            FlButton(label: "Pause", variant: "secondary") }
+                        Stack { style { border: "1px solid var(--danger)"  border-radius: "var(--radius-md)"  background: "var(--danger-soft)"  padding: "22px 24px"  gap: "18px" }
+                            Row(align: start) { style { gap: "14px"  flex-wrap: "nowrap"  align-items: "flex-start" }
+                                Icon("warning") { style { color: "var(--danger)"  flex: "none"  display: "inline-flex"  font-size: "20px" } }
+                                Stack { style { gap: "5px" }
+                                    Heading("Delete storefront-edge", h3) { style { margin: "0"  font: "700 16px/1.3 var(--font-sans)"  color: "var(--text-danger)" } }
+                                    Text("Removes 128 builds, 4 domains, every trace and the edge KV namespace. The project name becomes available to anyone immediately. There is no export afterwards.") { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-secondary)"  max-width: "62ch" } } } }
+                            Row(align: end) { style { gap: "12px"  max-width: "620px"  flex-wrap: "nowrap"  align-items: "flex-end"  @media (max-width: 480px) { flex-wrap: "wrap" } }
+                                Container { style { flex-grow: "1"  padding: "0"  width: "auto"  min-width: "0" }
+                                    Field(label: "Type storefront-edge to confirm", id: "s-confirm") {
+                                        FlInput(id: "s-confirm", value: confirmDraft, placeholder: "storefront-edge", labelId: "s-confirm-label") { on:input { confirmDraft = event.target.value  SettingsStore.setConfirm(event.target.value) } } } }
+                                Container { style { padding: "0"  width: "auto"  flex: "none"  align-self: "flex-start"  margin-top: "26px" }  FlButton(label: "Delete this project", variant: "danger", disabled: SettingsStore.cannotDelete) } } }
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,0 +1,21 @@
+// One option of a radio group drawn as a card: role=radio, state in
+// aria-checked, the dot and the border key off it.
+Component RadioCard (label: String, help: String, checked: Bool = false) {
+    derived edge = if checked { "var(--brand)" } else { "var(--line-default)" }
+    derived bg = if checked { "var(--brand-soft)" } else { "transparent" }
+    derived ring = if checked { "var(--brand)" } else { "var(--border-control)" }
+    derived dot = if checked { "1" } else { "0" }
+    Button("", type: "button", role: "radio", aria-checked: checked, aria-label: label) {
+        style {
+            display: "flex"  gap: "12px"  padding: "12px 14px"  border: "1px solid var(--edge)"  --edge: edge  background: bg
+            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  width: "100%"
+            transition: "border-color var(--d-fast) var(--ease-standard), background var(--d-fast) var(--ease-standard)"
+            hover { border-color: "var(--line-strong)" }
+        }
+        Container { style { width: "16px"  height: "16px"  border-radius: "50%"  border: "1.5px solid var(--ring)"  --ring: ring  flex: "none"  margin: "2px 0 0"  padding: "0"  display: "inline-flex"  align-items: "center"  justify-content: "center" }
+            Container { style { width: "8px"  height: "8px"  border-radius: "50%"  background: "var(--brand)"  opacity: dot  padding: "0"  margin: "0" } } }
+        Stack { style { gap: "3px" }
+            Text(label) { style { margin: "0"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)" } }
+            Text(help) { style { margin: "0"  font-size: "13px"  line-height: "1.5"  color: "var(--text-tertiary)" } } }
+    }
+}

@@ -1,0 +1,16 @@
+// The select, styled like the input. Options are the caller's block; the
+// caller writes `on:change` on the call.
+Component FlSelect (id: String, labelId: String = "", label: String = "", width: String = "100%", height: String = "38px", value: String = "", mono: Bool = false) {
+    derived labelled = if labelId == "" { null } else { labelId }
+    derived named = if label == "" { null } else { label }
+    derived chosen = if value == "" { null } else { value }
+    derived family = if mono { "var(--font-mono)" } else { "var(--font-sans)" }
+    Select(id: id, aria-labelledby: labelled, aria-label: named, value: chosen) {
+        style {
+            height: height  width: width  max-width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"
+            color: "var(--text-primary)"  padding: "0 10px"  font: "400 14px/1.2 var(--font-sans)"  font-family: family
+            hover { border-color: "#8a929e" }  focus { border-color: "var(--focus-ring)" }
+        }
+        children
+    }
+}

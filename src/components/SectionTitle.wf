@@ -1,0 +1,7 @@
+// A settings section's h2 and its one-paragraph lead.
+Component SectionTitle (title: String, lead: String, margin: String = "0 0 8px") {
+    Stack { style { gap: "6px"  margin: margin }
+        Heading(title, h2) { style { margin: "0"  font-size: "26px"  font-weight: "700"  letter-spacing: "-0.015em" } }
+        Text(lead) { style { margin: "0"  font-size: "14px"  color: "var(--text-tertiary)"  max-width: "72ch"  line-height: "1.55" } }
+    }
+}

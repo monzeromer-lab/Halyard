@@ -25,7 +25,7 @@ Page AppObservability (path: "/app/observability", title: "Observability", descr
                 Option("production", "production")  Option("preview", "preview")
             }
             Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
-            FlButton(label: MetricsStore.tableLabel, variant: "secondary", size: "sm", icon: "grid") { MetricsStore.toggleTable() }
+            FlButton(label: MetricsStore.tableLabel, variant: "secondary", size: "sm", icon: "menu") { MetricsStore.toggleTable() }
             FlButton(label: "Open logs", variant: "ghost", size: "sm", icon: "menu", to: "/app/logs")
         }
 

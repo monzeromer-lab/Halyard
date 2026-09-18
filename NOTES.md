@@ -202,3 +202,23 @@ the library uses `pressed`, `checked` and `note`.
   assets relatively, so a dynamic route under a static build never
   hydrated. `for` inside an action body is silently dropped — not fixed,
   avoided with `.reduce`/`.map`.
+
+## Milestone 11 — settings, explorer
+
+- **No regex literals**: `RegExp("…")` is called as a function; a `{1,38}`
+  quantifier inside the string is written `\{1,38\}` because `{` starts an
+  interpolation.
+- **Form controls are components** (`FlInput`, `FlSelect`) with the label
+  named by `labelId`; the caller writes `on:input`/`on:change` on the call
+  and the handler reaches the root element. Page state holds the draft for
+  an input, the store owns the validation.
+- **The explorer's filter rows are a list of ids**, with the field, operator
+  and value in maps keyed by id. A `for` re-renders wholesale when its list
+  changes, which would blur the input being typed in; keeping the typed
+  value out of the list means only add and remove re-render the rows.
+- The sub-nav under 768px is a horizontal, scrollable row of the same
+  buttons. The icons `globe`/`lock`/`users`/`grid`/`eye-off` are not in the
+  runtime's set of 30 and are replaced by `link`/`eye`/`user`/`menu`/`close`.
+- Compiler fixes this milestone needed: a select's bound value was set
+  before its options existed (runtime), and a slot inside a `Select`
+  component was appended after the value (codegen).

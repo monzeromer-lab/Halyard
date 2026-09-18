@@ -54,7 +54,7 @@ Page AppBuild (path: "/app/builds/:hash", title: "Build", description: "One buil
                 Stack { style { gap: "0"  background: "var(--surface-sunken)"  flex-grow: "1"  min-height: "320px" }
                     Row(align: center) { style { padding: "12px 24px"  border-bottom: "1px solid var(--line-hairline)"  gap: "12px"  flex-wrap: "nowrap"  @media (max-width: 768px) { padding: "10px 16px" } }
                         Text("stage: {BuildStore.stageName}") { style { margin: "0"  font: "400 12px/1.2 var(--font-mono)"  color: "var(--text-tertiary)"  flex-grow: "1" } }
-                        FlButton(label: "Raw log", variant: "ghost", size: "sm", icon: "external-link") }
+                        FlButton(label: "Raw log", variant: "ghost", size: "sm", icon: "link") }
                     Stack(role: "log", aria-label: "Build output") { style { gap: "0"  padding: "18px 24px"  font: "400 13px/1.85 var(--font-mono)"  overflow-x: "auto"  @media (max-width: 768px) { padding: "14px 16px" } }
                         for l in BuildStore.output {
                             Text(l.text) { style { margin: "0"  color: l.color  white-space: "pre-wrap"  font: "inherit" } }

@@ -1,0 +1,18 @@
+// The text input: 38px, inset surface, control border; invalid in
+// aria-invalid and a danger border. The caller writes `on:input` on the
+// call and names the label with `labelId` (a Field's "{id}-label").
+Component FlInput (id: String, value: String = "", placeholder: String = "", invalid: Bool = false, mono: Bool = false, kind: String = "text", labelId: String = "", describedBy: String = "", height: String = "38px") {
+    derived edge = if invalid { "var(--danger)" } else { "var(--border-control)" }
+    derived family = if mono { "var(--font-mono)" } else { "var(--font-sans)" }
+    derived size = if mono { "13px" } else { "14px" }
+    derived labelled = if labelId == "" { null } else { labelId }
+    derived described = if describedBy == "" { null } else { describedBy }
+    Input(id: id, type: kind, value: value, placeholder: placeholder, aria-invalid: invalid, aria-labelledby: labelled, aria-describedby: described, autocomplete: "off") {
+        style {
+            height: height  width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-sm)"
+            color: "var(--text-primary)"  padding: "0 12px"  font-family: family  font-size: size  line-height: "1.2"
+            transition: "border-color var(--d-fast) var(--ease-standard)"
+            hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" }  focus { border-color: "var(--focus-ring)" }
+        }
+    }
+}

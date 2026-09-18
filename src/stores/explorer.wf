@@ -1,0 +1,75 @@
+// The query builder: saved queries, the source, filter rows that can be
+// added and removed, the generated HQL, and the result view. Rows are
+// replaced, never mutated, so the list re-renders.
+Store ExplorerStore {
+    state saved = "slow-gru"
+    state source = "traces"
+    state view = "table"
+    state ran = true
+    state nextId = 4
+    // The row list holds only ids; each row's parts live in maps keyed by
+    // id, so editing a value does not re-render the rows (and blur the
+    // input being typed in). Only adding or removing a row re-renders.
+    state filters = [1, 2, 3]
+    state fields = { "1": "region", "2": "duration_ms", "3": "status" }
+    state ops = { "1": "is", "2": ">", "3": "is not" }
+    state values = { "1": "gru1", "2": "500", "3": "404" }
+    state savedList = [
+        { id: "slow-gru", name: "Slow requests in gru1", meta: "traces · last 24h · 3 filters" },
+        { id: "5xx-route", name: "5xx by route", meta: "traces · last 7d · 1 filter" },
+        { id: "cold", name: "Cold starts after a deploy", meta: "traces · last 1h · 2 filters" },
+        { id: "kv-cross", name: "Cross-region KV reads", meta: "logs · last 24h · 2 filters" },
+        { id: "build-fail", name: "Failed builds by branch", meta: "builds · last 30d · 1 filter" }
+    ]
+    derived savedRows = savedList.map(s => { id: s.id, name: s.name, meta: s.meta, current: saved == s.id })
+    derived filterRows = filters.map((id, n) => { id: id, n: "{n + 1}", fieldId: "ex-f" + id, opId: "ex-o" + id, valId: "ex-v" + id, removeLabel: "Remove filter " + (n + 1) })
+    derived hasFilters = filters.length > 0
+    derived whereClause = filters.map(id => fields[id] + " " + ops[id] + " " + quoted(values[id])).join(" and ")
+    derived hql = "from " + source + " where " + (if whereClause == "" { "true" } else { whereClause }) + " group by region, route select count(), p50(duration_ms), p99(duration_ms)"
+    derived runLabel = if ran { "Re-run" } else { "Run query" }
+    derived resultNote = if ran { "8 groups from 1,024,918 traces, scanned in 340 ms" } else { "The query changed. Run it to refresh these 8 groups." }
+    derived isTable = view == "table"
+    derived isChart = view == "chart"
+
+    state results = [
+        { region: "gru1", route: "GET /api/stock", n: 412, p50: 1840, p99: 9412, share: "18.4" },
+        { region: "sin1", route: "GET /p/:sku", n: 286, p50: 112, p99: 940, share: "12.8" },
+        { region: "bom1", route: "GET /api/stock", n: 204, p50: 96, p99: 812, share: "9.1" },
+        { region: "jnb1", route: "GET /", n: 168, p50: 88, p99: 640, share: "7.5" },
+        { region: "cpt1", route: "GET /p/:sku", n: 142, p50: 104, p99: 588, share: "6.4" },
+        { region: "syd1", route: "POST /api/cart", n: 121, p50: 74, p99: 420, share: "5.4" },
+        { region: "hnd1", route: "GET /", n: 98, p50: 61, p99: 388, share: "4.4" },
+        { region: "icn1", route: "GET /checkout", n: 84, p50: 63, p99: 344, share: "3.8" }
+    ]
+    derived rows = results.map(r => { region: r.region, route: r.route, n: "{r.n}", p50: "{r.p50}", p99: r.p99.toLocaleString("en-US"), slow: r.p99 >= 1000, p99Color: if r.p99 >= 1000 { "var(--text-warning)" } else { "var(--text-secondary)" }, share: r.share, label: r.region + " · " + r.route, width: "{Math.round(r.n / 412 * 1000) / 10}%", color: if r.p99 >= 1000 { "var(--warning)" } else { "var(--viz-1)" } })
+
+    action quoted(v: String) {
+        if RegExp("^[0-9]+$").test(v) { return v }
+        return "'" + v + "'"
+    }
+    action pickSaved(id: String) { saved = id  ran = false }
+    action setSource(v: String) { source = v  ran = false }
+    action fieldOf(id: Number) { return fields[id] }
+    action opOf(id: Number) { return ops[id] }
+    action valueOf(id: Number) { return values[id] }
+    action withKey(m: Map, id: Number, v: String) {
+        copy = Object.assign({}, m)
+        copy[id] = v
+        return copy
+    }
+    action setField(id: Number, v: String) { fields = withKey(fields, id, v)  ran = false }
+    action setOp(id: Number, v: String) { ops = withKey(ops, id, v)  ran = false }
+    action setValue(id: Number, v: String) { values = withKey(values, id, v)  ran = false }
+    action addFilter() {
+        fields = withKey(fields, nextId, "route")
+        ops = withKey(ops, nextId, "contains")
+        values = withKey(values, nextId, "")
+        filters = filters.concat([nextId])
+        nextId = nextId + 1
+        ran = false
+    }
+    action removeFilter(id: Number) { filters = filters.filter(f => f != id)  ran = false }
+    action clearFilters() { filters = []  ran = false }
+    action run() { ran = true }
+    action setView(v: String) { view = v }
+}

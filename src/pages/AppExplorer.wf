@@ -1,7 +1,105 @@
-Page AppExplorer (path: "/app/explorer", title: "Explorer", description: "Query traces, logs and builds.", noindex) {
-    Container {
-        style { padding: "64px 24px" }
-        Heading("Explorer", h1)
-        Text("Coming in a later milestone.", muted)
+Page AppExplorer (path: "/app/explorer", title: "Explorer", description: "Query traces, logs and builds with filters you can add and remove.", noindex) {
+    use ExplorerStore
+
+    AppShell(crumb: "Explorer") {
+        SrTitle(text: "Explorer")
+        Row(align: stretch) {
+            style { flex-wrap: "nowrap"  gap: "0"  align-items: "stretch"  flex-grow: "1"  @media (max-width: 1024px) { flex-wrap: "wrap" } }
+            // Saved queries rail
+            Stack { style { width: "260px"  flex: "none"  gap: "0"  border-right: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"  padding: "18px 12px"  @media (max-width: 1024px) { width: "100%"  border-right: "0"  border-bottom: "1px solid var(--line-hairline)" } }
+                Row(align: center) { style { gap: "8px"  padding: "0 12px 12px"  flex-wrap: "nowrap" }
+                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" }  Overline(text: "SAVED QUERIES") }
+                    IconBtn(icon: "plus", label: "New query", size: 26) }
+                Stack(role: "group", aria-label: "Saved queries") { style { gap: "2px"  @media (max-width: 1024px) { flex-direction: "row"  flex-wrap: "wrap" } }
+                    for s in ExplorerStore.savedRows { SavedQuery(name: s.name, meta: s.meta, current: s.current) { ExplorerStore.pickSaved(s.id) } } }
+                Container { style { margin: "auto 0 0"  padding: "14px 12px 0"  border-top: "1px solid var(--line-hairline)"  width: "auto"  @media (max-width: 1024px) { display: "none" } }
+                    Text("A saved query is a file in the repository too. Editing one here writes a diff you commit like anything else.") { style { margin: "0"  font-size: "12px"  line-height: "1.6"  color: "var(--text-tertiary)" } } }
+            }
+
+            Stack { style { flex-grow: "1"  min-width: "0"  gap: "0"  flex-basis: "0"  @media (max-width: 1024px) { flex-basis: "100%" } }
+                // Builder
+                Stack { style { gap: "16px"  padding: "20px 28px"  border-bottom: "1px solid var(--line-hairline)"  @media (max-width: 768px) { padding: "16px" } }
+                    Row(align: end) { style { gap: "14px"  flex-wrap: "wrap"  align-items: "flex-end" }
+                        Container { style { width: "180px"  padding: "0"  @media (max-width: 480px) { width: "100%" } }
+                            Field(label: "Source", id: "ex-src") { FlSelect(id: "ex-src", labelId: "ex-src-label", value: ExplorerStore.source) { on:change { ExplorerStore.setSource(event.target.value) }  Option("traces", "traces")  Option("logs", "logs")  Option("builds", "builds") } } }
+                        Container { style { width: "180px"  padding: "0"  @media (max-width: 480px) { width: "100%" } }
+                            Field(label: "Time range", id: "ex-range") { FlSelect(id: "ex-range", labelId: "ex-range-label") { Option("24h", "Last 24 hours")  Option("1h", "Last hour")  Option("7d", "Last 7 days")  Option("custom", "Custom…") } } }
+                        Container { style { width: "200px"  padding: "0"  @media (max-width: 480px) { width: "100%" } }
+                            Field(label: "Group by", id: "ex-group") { FlSelect(id: "ex-group", labelId: "ex-group-label") { Option("region-route", "region, route")  Option("region", "region")  Option("route", "route")  Option("build", "build") } } }
+                        Container { style { width: "180px"  padding: "0"  @media (max-width: 480px) { width: "100%" } }
+                            Field(label: "Measure", id: "ex-agg") { FlSelect(id: "ex-agg", labelId: "ex-agg-label") { Option("all", "count, p50, p99")  Option("count", "count")  Option("p95", "p95 duration")  Option("errors", "error rate") } } }
+                        Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                        FlButton(label: ExplorerStore.runLabel, variant: "primary", icon: "check") { ExplorerStore.run() }
+                    }
+                    Stack { style { gap: "10px" }
+                        Overline(text: "FILTERS, ALL OF WHICH MUST MATCH")
+                        Stack(role: "group", aria-label: "Filters") { style { gap: "8px"  max-width: "900px" }
+                            for f in ExplorerStore.filterRows {
+                                Row(align: center) { style { gap: "10px"  padding: "10px 12px"  background: "var(--surface-inset)"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-sm)"  flex-wrap: "nowrap"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+                                    Num(text: f.n, size: "11px", color: "var(--text-disabled)", weight: "400")
+                                    Text("Field", id: "{f.fieldId}-label") { style { position: "absolute"  width: "1px"  height: "1px"  overflow: "hidden"  clip: "rect(0 0 0 0)"  margin: "0" } }
+                                    FlSelect(id: f.fieldId, labelId: "{f.fieldId}-label", value: ExplorerStore.fieldOf(f.id), width: "180px", height: "32px", mono: true) {
+                                        on:change { ExplorerStore.setField(f.id, event.target.value) }
+                                        Option("region", "region")  Option("route", "route")  Option("status", "status")  Option("duration_ms", "duration_ms")  Option("build", "build")  Option("rule", "rule")  Option("cold_start", "cold_start")  Option("country", "country") }
+                                    Text("Operator", id: "{f.opId}-label") { style { position: "absolute"  width: "1px"  height: "1px"  overflow: "hidden"  clip: "rect(0 0 0 0)"  margin: "0" } }
+                                    FlSelect(id: f.opId, labelId: "{f.opId}-label", value: ExplorerStore.opOf(f.id), width: "116px", height: "32px") {
+                                        on:change { ExplorerStore.setOp(f.id, event.target.value) }
+                                        Option("is", "is")  Option("is not", "is not")  Option("contains", "contains")  Option(">", ">")  Option("<", "<")  Option("in", "in") }
+                                    Text("Value", id: "{f.valId}-label") { style { position: "absolute"  width: "1px"  height: "1px"  overflow: "hidden"  clip: "rect(0 0 0 0)"  margin: "0" } }
+                                    Container { style { flex-grow: "1"  padding: "0"  width: "auto"  min-width: "120px" }
+                                        FlInput(id: f.valId, value: ExplorerStore.valueOf(f.id), placeholder: "value", mono: true, labelId: "{f.valId}-label", height: "32px") { on:input { ExplorerStore.setValue(f.id, event.target.value) } } }
+                                    IconBtn(icon: "close", label: f.removeLabel, size: 30) { ExplorerStore.removeFilter(f.id) }
+                                }
+                            }
+                            Row { style { gap: "10px" }
+                                FlButton(label: "Add filter", variant: "secondary", size: "sm", icon: "plus") { ExplorerStore.addFilter() }
+                                if ExplorerStore.hasFilters { FlButton(label: "Remove all", variant: "ghost", size: "sm") { ExplorerStore.clearFilters() } } }
+                        }
+                    }
+                    Row(align: center) { style { gap: "12px"  padding: "12px 14px"  background: "var(--surface-sunken)"  border: "1px solid var(--line-hairline)"  border-radius: "var(--radius-sm)"  flex-wrap: "nowrap" }
+                        Overline(text: "HQL")
+                        Code("{ExplorerStore.hql}") { style { flex-grow: "1"  min-width: "0"  font: "400 12.5px/1.5 var(--font-mono)"  color: "var(--text-accent)"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  background: "transparent"  padding: "0"  border: "0" } }
+                        FlButton(label: "Copy", variant: "ghost", size: "sm", icon: "copy") { navigator.clipboard.writeText(ExplorerStore.hql) } }
+                }
+
+                // Results
+                Stack { style { gap: "14px"  padding: "18px 28px 24px"  flex-grow: "1"  @media (max-width: 768px) { padding: "16px" } }
+                    Row(align: center) { style { gap: "14px"  flex-wrap: "wrap" }
+                        Text("{ExplorerStore.resultNote}", role: "status") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)"  flex-grow: "1" } }
+                        SegGroup(label: "Result view") {
+                            SegButton(label: "Table", pressed: ExplorerStore.isTable) { ExplorerStore.setView("table") }
+                            SegButton(label: "Bar chart", pressed: ExplorerStore.isChart) { ExplorerStore.setView("chart") } }
+                        FlButton(label: "Export", variant: "secondary", size: "sm", icon: "download") }
+                    if ExplorerStore.isTable {
+                        Container { style { border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "auto"  padding: "0"  width: "100%"  max-width: "100%" }
+                            Table(caption: "Query result grouped by region and route") {
+                                style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)"  min-width: "640px" }
+                                Thead { Trow { Th(text: "Region")  Th(text: "Route")  Th(text: "Requests", numeric: true)  Th(text: "p50 ms", numeric: true)  Th(text: "p99 ms", numeric: true)  Th(text: "Share %", numeric: true) } }
+                                Tbody {
+                                    for r in ExplorerStore.rows {
+                                        Trow {
+                                            Td(text: r.region, mono: true, color: "var(--text-primary)")
+                                            Td(text: r.route, mono: true, color: "var(--text-secondary)")
+                                            Td(text: r.n, numeric: true)
+                                            Td(text: r.p50, numeric: true)
+                                            Td(text: r.p99, numeric: true, color: r.p99Color)
+                                            Td(text: r.share, numeric: true) }
+                                    } } } }
+                    }
+                    if ExplorerStore.isChart {
+                        Stack { style { gap: "18px"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  padding: "22px 26px"  background: "var(--surface-raised)" }
+                            Text("Requests per region and route. One series, so every bar carries its own value and there is no legend.") { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+                            Stack { style { gap: "12px" }
+                                for r in ExplorerStore.rows {
+                                    Row(align: center) { style { gap: "14px"  flex-wrap: "nowrap" }
+                                        Text(r.label) { style { margin: "0"  width: "190px"  flex: "none"  font: "400 12px/1.3 var(--font-mono)"  color: "var(--text-secondary)"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  @media (max-width: 480px) { width: "120px" } } }
+                                        Container(role: "img", aria-label: "{r.label} {r.n} requests") { style { flex-grow: "1"  height: "20px"  background: "var(--surface-inset)"  border-radius: "3px"  padding: "0"  margin: "0"  width: "auto"  min-width: "0"  overflow: "hidden" }
+                                            Container { style { width: r.width  height: "100%"  background: r.color  border-radius: "0 4px 4px 0"  padding: "0"  margin: "0"  transition: "width var(--d-base) var(--ease-standard)" } } }
+                                        Container { style { width: "62px"  flex: "none"  text-align: "right"  padding: "0"  margin: "0" }  Num(text: r.n, size: "12px", color: "var(--text-primary)", weight: "500") } }
+                                } } }
+                    }
+                }
+            }
+        }
     }
 }

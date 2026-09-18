@@ -1,0 +1,17 @@
+// A saved query in the rail: aria-current marks the open one.
+Component SavedQuery (name: String, meta: String, current: Bool = false) {
+    derived bg = if current { "var(--brand-soft)" } else { "transparent" }
+    derived tint = if current { "var(--brand-hover)" } else { "var(--text-disabled)" }
+    derived cur = if current { "true" } else { null }
+    Button("", type: "button", aria-current: cur, aria-label: "{name}, {meta}") {
+        style {
+            display: "flex"  align-items: "flex-start"  gap: "10px"  width: "100%"  background: bg  border: "0"  padding: "10px 12px"
+            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  transition: "background var(--d-fast) var(--ease-standard)"
+            hover { background: "var(--surface-hover)" }
+        }
+        Icon("search") { style { color: tint  flex: "none"  display: "inline-flex"  margin-top: "1px"  font-size: "14px" } }
+        Stack { style { gap: "2px"  flex-grow: "1"  min-width: "0" }
+            Text(name) { style { margin: "0"  font: "600 13px/1.35 var(--font-sans)"  color: "var(--text-primary)" } }
+            Text(meta) { style { margin: "0"  font-size: "11px"  color: "var(--text-tertiary)" } } }
+    }
+}

@@ -1,0 +1,87 @@
+// Project settings: the open section, the general form with its live
+// validation, the domains form, the variables with per-row reveal, the
+// team, and the delete confirmation.
+Store SettingsStore {
+    state section = "general"
+    state name = "storefront-edge"
+    state saved = false
+    state cache = true
+    state attest = true
+    state approval = "two"
+    state revealed = []
+    state domain = ""
+    state domainMsg = ""
+    state domainBad = false
+    state confirm = ""
+
+    state sections = [
+        { id: "general", label: "General", icon: "settings" }, { id: "domains", label: "Domains", icon: "link" },
+        { id: "env", label: "Environment", icon: "eye" }, { id: "team", label: "Team", icon: "user" },
+        { id: "danger", label: "Danger zone", icon: "warning" }
+    ]
+    derived tabs = sections.map(s => { id: s.id, label: s.label, icon: s.icon, current: section == s.id, danger: s.id == "danger" })
+    derived isGeneral = section == "general"
+    derived isDomains = section == "domains"
+    derived isEnv = section == "env"
+    derived isTeam = section == "team"
+    derived isDanger = section == "danger"
+
+    derived nameOk = RegExp("^[a-z0-9][a-z0-9-]\{1,38\}$").test(name)
+    derived nameBad = !nameOk
+    derived nameHelp = if nameOk { "Lower case, digits and hyphens. Preview URLs become " + name + "-<branch>.halyard.app." } else { "" }
+    derived nameError = if nameOk { "" } else { "Lower case letters, digits and hyphens only, between 2 and 39 characters." }
+    derived saveLabel = if saved { "Saved" } else { "Save changes" }
+
+    state approvals = [
+        { id: "none", label: "No approval", help: "Anyone who can deploy moves traffic. Fastest, and the right answer for a preview environment." },
+        { id: "one", label: "One approver", help: "Any other member with deploy rights has to approve before traffic moves." },
+        { id: "two", label: "Two approvers, one an owner", help: "What we run on this project. An owner has to be one of the two." }
+    ]
+    derived approvalRows = approvals.map(a => { id: a.id, label: a.label, help: a.help, checked: approval == a.id })
+
+    derived domainHelp = if domainBad { "" } else { domainMsg }
+    derived domainError = if domainBad { domainMsg } else { "" }
+    state domains = [
+        { host: "storefront.example.com", role: "Primary", tone: "success", env: "production", cert: "Valid until 12 Dec" },
+        { host: "www.example.com", role: "Redirect", tone: "info", env: "production", cert: "Redirects to storefront.example.com" },
+        { host: "preview.example.com", role: "Wildcard", tone: "success", env: "preview", cert: "Valid until 12 Dec" },
+        { host: "shop.example.dev", role: "Pending", tone: "warning", env: "preview", cert: "Add a CNAME to cname.halyard.dev" }
+    ]
+
+    state vars = [
+        { k: "DATABASE_URL", v: "postgres://halyard:••••••@db.internal:5432/store", real: "postgres://halyard:s3cr3t@db.internal:5432/store", s: "All", secret: true },
+        { k: "STRIPE_SECRET_KEY", v: "sk_live_••••••••••••4Kd9", real: "sk_live_9f21c0b4d8e34Kd9", s: "Production", secret: true },
+        { k: "SESSION_SIGNING_KEY", v: "••••••••••••••••••••••••", real: "b7e1c4a09d2f6e8b1c3a5d7f9e0b2c4d", s: "All", secret: true },
+        { k: "NEXT_PUBLIC_CDN", v: "https://cdn.example.com", real: "https://cdn.example.com", s: "All", secret: false },
+        { k: "FEATURE_QUEUES", v: "true", real: "true", s: "Preview", secret: false },
+        { k: "LOG_LEVEL", v: "info", real: "info", s: "All", secret: false }
+    ]
+    derived varRows = vars.map(v => { key: v.k, scope: v.s, secret: v.secret, open: revealed.indexOf(v.k) > -1, shown: if v.secret && revealed.indexOf(v.k) < 0 { v.v } else { v.real }, lockColor: if v.secret { "var(--text-brass)" } else { "var(--text-disabled)" }, revealLabel: (if revealed.indexOf(v.k) > -1 { "Hide" } else { "Reveal" }) + " the value of " + v.k, revealIcon: if revealed.indexOf(v.k) > -1 { "close" } else { "eye" }, deleteLabel: "Delete " + v.k })
+
+    state members = [
+        { initials: "YN", name: "[YOUR NAME]", email: "you@company.com", role: "Owner" },
+        { initials: "AK", name: "[TEAMMATE 1]", email: "ak@company.com", role: "Admin" },
+        { initials: "MR", name: "[TEAMMATE 2]", email: "mr@company.com", role: "Developer" },
+        { initials: "JS", name: "[TEAMMATE 3]", email: "js@company.com", role: "Viewer" }
+    ]
+
+    derived cannotDelete = confirm != "storefront-edge"
+
+    action pick(id: String) { section = id }
+    action setName(v: String) { name = v  saved = false }
+    action toggleCache() { cache = !cache  saved = false }
+    action toggleAttest() { attest = !attest  saved = false }
+    action setApproval(id: String) { approval = id  saved = false }
+    action save() { saved = true }
+    action setDomain(v: String) { domain = v  domainMsg = ""  domainBad = false }
+    action addDomain() {
+        d = domain.trim()
+        ok = RegExp("^[a-z0-9-]+(\\.[a-z0-9-]+)+$").test(d)
+        domainBad = !ok
+        domainMsg = if ok { "Add a CNAME for " + d + " pointing at cname.halyard.dev, then it starts serving." } else { "That is not a hostname. Enter something like shop.example.com, with no scheme and no path." }
+    }
+    action toggleReveal(k: String) {
+        if revealed.indexOf(k) > -1 { revealed = revealed.filter(x => x != k) } else { revealed = revealed.concat([k]) }
+    }
+    action setConfirm(v: String) { confirm = v }
+}
