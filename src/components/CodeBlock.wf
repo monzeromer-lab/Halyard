@@ -1,0 +1,10 @@
+// Code on surface-sunken. Literal braces in the source are escaped \{ \}.
+Component CodeBlock (code: String, size: String = "14px", padding: String = "16px 18px") {
+    Code(code, block) {
+        style {
+            display: "block"  margin: "0"  padding: padding  background: "var(--surface-sunken)"  border: "1px solid var(--line-hairline)"
+            border-radius: "var(--radius-sm)"  font-family: "var(--font-mono)"  font-size: size  line-height: "1.6"
+            color: "var(--text-secondary)"  white-space: "pre"  overflow-x: "auto"
+        }
+    }
+}

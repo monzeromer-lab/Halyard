@@ -1,0 +1,6 @@
+Component Rule (grow: Bool = false) {
+    derived flex = if grow { "1" } else { "none" }
+    Container {
+        style { height: "1px"  background: "var(--line-hairline)"  width: "100%"  padding: "0"  margin: "0"  flex-grow: flex }
+    }
+}

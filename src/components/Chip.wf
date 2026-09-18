@@ -1,0 +1,18 @@
+// A filter chip: pressed state in aria-pressed, an optional count in numeric.
+Component Chip (label: String, pressed: Bool = false, count: String = "") {
+    derived bg = if pressed { "var(--accent-soft)" } else { "transparent" }
+    derived fg = if pressed { "var(--text-accent)" } else { "var(--text-secondary)" }
+    derived edge = if pressed { "var(--accent)" } else { "var(--line-default)" }
+    Button(label, type: "button", aria-pressed: pressed) {
+        style {
+            display: "inline-flex"  align-items: "center"  gap: "6px"  height: "30px"  padding: "0 12px"
+            border-radius: "var(--radius-pill)"  border: "1px solid var(--edge)"  --edge: edge
+            background: bg  color: fg  font: "600 12px/1 var(--font-sans)"  cursor: "pointer"  white-space: "nowrap"
+            transition: "all var(--d-fast) var(--ease-standard)"
+            hover { border-color: "var(--line-strong)"  color: "var(--text-primary)" }
+        }
+        if count != "" {
+            Text(count) { style { font-family: "var(--font-mono)"  font-variant-numeric: "tabular-nums"  opacity: "0.7"  margin: "0"  font-size: "inherit"  color: "inherit" } }
+        }
+    }
+}

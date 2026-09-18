@@ -1,0 +1,9 @@
+Component NavLink (label: String, to: String) {
+    Link(label, to: to) {
+        style {
+            font: "600 14px/1 var(--font-sans)"  color: "var(--text-secondary)"  text-decoration: "none"
+            transition: "color var(--d-instant) var(--ease-standard)"
+            hover { color: "var(--text-primary)" }
+        }
+    }
+}

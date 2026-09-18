@@ -1,0 +1,44 @@
+Component SiteFooter () {
+    Stack(role: "contentinfo") {
+        style {
+            gap: "0"  padding: "56px 80px 40px"  border-top: "1px solid var(--line-hairline)"  background: "var(--surface-sunken)"
+            @media (max-width: 1024px) { padding: "48px 32px 32px" }
+            @media (max-width: 768px) { padding: "40px 16px 24px" }
+        }
+        Row {
+            style { gap: "80px"  margin-bottom: "48px"  flex-wrap: "nowrap"  @media (max-width: 768px) { flex-wrap: "wrap"  gap: "32px" } }
+            Stack {
+                style { width: "300px"  flex: "none"  gap: "16px"  @media (max-width: 768px) { width: "100%" } }
+                Link(to: "/") {
+                    style { display: "flex"  align-items: "center"  gap: "10px"  color: "var(--text-primary)"  text-decoration: "none" }
+                    Mark(size: 20)
+                    Text("Halyard") { style { margin: "0"  font: "700 18px/1 var(--font-sans)"  letter-spacing: "-0.02em"  color: "var(--text-primary)" } }
+                }
+                Text("An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.") {
+                    style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-tertiary)"  max-width: "36ch" }
+                }
+            }
+            Grid(columns: 4) {
+                style { flex-grow: "1"  gap: "24px"  @media (max-width: 768px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" } }
+                Stack { style { gap: "0" }  Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "PRODUCT") }
+                    FootLink(label: "Overview", to: "/")  FootLink(label: "Pricing", to: "/pricing")  FootLink(label: "Changelog", to: "/changelog")  FootLink(label: "Status", to: "/status") }
+                Stack { style { gap: "0" }  Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "DEVELOPERS") }
+                    FootLink(label: "Docs", to: "/docs")  FootLink(label: "API reference", to: "/docs")  FootLink(label: "CLI", to: "/docs")  FootLink(label: "Dashboard", to: "/app") }
+                Stack { style { gap: "0" }  Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "COMPANY") }
+                    FootLink(label: "About", to: "/")  FootLink(label: "Careers", to: "/")  FootLink(label: "Security", to: "/")  FootLink(label: "Press", to: "/") }
+                Stack { style { gap: "0" }  Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "LEGAL") }
+                    FootLink(label: "Terms", to: "/")  FootLink(label: "Privacy", to: "/")  FootLink(label: "Subprocessors", to: "/")  FootLink(label: "DPA", to: "/") }
+            }
+        }
+        Rule()
+        Row(align: center) {
+            style { padding-top: "24px"  gap: "16px"  flex-wrap: "nowrap"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+            Link(to: "/status") {
+                style { text-decoration: "none" }
+                StatusBadge(label: "All 19 regions operational", tone: "success")
+            }
+            Container { style { flex-grow: "1"  padding: "0"  margin: "0"  width: "auto" } }
+            Text("© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.") { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } }
+        }
+    }
+}

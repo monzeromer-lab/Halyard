@@ -1,0 +1,27 @@
+// A stat tile: overline, delta badge, numeric value with unit, a note, and
+// a 12-bar strip where the design drew a sparkline (no inline SVG).
+Component StatTile (label: String, value: String, unit: String, delta: String, tone: String, note: String, bars: List, color: String) {
+    Stack {
+        style { gap: "8px"  padding: "16px 18px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)" }
+        Row(align: center) {
+            style { flex-wrap: "nowrap"  gap: "8px" }
+            Container { style { flex-grow: "1"  padding: "0"  margin: "0"  width: "auto" }  Overline(text: label) }
+            StatusBadge(label: delta, tone: tone, dot: false)
+        }
+        Row(align: end) {
+            style { flex-wrap: "nowrap"  gap: "12px" }
+            Row(align: baseline) {
+                style { flex-wrap: "nowrap"  gap: "5px"  flex-grow: "1" }
+                Num(text: value, size: "28px")
+                Text(unit) { style { margin: "0"  font-size: "12px"  color: "var(--text-tertiary)" } }
+            }
+            Row(align: end) {
+                style { flex-wrap: "nowrap"  gap: "3px"  height: "32px"  flex: "none"  width: "120px"  align-items: "flex-end" }
+                for h in bars {
+                    Container { style { flex: "1 1 0"  height: "{h}%"  min-height: "2px"  background: color  opacity: "0.75"  border-radius: "1px"  padding: "0"  margin: "0" } }
+                }
+            }
+        }
+        Text(note) { style { margin: "0"  font-size: "11px"  color: "var(--text-tertiary)" } }
+    }
+}

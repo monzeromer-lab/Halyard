@@ -1,0 +1,11 @@
+// A reference panel: the demo on the left, the note on the right.
+Component Spec (note: String) {
+    Grid(columns: 2) {
+        style { gap: "0"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "hidden"  background: "var(--surface-raised)"  @media (max-width: 768px) { grid-template-columns: "1fr" } }
+        Row(align: center) {
+            style { padding: "22px 24px"  gap: "12px"  border-right: "1px solid var(--line-hairline)"  @media (max-width: 768px) { border-right: "0"  border-bottom: "1px solid var(--line-hairline)" } }
+            children
+        }
+        Text(note) { style { margin: "0"  padding: "18px 20px"  background: "var(--surface-sunken)"  font-family: "var(--font-mono)"  font-size: "12px"  line-height: "1.7"  color: "var(--text-secondary)"  white-space: "pre-wrap" } }
+    }
+}

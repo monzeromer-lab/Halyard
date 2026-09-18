@@ -1,0 +1,47 @@
+// The button contract: variant and size live in data attributes, the outcome
+// in the label. One primary per viewport. A `to` makes it a link that looks
+// the same; a handler written on the call reaches the root either way.
+Component FlButton (label: String, variant: String = "secondary", size: String = "md", to: String = "", icon: String = "", disabled: Bool = false) {
+    derived bg = if variant == "primary" { "var(--brand)" } else if variant == "secondary" { "var(--surface-raised)" } else if variant == "danger" { "var(--danger)" } else if variant == "accent" { "var(--accent)" } else { "transparent" }
+    derived fg = if variant == "primary" { "var(--on-brand)" } else if variant == "secondary" { "var(--text-primary)" } else if variant == "danger" { "var(--on-danger)" } else if variant == "accent" { "var(--on-accent)" } else { "var(--text-secondary)" }
+    derived edge = if variant == "secondary" { "var(--line-strong)" } else { "transparent" }
+    derived hoverBg = if variant == "primary" { "var(--brand-hover)" } else if variant == "secondary" { "var(--surface-hover)" } else if variant == "danger" { "#ff7676" } else if variant == "accent" { "var(--accent-hover)" } else { "var(--surface-hover)" }
+    derived hoverFg = if variant == "ghost" { "var(--text-primary)" } else { fg }
+    derived hoverEdge = if variant == "secondary" { "var(--border-control)" } else { edge }
+    derived hoverGlow = if variant == "primary" { "var(--glow-brand)" } else { "none" }
+    derived h = if size == "sm" { "30px" } else if size == "lg" { "46px" } else { "38px" }
+    derived px = if size == "sm" { "0 12px" } else if size == "lg" { "0 22px" } else { "0 16px" }
+    derived fs = if size == "sm" { "12px" } else if size == "lg" { "16px" } else { "14px" }
+    derived radius = if size == "sm" { "var(--radius-sm)" } else { "var(--radius-md)" }
+    derived dim = if disabled { "0.45" } else { "1" }
+    derived cursor = if disabled { "not-allowed" } else { "pointer" }
+
+    if to != "" {
+        Link(label, to: to, data-variant: variant, data-size: size) {
+            style {
+                --bg: bg  --fg: fg  --edge: edge  --hover-bg: hoverBg  --hover-fg: hoverFg  --hover-edge: hoverEdge  --hover-glow: hoverGlow
+                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"
+                height: h  padding: px  border-radius: radius  border: "1px solid var(--edge)"
+                font-family: "var(--font-sans)"  font-weight: "600"  font-size: fs  line-height: "1.2"
+                background: "var(--bg)"  color: "var(--fg)"  white-space: "nowrap"  text-decoration: "none"  cursor: "pointer"
+                transition: "background var(--d-instant) var(--ease-standard), border-color var(--d-instant) var(--ease-standard), box-shadow var(--d-base) var(--ease-standard), transform var(--d-instant) var(--ease-standard)"
+                hover { background: "var(--hover-bg)"  color: "var(--hover-fg)"  border-color: "var(--hover-edge)"  box-shadow: "var(--hover-glow)" }
+                active { transform: "translateY(1px)" }
+            }
+        }
+    } else {
+        Button(label, type: "button", data-variant: variant, data-size: size, disabled: disabled) {
+            style {
+                --bg: bg  --fg: fg  --edge: edge  --hover-bg: hoverBg  --hover-fg: hoverFg  --hover-edge: hoverEdge  --hover-glow: hoverGlow
+                display: "inline-flex"  align-items: "center"  justify-content: "center"  gap: "8px"
+                height: h  padding: px  border-radius: radius  border: "1px solid var(--edge)"
+                font-family: "var(--font-sans)"  font-weight: "600"  font-size: fs  line-height: "1.2"
+                background: "var(--bg)"  color: "var(--fg)"  white-space: "nowrap"  cursor: cursor  opacity: dim
+                transition: "background var(--d-instant) var(--ease-standard), border-color var(--d-instant) var(--ease-standard), box-shadow var(--d-base) var(--ease-standard), transform var(--d-instant) var(--ease-standard)"
+                hover { background: "var(--hover-bg)"  color: "var(--hover-fg)"  border-color: "var(--hover-edge)"  box-shadow: "var(--hover-glow)" }
+                active { transform: "translateY(1px)" }
+                disabled { transform: "none" }
+            }
+        }
+    }
+}

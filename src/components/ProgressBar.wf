@@ -1,0 +1,9 @@
+// A 6px track with a brand fill. The bar says its number too.
+Component ProgressBar (pct: Number, label: String, color: String = "var(--brand)", maxWidth: String = "100%") {
+    Container(role: "progressbar", aria-valuenow: pct, aria-valuemin: 0, aria-valuemax: 100, aria-label: label) {
+        style { height: "6px"  border-radius: "var(--radius-pill)"  background: "var(--surface-inset)"  overflow: "hidden"  width: "100%"  max-width: maxWidth  padding: "0"  margin: "0" }
+        Container {
+            style { height: "100%"  width: "{pct}%"  background: color  border-radius: "var(--radius-pill)"  transition: "width var(--d-slow) var(--ease-standard)"  padding: "0"  margin: "0" }
+        }
+    }
+}

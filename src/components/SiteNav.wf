@@ -1,0 +1,43 @@
+// The sticky marketing header: mark, five links, search (opens the command
+// palette from a visible button — no global key handler), sign in, the one
+// primary button. Collapses to mark + primary on a phone.
+Component SiteNav () {
+    use UiStore
+    Row(align: center, role: "banner") {
+        style {
+            position: "sticky"  top: "0"  z-index: "100"  height: "68px"  flex-wrap: "nowrap"  gap: "40px"  padding: "0 80px"
+            background: "rgba(11,12,14,0.72)"  backdrop-filter: "blur(16px)"  border-bottom: "1px solid var(--line-hairline)"
+            @media (max-width: 1024px) { padding: "0 32px"  gap: "24px" }
+            @media (max-width: 768px) { padding: "0 16px"  gap: "12px"  height: "60px" }
+        }
+        Link(to: "/") {
+            style { display: "flex"  align-items: "center"  gap: "10px"  color: "var(--text-primary)"  text-decoration: "none" }
+            Mark(size: 22)
+            Text("Halyard") { style { margin: "0"  font: "700 19px/1 var(--font-sans)"  letter-spacing: "-0.02em"  color: "var(--text-primary)" } }
+        }
+        Row(align: center, role: "navigation", aria-label: "Primary") {
+            style { flex-wrap: "nowrap"  gap: "28px"  flex-grow: "1"  @media (max-width: 768px) { display: "none" } }
+            NavLink(label: "Product", to: "/")
+            NavLink(label: "Pricing", to: "/pricing")
+            NavLink(label: "Docs", to: "/docs")
+            NavLink(label: "Changelog", to: "/changelog")
+            NavLink(label: "Status", to: "/status")
+        }
+        Row(align: center) {
+            style { flex-wrap: "nowrap"  gap: "12px" }
+            Button("Search", type: "button", data-variant: "ghost", data-size: "sm") {
+                style {
+                    display: "inline-flex"  align-items: "center"  gap: "10px"  height: "30px"  padding: "0 12px"  border-radius: "var(--radius-sm)"
+                    border: "1px solid transparent"  background: "transparent"  color: "var(--text-secondary)"  font: "600 12px/1.2 var(--font-sans)"  cursor: "pointer"
+                    hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+                    @media (max-width: 768px) { display: "none" }
+                }
+                Icon("search") { style { font-size: "14px"  display: "inline-flex" } }
+                Kbd(text: "⌘K")
+                UiStore.open("palette")
+            }
+            FlButton(label: "Sign in", variant: "ghost", size: "sm", to: "/app")
+            FlButton(label: "Start building", variant: "primary", size: "sm", to: "/new")
+        }
+    }
+}

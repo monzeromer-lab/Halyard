@@ -1,0 +1,9 @@
+// A numbered section heading with a rule running to the right edge.
+Component SectionHead (number: String, title: String) {
+    Row(gap: md, align: baseline) {
+        style { flex-wrap: "nowrap"  gap: "14px" }
+        Text(number) { style { font-family: "var(--font-mono)"  font-variant-numeric: "tabular-nums"  font-size: "13px"  color: "var(--text-disabled)" } }
+        Heading(title, h2) { style { margin: "0"  font-size: "26px"  font-weight: "700"  letter-spacing: "-0.015em"  white-space: "nowrap" } }
+        Rule(grow: true)
+    }
+}

@@ -1,0 +1,3 @@
+Component Dot (color: String, size: Number = 7) {
+    Container { style { width: "{size}px"  height: "{size}px"  border-radius: "50%"  background: color  flex: "none"  padding: "0"  margin: "0" } }
+}

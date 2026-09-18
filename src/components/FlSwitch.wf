@@ -1,0 +1,25 @@
+// A switch is a button with role=switch; its state is aria-checked and the
+// CSS keys off it. The handler written on the call flips the caller's state.
+Component FlSwitch (checked: Bool, label: String, id: String) {
+    derived bg = if checked { "var(--accent)" } else { "var(--surface-inset)" }
+    derived edge = if checked { "var(--accent)" } else { "var(--border-control)" }
+    derived knob = if checked { "translateX(18px)" } else { "translateX(0)" }
+    derived knobBg = if checked { "var(--on-accent)" } else { "var(--text-secondary)" }
+    Row(align: center) {
+        style { display: "inline-flex"  flex-wrap: "nowrap"  gap: "12px"  width: "fit-content" }
+        Button("", type: "button", role: "switch", aria-checked: checked, aria-labelledby: id) {
+            style {
+                display: "inline-flex"  align-items: "center"  width: "40px"  height: "22px"  flex: "none"  padding: "2px"
+                border-radius: "var(--radius-pill)"  background: bg  border: "1px solid var(--edge)"  --edge: edge  cursor: "pointer"
+                transition: "background var(--d-fast) var(--ease-standard), border-color var(--d-fast) var(--ease-standard)"
+            }
+            Container {
+                style {
+                    width: "16px"  height: "16px"  border-radius: "50%"  background: knobBg  transform: knob  padding: "0"  margin: "0"
+                    transition: "transform var(--d-fast) var(--ease-spring), background var(--d-fast) var(--ease-standard)"
+                }
+            }
+        }
+        Text(label, id: id) { style { margin: "0"  font-size: "14px"  color: "var(--text-secondary)" } }
+    }
+}

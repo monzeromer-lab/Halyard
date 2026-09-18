@@ -105,7 +105,20 @@ Panel(title: "Keys") {
 }
 ```
 
-Call user components with **named arguments**.
+Call user components with **named arguments**. A prop that reads state stays
+live inside the component: `Chip(pressed: showErrors)` repaints when
+`showErrors` changes. A handler written on the call
+— the click shorthand or an explicit `on:…` block — attaches to the
+component's root element, so a styled button component is clickable wherever
+it is used:
+
+```wf
+Component SaveButton (label: String) {
+    Button(label) { style { background: "var(--brand)" hover { background: "var(--brand-hover)" } } }
+}
+
+SaveButton(label: "Publish changes") { publish() }
+```
 
 ### Attributes
 
@@ -746,6 +759,18 @@ ring, not a ring on every click), `active`, `disabled`, `placeholder`,
 `focus-within`. These are stylesheet rules, so their values must be known at
 build time: literals and token keywords, not state.
 
+A rule that has to vary per element reads a custom property the element sets
+— a custom property can follow state, the rule cannot:
+
+```wf
+Button(label) {
+    style {
+        --hover-bg: hoverColor          // state, prop or derived
+        hover { background: "var(--hover-bg)" }
+    }
+}
+```
+
 ### Themes
 
 A theme is written in WebFluent, in your own `src/`:
@@ -1065,7 +1090,7 @@ components with one name — is an error and stops the build.
 
 | Rule | What it means |
 |---|---|
-| `A01`–`A12` | WCAG element checks — alt text, form labels, heading outline, table headers |
+| `A01`–`A12` | WCAG element checks — alt text, form labels, heading outline, table headers. A control is named by `label:`, or by `aria-label:` / `aria-labelledby:` when its visible label is a separate element |
 | `A13` | A theme's colour pairing falls below the WCAG AA contrast ratio |
 | `S01` | A page has no title |
 | `S02` | A page has no description, so its search snippet is written for it |
@@ -1233,7 +1258,7 @@ Page Invoice (path: "/", title: "Invoice") {
 
 1. **Every page needs a path**: `Page Name (path: "/route") { ... }`
 2. **State is reactive**: any UI referencing a state variable auto-updates
-3. **Modifiers are positional**: `Button("Label", primary, large)` — order doesn't matter
+3. **Modifiers are positional**: `Button("Label", primary, large)` — order doesn't matter. A prop, state or derived name declared in the enclosing page or component shadows a modifier word, so a component with a `text` prop writes `Text(text)` and means the prop
 4. **Named args use colon**: `Input(text, bind: myVar, placeholder: "...")`
 5. **Braces for children/body**: `Card { Card.Body { Text("content") } }`
 6. **Sub-components use dot**: `Card.Header`, `Card.Body`, `Card.Footer`, `Navbar.Brand`, `Navbar.Links`

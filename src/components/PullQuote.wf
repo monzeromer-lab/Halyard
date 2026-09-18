@@ -1,0 +1,11 @@
+Component PullQuote (text: String, name: String, role: String) {
+    Stack {
+        style { gap: "18px"  padding-top: "24px"  border-top: "2px solid var(--brass)"  max-width: "62ch" }
+        Text(text) { style { margin: "0"  font-family: "var(--font-display)"  font-style: "italic"  font-size: "28px"  line-height: "1.35"  font-weight: "400"  color: "var(--text-primary)" } }
+        Row(gap: sm, align: center) {
+            style { flex-wrap: "nowrap"  gap: "10px" }
+            Placeholder(text: name, size: "13px")
+            Text(role) { style { margin: "0"  font-size: "13px"  color: "var(--text-tertiary)" } }
+        }
+    }
+}

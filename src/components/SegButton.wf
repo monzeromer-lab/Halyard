@@ -1,0 +1,12 @@
+Component SegButton (label: String, pressed: Bool = false) {
+    derived bg = if pressed { "var(--surface-active)" } else { "transparent" }
+    derived fg = if pressed { "var(--text-primary)" } else { "var(--text-tertiary)" }
+    Button(label, type: "button", aria-pressed: pressed) {
+        style {
+            background: bg  color: fg  border: "0"  height: "26px"  padding: "0 12px"  border-radius: "4px"
+            font: "600 12px/1 var(--font-sans)"  cursor: "pointer"  white-space: "nowrap"
+            transition: "background var(--d-fast) var(--ease-standard), color var(--d-fast) var(--ease-standard)"
+            hover { color: "var(--text-secondary)" }
+        }
+    }
+}

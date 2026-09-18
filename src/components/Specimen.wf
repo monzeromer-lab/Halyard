@@ -1,0 +1,9 @@
+Component Specimen (name: String, spec: String, sample: String, family: String, size: String, lh: String, ls: String, weight: String) {
+    Row(align: baseline) {
+        style { flex-wrap: "nowrap"  gap: "24px"  padding: "14px 0"  border-bottom: "1px solid var(--line-hairline)"  @media (max-width: 768px) { flex-wrap: "wrap"  gap: "8px" } }
+        Stack { style { width: "120px"  flex: "none"  gap: "3px" }
+            Text(name) { style { margin: "0"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-primary)" } }
+            Text(spec) { style { margin: "0"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-tertiary)" } } }
+        Text(sample) { style { margin: "0"  flex-grow: "1"  min-width: "0"  overflow: "hidden"  text-overflow: "ellipsis"  white-space: "nowrap"  color: "var(--text-primary)"  font-family: family  font-size: size  line-height: lh  letter-spacing: ls  font-weight: weight } }
+    }
+}

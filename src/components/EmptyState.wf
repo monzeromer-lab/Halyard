@@ -1,0 +1,10 @@
+// Names the missing thing and offers the action that creates it (the caller
+// passes the button as children).
+Component EmptyState (title: String, body: String) {
+    Stack(align: center) {
+        style { gap: "8px"  padding: "48px 24px"  text-align: "center"  border: "1px dashed var(--line-default)"  border-radius: "var(--radius-md)" }
+        Text(title) { style { margin: "0"  font: "700 17px/1.35 var(--font-sans)"  color: "var(--text-primary)" } }
+        Text(body) { style { margin: "0 0 8px"  font-size: "14px"  line-height: "1.55"  color: "var(--text-tertiary)"  max-width: "48ch" } }
+        children
+    }
+}

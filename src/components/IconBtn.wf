@@ -1,0 +1,15 @@
+// An icon-only button always carries an accessible name.
+Component IconBtn (icon: String, label: String, variant: String = "ghost", size: Number = 38) {
+    derived edge = if variant == "outline" { "var(--line-default)" } else { "transparent" }
+    IconButton(icon: icon, label: label, type: "button", data-variant: variant) {
+        style {
+            --edge: edge
+            display: "inline-flex"  align-items: "center"  justify-content: "center"
+            width: "{size}px"  height: "{size}px"  min-width: "{size}px"  padding: "0"
+            border-radius: "var(--radius-sm)"  border: "1px solid var(--edge)"  background: "transparent"
+            color: "var(--text-secondary)"  cursor: "pointer"  font-size: "17px"
+            transition: "background var(--d-instant) var(--ease-standard), color var(--d-instant) var(--ease-standard)"
+            hover { background: "var(--surface-hover)"  color: "var(--text-primary)" }
+        }
+    }
+}

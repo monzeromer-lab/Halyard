@@ -1,0 +1,6 @@
+// Anything that changes on screen is numeric: mono, tabular figures.
+Component Num (text: String, size: String = "15px", color: String = "var(--text-primary)", weight: String = "500") {
+    Text(text) {
+        style { font-family: "var(--font-mono)"  font-variant-numeric: "tabular-nums"  font-size: size  font-weight: weight  color: color  margin: "0"  line-height: "1.2" }
+    }
+}

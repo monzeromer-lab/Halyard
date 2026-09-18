@@ -1,68 +1,251 @@
 Page Patterns (path: "/patterns", title: "Design reference", description: "The Fluant Ink tokens, type scale and components.", noindex) {
-    state pct = 40
-    state on = true
+    state surfaces = [
+        { name: "surface-canvas", hex: "#0b0c0e" }, { name: "surface-sunken", hex: "#060708" }, { name: "surface-raised", hex: "#131519" },
+        { name: "surface-overlay", hex: "#1a1d23" }, { name: "surface-inset", hex: "#101318" }, { name: "surface-hover", hex: "#1f232a" }, { name: "surface-active", hex: "#262b33" }
+    ]
+    state inks = [
+        { name: "text-primary", hex: "#f4f1ec" }, { name: "text-secondary", hex: "#b9bec7" }, { name: "text-tertiary", hex: "#949ba7" }, { name: "text-disabled", hex: "#5d646f" },
+        { name: "line-hairline", hex: "#1c2026" }, { name: "line-default", hex: "#2a2f37" }, { name: "border-control", hex: "#6b7482" }
+    ]
+    state brands = [
+        { name: "brand", hex: "#ff6a2b" }, { name: "brand-hover", hex: "#ff804a" }, { name: "brand-soft", hex: "#2a1409" }, { name: "accent", hex: "#35e0b0" },
+        { name: "accent-soft", hex: "#07221c" }, { name: "brass", hex: "#d9b45a" }, { name: "brass-soft", hex: "#241c0c" }
+    ]
+    state statuses = [
+        { name: "success", hex: "#3ad07f" }, { name: "warning", hex: "#f5b53c" }, { name: "danger", hex: "#ff5d5d" }, { name: "info", hex: "#48b6ef" },
+        { name: "viz-5", hex: "#ff8fc0" }, { name: "viz-6", hex: "#a9d84a" }, { name: "viz-7", hex: "#9b8cff" }
+    ]
+    state durations = [
+        { name: "duration-instant", value: "80ms", note: "Colour or opacity on hover and press" },
+        { name: "duration-fast", value: "140ms", note: "Tooltip, switch knob, tab underline" },
+        { name: "duration-base", value: "220ms", note: "Menu, popover, toast, accordion" },
+        { name: "duration-slow", value: "380ms", note: "Modal, drawer, tab cross-fade" },
+        { name: "duration-slower", value: "620ms", note: "Scroll reveal, staggered entrance" },
+        { name: "duration-cinematic", value: "1100ms", note: "Hero entrance, counter run. One per viewport." }
+    ]
+    state easings = [
+        { name: "ease-standard", value: "cubic-bezier(0.2,0,0,1)", note: "Moves that stay on screen" },
+        { name: "ease-entrance", value: "cubic-bezier(0.16,1,0.3,1)", note: "Anything arriving" },
+        { name: "ease-exit", value: "cubic-bezier(0.7,0,0.84,0)", note: "Anything leaving" },
+        { name: "ease-spring", value: "cubic-bezier(0.34,1.56,0.64,1)", note: "One overshoot, a deliberate act" },
+        { name: "ease-anticipate", value: "cubic-bezier(0.68,-0.4,0.27,1.4)", note: "Hero and page transitions only" }
+    ]
+    state rules = [
+        { n: "01", title: "The element is part of the contract", body: "A button is a Button, a link is a Link, a field is an Input with a label. Swap in a container with a click handler and the CSS still matches but Tab stops working." },
+        { n: "02", title: "State lives in attributes, not classes", body: "aria-pressed, aria-selected, aria-checked, aria-current, aria-invalid, aria-expanded and disabled are what the CSS keys off. The accessible state and the visual state cannot drift apart — there is only one of them." },
+        { n: "03", title: "Variants live in data-*", body: "data-variant, data-size, data-tone, data-dense, data-numeric. A port emits the same strings and inherits every rule, including ones added later." },
+        { n: "04", title: "Layout is flex or grid with gap", body: "Never margins between siblings and never whitespace-as-spacing. Gap survives reordering, deletion and direct manipulation; margins do not." },
+        { n: "05", title: "Colour is never the only signal", body: "Status carries a word, charts carry direct labels, bars that mean slow also say the number. High contrast removes every shadow, so nothing may depend on one to exist." }
+    ]
+    state pressedChip = true
+    state switchOn = true
+    state seg = "24h"
+    state pct = 64
 
-    Container {
-        style { padding: "64px 24px"  max-width: "1280px" }
-
-        Heading("Smoke test", h1) {
-            style { font-family: "var(--font-display)"  font-size: "72px"  line-height: "0.94"  letter-spacing: "-0.025em"  font-weight: "600" }
+    Stack {
+        style {
+            gap: "56px"  padding: "64px 80px 72px"  max-width: "1440px"  margin: "0 auto"  width: "100%"
+            @media (max-width: 1024px) { padding: "48px 32px" }
+            @media (max-width: 768px) { padding: "32px 16px"  gap: "40px" }
         }
-        Text("Theme tokens, structural mode, fonts, hover, data attributes, reactive style, children.") {
-            style { color: "var(--text-secondary)"  font-size: "18px"  line-height: "1.6"  max-width: "62ch" }
-        }
 
-        Row(gap: sm, align: center) {
-            style { margin-top: "24px" }
-            Button("Publish changes", data-variant: "primary") {
-                style {
-                    height: "38px"  padding: "0 16px"  border-radius: "var(--radius-md)"  border: "1px solid transparent"
-                    font: "600 14px/1.2 var(--font-sans)"  background: "var(--brand)"  color: "var(--on-brand)"  cursor: "pointer"
-                    transition: "background var(--d-instant) var(--ease-standard), box-shadow var(--d-base) var(--ease-standard)"
-                    hover { background: "var(--brand-hover)"  box-shadow: "var(--glow-brand)" }
-                    active { transform: "translateY(1px)" }
-                }
-                pct = pct + 10
+        Stack {
+            style { gap: "18px" }
+            Overline(text: "FLUANT INK · PORTING REFERENCE")
+            Heading("The contract, component by component.", h1) {
+                style { margin: "0"  max-width: "20ch"  font-family: "var(--font-display)"  font-size: "72px"  line-height: "0.94"  letter-spacing: "-0.025em"  font-weight: "600"
+                        @media (max-width: 768px) { font-size: "40px" } }
             }
-            Button("Toggle", aria-pressed: on, data-variant: "secondary") {
-                style {
-                    height: "38px"  padding: "0 16px"  border-radius: "var(--radius-md)"  border: "1px solid var(--line-strong)"
-                    font: "600 14px/1.2 var(--font-sans)"  background: "var(--surface-raised)"  color: "var(--text-primary)"  cursor: "pointer"
-                    hover { background: "var(--surface-hover)"  border-color: "var(--border-control)" }
-                }
-                on = !on
+            Text("Every board on this canvas is built from what is on this page. Emit the same element, the same attributes and the same tokens and the stylesheet carries the design — that is the whole porting story.") {
+                style { margin: "0"  max-width: "72ch"  font-size: "18px"  line-height: "1.6"  color: "var(--text-secondary)" }
             }
-            Icon("check") { style { color: "var(--text-success)" } }
-            Text("pressed: {on} · {pct}%") { style { font-family: "var(--font-mono)"  font-size: "12px"  color: "var(--text-tertiary)" } }
+            Row(gap: sm) {
+                style { gap: "10px" }
+                FlButton(label: "Back to the landing page", variant: "secondary", size: "sm", to: "/")
+                FlButton(label: "See the product UI", variant: "ghost", size: "sm", to: "/app")
+            }
         }
 
-        Stack(gap: xs) {
-            style { margin-top: "24px"  max-width: "320px" }
-            Container {
-                style { height: "6px"  border-radius: "var(--radius-pill)"  background: "var(--surface-inset)"  overflow: "hidden"  width: "100%"  padding: "0" }
+        // 01 Colour
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "01", title: "Colour")
+            Text("Ink is the default theme. Every token is a custom property on :root, declared once in Theme.wf.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)"  max-width: "90ch" } }
+            Grid(columns: 4) {
+                style { gap: "20px"  @media (max-width: 768px) { grid-template-columns: "repeat(2, minmax(0, 1fr))" } }
+                Stack { style { gap: "10px" }  Overline(text: "SURFACES")
+                    for s in surfaces { Swatch(name: s.name, hex: s.hex) } }
+                Stack { style { gap: "10px" }  Overline(text: "INK")
+                    for s in inks { Swatch(name: s.name, hex: s.hex) } }
+                Stack { style { gap: "10px" }  Overline(text: "BRAND AND ACCENT")
+                    for s in brands { Swatch(name: s.name, hex: s.hex) } }
+                Stack { style { gap: "10px" }  Overline(text: "STATUS AND DATA")
+                    for s in statuses { Swatch(name: s.name, hex: s.hex) } }
+            }
+        }
+
+        // 02 Type
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "02", title: "Type")
+            Text("Fraunces for display, Manrope for the interface, JetBrains Mono for anything that is a number or a token.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Specimen(name: "display-2xl", spec: "Fraunces 96/0.92, -0.03em", sample: "Ship the surface", family: "var(--font-display)", size: "96px", lh: "0.92", ls: "-0.03em", weight: "600")
+            Specimen(name: "display-lg", spec: "Fraunces 56/1.0, -0.02em", sample: "Section opener", family: "var(--font-display)", size: "56px", lh: "1.0", ls: "-0.02em", weight: "600")
+            Specimen(name: "heading-xl", spec: "Manrope 34/1.15, 700", sample: "Page title in the product", family: "var(--font-sans)", size: "34px", lh: "1.15", ls: "-0.02em", weight: "700")
+            Specimen(name: "heading-md", spec: "Manrope 20/1.3, 700", sample: "Card and drawer title", family: "var(--font-sans)", size: "20px", lh: "1.3", ls: "-0.01em", weight: "700")
+            Specimen(name: "body-lg", spec: "Manrope 18/1.6, 400", sample: "Lead paragraph, 62ch", family: "var(--font-sans)", size: "18px", lh: "1.6", ls: "0", weight: "400")
+            Specimen(name: "body", spec: "Manrope 16/1.6, 400", sample: "Default copy, 72ch", family: "var(--font-sans)", size: "16px", lh: "1.6", ls: "0", weight: "400")
+            Specimen(name: "body-sm", spec: "Manrope 14/1.55, 400", sample: "Table cells and helper text", family: "var(--font-sans)", size: "14px", lh: "1.55", ls: "0", weight: "400")
+            Specimen(name: "label", spec: "Manrope 14/1.2, 600", sample: "Button and field label", family: "var(--font-sans)", size: "14px", lh: "1.2", ls: "0", weight: "600")
+            Specimen(name: "overline", spec: "Manrope 11/1.2, 700, .14em", sample: "SECTION EYEBROW", family: "var(--font-sans)", size: "11px", lh: "1.2", ls: "0.14em", weight: "700")
+            Specimen(name: "numeric", spec: "JetBrains Mono 15, tabular", sample: "412 ms · 22.4 s · 1,204", family: "var(--font-mono)", size: "15px", lh: "1.2", ls: "0", weight: "500")
+            Specimen(name: "code", spec: "JetBrains Mono 14/1.6", sample: "halyard deploy --wait", family: "var(--font-mono)", size: "14px", lh: "1.6", ls: "0", weight: "400")
+        }
+
+        // 03 Actions
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "03", title: "Actions")
+            Text("One brand-filled action per viewport. Everything else is secondary, ghost, or destructive.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Spec(note: "FlButton(label, variant: primary | secondary | ghost | danger | accent, size: sm | md | lg). Label the outcome, never Submit.") {
+                FlButton(label: "Publish changes", variant: "primary")
+                FlButton(label: "Preview", variant: "secondary")
+                FlButton(label: "Cancel", variant: "ghost")
+                FlButton(label: "Delete run", variant: "danger")
+                FlButton(label: "Go live", variant: "accent")
+                FlButton(label: "Small", variant: "primary", size: "sm")
+                FlButton(label: "Large", variant: "primary", size: "lg")
+                FlButton(label: "Disabled", variant: "secondary", disabled: true)
+                IconBtn(icon: "menu", label: "More actions")
+                IconBtn(icon: "settings", label: "Refresh", variant: "outline")
+            }
+        }
+
+        // 04 Status and selection
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "04", title: "Status and selection")
+            Text("Badges, chips and keyboard hints. Never colour on its own.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Spec(note: "StatusBadge(label, tone: brand | accent | success | warning | danger | info | brass | neutral). Chip carries aria-pressed. Status is never hue alone.") {
+                StatusBadge(label: "Beta", tone: "brand")
+                StatusBadge(label: "Live", tone: "accent")
+                StatusBadge(label: "Passed", tone: "success")
+                StatusBadge(label: "Degraded", tone: "warning")
+                StatusBadge(label: "Failed", tone: "danger")
+                StatusBadge(label: "Queued", tone: "info")
+                StatusBadge(label: "Award", tone: "brass")
+                StatusBadge(label: "Draft", tone: "neutral")
+                OutlineBadge(label: "fra1")
+                Chip(label: "Errors", pressed: pressedChip, count: "12") { pressedChip = !pressedChip }
+                Chip(label: "Warnings", pressed: false, count: "4")
+                Kbd(text: "⌘K")
+                Kbd(text: "esc")
+            }
+        }
+
+        // 05 Forms
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "05", title: "Forms")
+            Text("The label, the help text and the error message are part of the field, not decoration around it.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Spec(note: "Every input has a real label. An invalid field carries aria-invalid; the error states cause and next move.") {
+                Field(label: "Project name", id: "p-name", help: "Lower case, digits and hyphens.", error: "", width: "300px") {
+                    Input(text, id: "p-name", aria-labelledby: "p-name-label", value: "storefront-edge", aria-invalid: "false") { style { height: "38px"  width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--border-control)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px"  font: "400 14px/1.2 var(--font-sans)"  hover { border-color: "#8a929e" }  placeholder { color: "var(--text-tertiary)" } } }
+                }
+                Field(label: "Custom domain", id: "p-bad", help: "", error: "That is not a hostname. Drop the scheme.", width: "300px") {
+                    Input(text, id: "p-bad", aria-labelledby: "p-bad-label", value: "https://shop", aria-invalid: "true") { style { height: "38px"  width: "100%"  background: "var(--surface-inset)"  border: "1px solid var(--danger)"  border-radius: "var(--radius-sm)"  color: "var(--text-primary)"  padding: "0 12px"  font: "400 14px/1.2 var(--font-sans)" } }
+                }
+                FlSwitch(checked: switchOn, label: "Reuse the build cache", id: "p-sw") { switchOn = !switchOn }
+                SegGroup(label: "Range") {
+                    SegButton(label: "1h", pressed: seg == "1h") { seg = "1h" }
+                    SegButton(label: "24h", pressed: seg == "24h") { seg = "24h" }
+                    SegButton(label: "7d", pressed: seg == "7d") { seg = "7d" }
+                }
+            }
+        }
+
+        // 06 Data display
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "06", title: "Data display")
+            Text("Tables, cards and stat tiles — the three shapes almost every product screen is made of.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Spec(note: "Numeric columns are right-aligned with tabular figures. Always a caption. A status cell carries a badge with a word.") {
                 Container {
-                    style { height: "100%"  width: "{pct}%"  background: "var(--brand)"  border-radius: "var(--radius-pill)"  transition: "width var(--d-slow) var(--ease-standard)"  padding: "0"  margin: "0" }
+                    style { width: "100%"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-sm)"  overflow: "hidden"  padding: "0"  margin: "0"  max-width: "100%" }
+                    Table(caption: "Example deployment rows") {
+                        style { width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)" }
+                        Thead { Trow {
+                            Th(text: "Build")  Th(text: "Branch")  Th(text: "Status")  Th(text: "Duration", numeric: true)  Th(text: "Regions", numeric: true)
+                        } }
+                        Tbody {
+                            Trow { style { hover { background: "var(--surface-hover)" } }
+                                Td(text: "8f2c41", mono: true)  Td(text: "main")  Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: "Ready", tone: "success") }  Td(text: "22.4", numeric: true)  Td(text: "19/19", numeric: true) }
+                            Trow { style { hover { background: "var(--surface-hover)" } }
+                                Td(text: "5a04bb", mono: true)  Td(text: "fix/cookie-trim")  Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: "Building", tone: "info") }  Td(text: "—", numeric: true)  Td(text: "—", numeric: true) }
+                            Trow { style { hover { background: "var(--surface-hover)" } }
+                                Td(text: "2ee7f0", mono: true)  Td(text: "feat/queues")  Tcell("") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)" }  StatusBadge(label: "Failed", tone: "danger") }  Td(text: "18.9", numeric: true)  Td(text: "—", numeric: true) }
+                        }
+                    }
                 }
+            }
+            Spec(note: "FeatureCard adds the hover lift with data-interactive. A stat tile is a card plus a numeric and a bar strip where the design drew a sparkline.") {
+                Container { style { width: "280px"  padding: "0"  margin: "0"  max-width: "100%" }
+                    FeatureCard(overline: "EDGE", title: "Global by default", body: "Every deploy lands in 19 regions at once.", link: "How routing works", to: "/docs") }
+                Container { style { width: "260px"  padding: "0"  margin: "0"  max-width: "100%" }
+                    StatTile(label: "P95 RESPONSE", value: "38", unit: "ms", delta: "− 9%", tone: "success", note: "across all 19 regions", bars: [30, 36, 28, 46, 40, 58, 52, 68, 62, 80, 74, 70], color: "var(--viz-1)") }
             }
         }
 
-        SmokePanel(title: "A slot") {
-            Text("This text came from the caller's block; pct is {pct}.") { style { color: "var(--text-secondary)"  font-size: "14px" } }
-        }
-
-        Table(caption: "Example rows") {
-            style { margin-top: "24px"  width: "100%"  border-collapse: "collapse"  font: "400 14px/1.55 var(--font-sans)" }
-            Thead { Trow { Tcell("Build") Tcell("Status") } }
-            Tbody {
-                Trow(aria-selected: on) {
-                    style { hover { background: "var(--surface-hover)" } }
-                    Tcell("8f2c41") { style { font-family: "var(--font-mono)"  color: "var(--text-brand)"  padding: "12px"  border-bottom: "1px solid var(--line-hairline)" } }
-                    Tcell("Ready") { style { padding: "12px"  border-bottom: "1px solid var(--line-hairline)"  color: "var(--text-secondary)" } }
+        // 07 Feedback
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "07", title: "Feedback")
+            Text("Alerts, progress and the waiting states. Each says what happened and what to do next.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Spec(note: "Callout(tone, title, body) is a live region by severity. ProgressBar carries aria-valuenow and says its number beside it.") {
+                Callout(tone: "warning", title: "gru1 is degraded", body: "p95 crossed 200 ms for five minutes. Still serving.")
+                Row(align: center) {
+                    style { width: "100%"  gap: "16px"  flex-wrap: "nowrap" }
+                    ProgressBar(pct: pct, label: "Regions acknowledged", maxWidth: "200px")
+                    Num(text: "12 of 19 regions", size: "12px", color: "var(--text-tertiary)")
+                    FlButton(label: "Advance", variant: "ghost", size: "sm") { pct = pct + 6 }
                 }
+                Placeholder(text: "[YOUR PRICE]")
             }
         }
 
-        Link(to: "/", active: "exact") { Text("Home") }
-        Link(to: "/patterns") { Text("Patterns (current)") }
+        // 08 Motion
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "08", title: "Motion")
+            Text("Durations and curves are tokens. If you cannot name what a transition explains, delete it.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Grid(columns: 2) {
+                style { gap: "20px"  @media (max-width: 768px) { grid-template-columns: "1fr" } }
+                Stack { style { gap: "0" }
+                    Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "DURATION") }
+                    for d in durations { TokenRow(name: d.name, value: d.value, note: d.note) } }
+                Stack { style { gap: "0" }
+                    Container { style { padding: "0 0 12px"  margin: "0"  width: "auto" }  Overline(text: "EASING") }
+                    for e in easings { TokenRow(name: e.name, value: e.value, note: e.note) } }
+            }
+        }
+
+        // 09 Porting rules
+        Stack {
+            style { gap: "16px" }
+            SectionHead(number: "09", title: "Porting rules")
+            Text("Five things that decide whether a port keeps working as the system grows.") { style { margin: "0 0 4px"  font-size: "14px"  line-height: "1.6"  color: "var(--text-tertiary)" } }
+            Grid(columns: 2) {
+                style { gap: "16px"  @media (max-width: 768px) { grid-template-columns: "1fr" } }
+                for r in rules {
+                    Row {
+                        style { flex-wrap: "nowrap"  gap: "14px"  padding: "20px"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)" }
+                        Num(text: r.n, size: "13px", color: "var(--text-brand)")
+                        Stack { style { gap: "6px" }
+                            Text(r.title) { style { margin: "0"  font: "700 15px/1.3 var(--font-sans)" } }
+                            Text(r.body) { style { margin: "0"  font-size: "13px"  line-height: "1.6"  color: "var(--text-secondary)" } } }
+                    }
+                }
+            }
+        }
     }
 }

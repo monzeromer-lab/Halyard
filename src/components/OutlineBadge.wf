@@ -1,0 +1,9 @@
+Component OutlineBadge (label: String) {
+    Text(label, data-variant: "outline") {
+        style {
+            display: "inline-flex"  align-items: "center"  height: "22px"  padding: "0 9px"  width: "fit-content"  margin: "0"
+            border-radius: "var(--radius-pill)"  font: "700 12px/1 var(--font-sans)"  border: "1px solid var(--line-strong)"
+            background: "transparent"  color: "var(--text-secondary)"  white-space: "nowrap"
+        }
+    }
+}

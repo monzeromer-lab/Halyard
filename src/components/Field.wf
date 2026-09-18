@@ -1,0 +1,14 @@
+// A form field: the label, the control (children), then help or error. The
+// error is in the field, not decoration around it.
+Component Field (label: String, id: String, help: String = "", error: String = "", width: String = "100%") {
+    Stack {
+        style { gap: "0"  width: width  max-width: "100%" }
+        Text(label, id: "{id}-label") { style { display: "block"  font: "600 14px/1.2 var(--font-sans)"  color: "var(--text-secondary)"  margin: "0 0 8px" } }
+        children
+        if error != "" {
+            Text(error, role: "alert") { style { font: "400 12px/1.5 var(--font-sans)"  color: "var(--text-danger)"  margin: "6px 0 0" } }
+        } else if help != "" {
+            Text(help) { style { font: "400 12px/1.5 var(--font-sans)"  color: "var(--text-tertiary)"  margin: "6px 0 0" } }
+        }
+    }
+}

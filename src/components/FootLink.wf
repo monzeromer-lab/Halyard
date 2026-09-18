@@ -1,0 +1,5 @@
+Component FootLink (label: String, to: String) {
+    Link(label, to: to) {
+        style { display: "block"  color: "var(--text-tertiary)"  font: "400 14px/2 var(--font-sans)"  text-decoration: "none"  hover { color: "var(--text-primary)" } }
+    }
+}

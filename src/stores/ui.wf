@@ -1,0 +1,33 @@
+// Overlay and notification state shared by every page: which overlay is
+// open (command palette, modal, drawer, menu, popover), the toast stack.
+Store UiStore {
+    state overlay = ""
+    state query = ""
+    state toasts = []
+    state nextToast = 1
+
+    derived paletteOpen = overlay == "palette"
+    derived modalOpen = overlay == "modal"
+    derived drawerOpen = overlay == "drawer"
+    derived menuOpen = overlay == "menu"
+    derived popoverOpen = overlay == "popover"
+
+    action open(name: String) {
+        overlay = name
+        query = ""
+    }
+
+    action close() {
+        overlay = ""
+    }
+
+    action toast(kind: String, title: String, body: String) {
+        next = toasts.slice(-3)
+        toasts = next.concat([{ id: nextToast, kind: kind, title: title, body: body }])
+        nextToast = nextToast + 1
+    }
+
+    action dismiss(id: Number) {
+        toasts = toasts.filter(t => t.id != id)
+    }
+}

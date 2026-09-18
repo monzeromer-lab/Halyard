@@ -52,3 +52,25 @@ content-hashed classes (one rule per distinct block, CSP-safe).
   component is called with named arguments.
 - **Interpolation** `"{expr}"` refuses `,` and `:` inside the braces; strings
   such as `rgba(…)` or `"19/19"` are precomputed in store `derived`s.
+
+## Milestone 2 — what the component library needed from the compiler
+
+Writing the `.fl-*` contract as user components exposed five more gaps, all
+fixed in the compiler rather than worked around:
+
+- **Props were snapshots.** `Chip(pressed: on)` copied `on` once, so nothing
+  inside the component ever saw it change. Props are now handed over as
+  getters and read live.
+- **Prop defaults were dropped by the SPA** (`dot: Bool = true` arrived as
+  `undefined`), while the static paint applied them.
+- **Handlers on a component call were dropped**, so a styled button component
+  was unusable; they now attach to the component's root element.
+- **Custom properties** (`--hover-bg: hoverBg`) could not be written, which is
+  the only way a static `hover { }` rule can take a per-variant value.
+- **Prop names collided with the modifier vocabulary**: `Text(text)` in a
+  component with a `text` prop rendered nothing (the word was the input-type
+  modifier). Declared names now shadow the vocabulary; `error:` is also
+  usable as a prop name, and the A03/A04 lints accept `aria-labelledby`.
+
+A prop cannot be called `on` (`on:` is the event syntax) or `use` (keyword);
+the library uses `pressed`, `checked` and `note`.

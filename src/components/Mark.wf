@@ -1,0 +1,24 @@
+// The brand mark: a diamond outline with a filled inner diamond. The design
+// draws it as an SVG; two rotated squares carry the same shape.
+Component Mark (size: Number = 22) {
+    derived outer = size * 0.72
+    derived inner = size * 0.34
+    Container {
+        style {
+            width: "{size}px"  height: "{size}px"  flex: "none"  position: "relative"
+            display: "inline-flex"  align-items: "center"  justify-content: "center"  padding: "0"  margin: "0"
+        }
+        Container {
+            style {
+                position: "absolute"  width: "{outer}px"  height: "{outer}px"  padding: "0"  margin: "0"
+                border: "1.75px solid var(--brand)"  transform: "rotate(45deg)"  border-radius: "1px"
+            }
+        }
+        Container {
+            style {
+                position: "absolute"  width: "{inner}px"  height: "{inner}px"  padding: "0"  margin: "0"
+                background: "var(--brand)"  opacity: "0.85"  transform: "rotate(45deg)"
+            }
+        }
+    }
+}

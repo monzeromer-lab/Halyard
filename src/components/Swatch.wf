@@ -1,0 +1,9 @@
+Component Swatch (name: String, hex: String) {
+    Stack {
+        style { gap: "6px" }
+        Container { style { height: "52px"  border-radius: "var(--radius-sm)"  border: "1px solid var(--line-hairline)"  background: hex  padding: "0"  margin: "0"  width: "100%" } }
+        Row { style { flex-wrap: "nowrap"  gap: "8px" }
+            Text(name) { style { margin: "0"  flex-grow: "1"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-secondary)" } }
+            Text(hex) { style { margin: "0"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-tertiary)" } } }
+    }
+}

@@ -1,0 +1,7 @@
+Component TokenRow (name: String, value: String, note: String) {
+    Row { style { flex-wrap: "nowrap"  gap: "14px"  padding: "9px 0"  border-bottom: "1px solid var(--line-hairline)"  @media (max-width: 768px) { flex-wrap: "wrap" } }
+        Text(name) { style { margin: "0"  width: "148px"  flex: "none"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-primary)" } }
+        Text(value) { style { margin: "0"  width: "168px"  flex: "none"  font-family: "var(--font-mono)"  font-size: "11px"  color: "var(--text-tertiary)" } }
+        Text(note) { style { margin: "0"  flex-grow: "1"  min-width: "0"  font-size: "12px"  line-height: "1.5"  color: "var(--text-secondary)" } }
+    }
+}

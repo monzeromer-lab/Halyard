@@ -1,0 +1,9 @@
+// A visibly marked gap: a real fact the design does not have.
+Component Placeholder (text: String, size: String = "14px") {
+    Text(text) {
+        style {
+            display: "inline-block"  margin: "0"  padding: "2px 8px"  border: "1px dashed var(--line-strong)"  border-radius: "var(--radius-xs)"
+            font-family: "var(--font-mono)"  font-size: size  color: "var(--text-tertiary)"  background: "var(--surface-inset)"
+        }
+    }
+}

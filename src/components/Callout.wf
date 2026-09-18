@@ -1,0 +1,23 @@
+// An alert says what happened and what to do next. Tones: success, warning,
+// danger, info.
+Component Callout (tone: String, title: String, body: String) {
+    derived bg = if tone == "success" { "var(--success-soft)" } else if tone == "warning" { "var(--warning-soft)" } else if tone == "danger" { "var(--danger-soft)" } else { "var(--info-soft)" }
+    derived edge = if tone == "success" { "var(--success)" } else if tone == "warning" { "var(--warning)" } else if tone == "danger" { "var(--danger)" } else { "var(--info)" }
+    derived fg = if tone == "success" { "var(--text-success)" } else if tone == "warning" { "var(--text-warning)" } else if tone == "danger" { "var(--text-danger)" } else { "var(--text-info)" }
+    derived icon = if tone == "success" { "check" } else if tone == "info" { "info" } else { "warning" }
+    derived role = if tone == "danger" || tone == "warning" { "alert" } else { "status" }
+    Row(role: role, data-tone: tone) {
+        style {
+            display: "flex"  flex-wrap: "nowrap"  gap: "12px"  padding: "14px 16px"  width: "100%"
+            background: bg  border: "1px solid var(--edge)"  --edge: edge  border-radius: "var(--radius-md)"
+        }
+        Icon(icon) { style { color: edge  flex: "none"  font-size: "18px"  display: "inline-flex"  margin-top: "1px" } }
+        Stack {
+            style { gap: "4px" }
+            Text(title) { style { margin: "0"  font: "700 13px/1.3 var(--font-sans)"  color: fg } }
+            if body != "" {
+                Text(body) { style { margin: "0"  font-size: "13px"  line-height: "1.55"  color: "var(--text-secondary)" } }
+            }
+        }
+    }
+}

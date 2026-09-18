@@ -1,0 +1,11 @@
+// A segmented control: the frame; each option is a SegButton whose pressed
+// state lives in aria-pressed.
+Component SegGroup (label: String) {
+    Row(role: "group", aria-label: label) {
+        style {
+            display: "inline-flex"  flex-wrap: "nowrap"  gap: "2px"  padding: "3px"  width: "fit-content"
+            background: "var(--surface-inset)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-sm)"
+        }
+        children
+    }
+}

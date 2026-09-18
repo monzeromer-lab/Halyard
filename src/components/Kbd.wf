@@ -1,0 +1,9 @@
+Component Kbd (text: String) {
+    Text(text) {
+        style {
+            display: "inline-flex"  align-items: "center"  height: "20px"  padding: "0 6px"  margin: "0"  border-radius: "4px"
+            background: "var(--surface-inset)"  border: "1px solid var(--line-default)"  color: "var(--text-tertiary)"
+            font: "500 11px/1 var(--font-mono)"
+        }
+    }
+}
