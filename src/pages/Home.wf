@@ -173,12 +173,14 @@ Page Home (path: "/", title: "Ship to every region at once", description: "Halya
                 Container { style { padding: "0"  width: "auto"  align-self: "flex-start" }  FlButton(label: "Full API reference", variant: "ghost", size: "sm", to: "/docs") } }
             Stack {
                 style { flex-grow: "1"  min-width: "0"  gap: "0"  background: "var(--surface-sunken)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-lg)"  overflow: "hidden" }
-                Row(role: "tablist", aria-label: "Interface", align: center) {
+                Row(align: center) {
                     style { flex-wrap: "nowrap"  gap: "4px"  padding: "8px 8px 0"  border-bottom: "1px solid var(--line-hairline)" }
-                    CodeTab(label: "halyard.config.ts", selected: code == "cfg") { code = "cfg" }
-                    CodeTab(label: "Terminal", selected: code == "cli") { code = "cli" }
-                    CodeTab(label: "REST", selected: code == "api") { code = "api" }
-                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                    Row(role: "tablist", aria-label: "Interface", align: center) {
+                        style { flex-wrap: "nowrap"  gap: "4px"  flex-grow: "1" }
+                        CodeTab(label: "halyard.config.ts", selected: code == "cfg") { code = "cfg" }
+                        CodeTab(label: "Terminal", selected: code == "cli") { code = "cli" }
+                        CodeTab(label: "REST", selected: code == "api") { code = "api" }
+                    }
                     IconBtn(icon: "copy", label: "Copy snippet", size: 34) { navigator.clipboard.writeText(codeText) }
                 }
                 Code("{codeText}", block) { style { display: "block"  margin: "0"  padding: "24px 26px"  font-family: "var(--font-mono)"  font-size: "13px"  line-height: "1.75"  color: "var(--text-secondary)"  white-space: "pre-wrap"  min-height: "280px"  background: "transparent"  border: "0" } }

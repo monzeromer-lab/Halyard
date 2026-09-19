@@ -67,12 +67,14 @@ Page Docs (path: "/docs", title: "Routing rules", description: "A routing rule d
             Prose(text: "Every rule is { match, target }. The match object is a conjunction: each key you set must be satisfied, and keys you omit are not consulted. A rule with an empty match is the fallback and must be last.")
             Stack {
                 style { gap: "0"  margin: "28px 0 32px"  background: "var(--surface-sunken)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-md)"  overflow: "hidden" }
-                Row(role: "tablist", aria-label: "Route definition format", align: center) {
+                Row(align: center) {
                     style { flex-wrap: "nowrap"  gap: "4px"  padding: "8px 8px 0"  border-bottom: "1px solid var(--line-hairline)" }
-                    CodeTab(label: "routes.halyard.ts", selected: code == "ts") { code = "ts" }
-                    CodeTab(label: "routes.json", selected: code == "json") { code = "json" }
-                    CodeTab(label: "CLI", selected: code == "cli") { code = "cli" }
-                    Container { style { flex-grow: "1"  padding: "0"  width: "auto" } }
+                    Row(role: "tablist", aria-label: "Route definition format", align: center) {
+                        style { flex-wrap: "nowrap"  gap: "4px"  flex-grow: "1" }
+                        CodeTab(label: "routes.halyard.ts", selected: code == "ts") { code = "ts" }
+                        CodeTab(label: "routes.json", selected: code == "json") { code = "json" }
+                        CodeTab(label: "CLI", selected: code == "cli") { code = "cli" }
+                    }
                     IconBtn(icon: "copy", label: "Copy snippet", size: 34) { navigator.clipboard.writeText(codeText) }
                 }
                 Code("{codeText}", block) { style { display: "block"  margin: "0"  padding: "20px 22px"  font-family: "var(--font-mono)"  font-size: "13px"  line-height: "1.75"  color: "var(--text-secondary)"  white-space: "pre-wrap"  background: "transparent"  border: "0" } }

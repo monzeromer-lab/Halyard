@@ -14,7 +14,7 @@ Component AppShell (crumb: String) {
             Link(to: "/") { style { display: "flex"  align-items: "center"  gap: "9px"  padding: "4px 8px 16px"  color: "var(--text-primary)"  text-decoration: "none" }
                 Mark(size: 22)
                 Text("Halyard") { style { margin: "0"  font: "700 16px/1 var(--font-sans)"  letter-spacing: "-0.02em"  color: "var(--text-primary)" } } }
-            Button("", type: "button", aria-label: "Switch project") {
+            Button("", type: "button", aria-label: "HL {ProjectStore.name}, switch project") {
                 style { display: "flex"  align-items: "center"  gap: "10px"  width: "100%"  height: "44px"  padding: "0 10px"  margin-bottom: "18px"  background: "var(--surface-inset)"  border: "1px solid var(--line-default)"  border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  color: "var(--text-primary)"
                         hover { border-color: "var(--line-strong)" } }
                 Text("HL") { style { width: "24px"  height: "24px"  border-radius: "6px"  background: "var(--brand-soft)"  color: "var(--text-brand)"  display: "inline-flex"  align-items: "center"  justify-content: "center"  font: "700 11px/1 var(--font-mono)"  flex: "none"  margin: "0" } }
@@ -59,7 +59,7 @@ Component AppShell (crumb: String) {
                     Link("{ProjectStore.name}", to: "/app") { style { color: "var(--text-tertiary)"  text-decoration: "none"  font-size: "13px"  hover { color: "var(--text-primary)" } } }
                     Icon("chevron-right") { style { color: "var(--line-strong)"  display: "inline-flex"  font-size: "13px" } }
                     Text(crumb, aria-current: "page") { style { margin: "0"  color: "var(--text-primary)"  font-weight: "600"  font-size: "13px" } } }
-                Button("", type: "button", aria-label: "Search, command palette") {
+                Button("", type: "button", aria-label: "Search, command palette, ⌘K") {
                     style { display: "inline-flex"  align-items: "center"  gap: "10px"  height: "30px"  padding: "0 12px"  border-radius: "var(--radius-sm)"  border: "1px solid transparent"  background: "transparent"  color: "var(--text-secondary)"  cursor: "pointer"
                             hover { background: "var(--surface-hover)"  color: "var(--text-primary)" } }
                     Icon("search") { style { display: "inline-flex"  font-size: "14px" } }
