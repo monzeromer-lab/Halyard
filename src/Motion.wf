@@ -1,0 +1,18 @@
+// The two animations this design asks for that no element-level style
+// block can express. Declared here, they reach any style block by name;
+// src/styles.css redefines both as still frames for a reader who asked
+// for less motion.
+
+/// The region strip scrolls. The track holds the list twice, so the -50%
+/// this ends on lands exactly where it started.
+animation Marquee {
+    from { transform: translateX(0) }
+    to { transform: translateX(-50%) }
+}
+
+/// The live badge breathes a ring while the log is following.
+animation Pulse {
+    0% { box-shadow: 0 0 0 0 rgba(53, 224, 176, 0.45) }
+    70% { box-shadow: 0 0 0 8px rgba(53, 224, 176, 0) }
+    100% { box-shadow: 0 0 0 0 rgba(53, 224, 176, 0) }
+}

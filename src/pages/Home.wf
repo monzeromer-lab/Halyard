@@ -66,7 +66,8 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
                 style { margin-top: 64px; border-top: 1px solid $line-hairline; border-bottom: 1px solid $line-hairline; padding: 18px 0; gap: 0; overflow: hidden; flex-wrap: nowrap
                         mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent) }
                 Row(align: .center) {
-                    style { gap: 0; flex-wrap: nowrap; width: max-content; animation: hl-marquee 42s linear infinite }
+                    style { gap: 0; flex-wrap: nowrap; width: max-content; animation: Marquee 42s linear infinite
+                            @media (prefers-reduced-motion: reduce) { animation: none } }
                     Row(align: .center) {
                         style { gap: 0; flex-wrap: nowrap }
                         for r in ContentStore.regions by r {
