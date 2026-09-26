@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship to every region at once</title>
+    <meta name="description" content="Halyard builds your app once, signs it, and switches routing in all 19 regions in the same second.">
+    <link rel="canonical" href="https://halyard.example.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ship to every region at once">
+    <meta property="og:site_name" content="Halyard">
+    <meta property="og:description" content="Halyard builds your app once, signs it, and switches routing in all 19 regions in the same second.">
+    <meta property="og:url" content="https://halyard.example.com/">
+    <meta property="og:locale" content="en">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Ship to every region at once">
+    <meta name="twitter:description" content="Halyard builds your app once, signs it, and switches routing in all 19 regions in the same second.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://halyard.example.com/#website","url":"https://halyard.example.com/","name":"Halyard"},{"@type":"Organization","@id":"https://halyard.example.com/#organization","name":"Halyard","url":"https://halyard.example.com/"},{"@type":"WebPage","@id":"https://halyard.example.com/#webpage","url":"https://halyard.example.com/","name":"Ship to every region at once","isPartOf":{"@id":"https://halyard.example.com/#website"},"description":"Halyard builds your app once, signs it, and switches routing in all 19 regions in the same second."}]}</script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./pages/Home.css" data-wf-page-css="Home">
+    <script src="./app.js" defer></script>
+    <script src="./pages/Home.js" data-wf-page="Home" defer></script>
+</head>
+<body>
+    <a class="wf-skip-link" href="#wf-main">Skip to content</a>
+    <div id="app">
+        <div class="wf-stack">
+            <main id="wf-main">
+                <div class="wf-row wf-align--center wf-s2539ed54" role="banner">
+                    <a class="wf-link wf-se0661cf6 active" href="/" aria-current="page">
+                        <div class="wf-container wf-sb156c596">
+                            <div class="wf-container wf-sa8c29ac4"></div>
+                            <div class="wf-container wf-s8c25beec"></div>
+                        </div>
+                        <p class="wf-text wf-sf202558c">Halyard</p>
+                    </a>
+                    <div class="wf-row wf-align--center wf-se8aec2f6" role="navigation" aria-label="Primary">
+                        <a class="wf-link wf-se5a013ae active" href="/" aria-current="page">Product</a>
+                        <a class="wf-link wf-se5a013ae" href="/pricing">Pricing</a>
+                        <a class="wf-link wf-se5a013ae" href="/docs">Docs</a>
+                        <a class="wf-link wf-se5a013ae" href="/changelog">Changelog</a>
+                        <a class="wf-link wf-se5a013ae" href="/status">Status</a>
+                    </div>
+                    <div class="wf-row wf-align--center wf-s26e0b757">
+                        <button class="wf-btn wf-s6521032c" type="button" data-variant="ghost" data-size="sm">
+                            Search
+                            <i class="wf-icon wf-s68131ad8" data-icon="search"></i>
+                            <p class="wf-text wf-sfca99c1b">⌘K</p>
+                        </button>
+                        <a class="wf-link wf-s7d7880c1" href="/app" data-variant="ghost" data-size="sm">Sign in</a>
+                        <a class="wf-link wf-s7d7880c1" href="/new" data-variant="primary" data-size="sm">Start building</a>
+                    </div>
+                </div>
+                <div class="wf-container wf-s6b38cf84">
+                    <div class="wf-container wf-sb4a41df2">
+                        <div class="wf-row wf-sef240efa">
+                            <div class="wf-stack wf-animate-fadeIn wf-sc23aef1b">
+                                <p class="wf-text wf-s295231da">EDGE RUNTIME · 19 REGIONS · ONE ARTIFACT</p>
+                                <h1 class="wf-heading wf-animate-slideUp wf-s8f4341fc">Ship to every region at once.</h1>
+                                <p class="wf-text wf-sa1d20350">Halyard builds your app once, signs the artifact, and switches routing in all 19 regions in the same second. No region flags, no staged rollout to configure, no cache to warm afterwards.</p>
+                                <div class="wf-row wf-align--center wf-s982ede03">
+                                    <a class="wf-link wf-s7d7880c1" href="/new" data-variant="primary" data-size="lg">Start building</a>
+                                    <a class="wf-link wf-s7d7880c1" href="/docs" data-variant="secondary" data-size="lg">Read the runtime docs</a>
+                                </div>
+                                <p class="wf-text wf-s28b26b52">Free under 100k requests a month. No card until you cross it.</p>
+                            </div>
+                            <div class="wf-stack wf-animate-fadeIn wf-scff86dd1">
+                                <div class="wf-row wf-align--center wf-s708388e7">
+                                    <i class="wf-icon wf-s5ba4ccac" data-icon="chevron-right"></i>
+                                    <p class="wf-text wf-s24501e20">halyard deploy --wait</p>
+                                    <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="accent">
+                                        <div class="wf-container wf-sff322a94"></div>
+                                        <p class="wf-text wf-sd76507ea">live</p>
+                                    </div>
+                                </div>
+                                <div class="wf-stack wf-s6184bb3d">
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s939a0a9c">✓</p>
+                                        <p class="wf-text wf-sd76507ea">resolved 412 modules</p>
+                                    </div>
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s939a0a9c">✓</p>
+                                        <p class="wf-text wf-sd76507ea">compiled 38 routes → edge</p>
+                                    </div>
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s939a0a9c">✓</p>
+                                        <p class="wf-text wf-sd76507ea">signed sha256:8f2c41…a7</p>
+                                    </div>
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s939a0a9c">✓</p>
+                                        <p class="wf-text wf-sd76507ea">packed 2.1 MB gzipped</p>
+                                    </div>
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s939a0a9c">✓</p>
+                                        <p class="wf-text wf-sd76507ea">19/19 regions acknowledged</p>
+                                    </div>
+                                    <div class="wf-row wf-s3393c8ac">
+                                        <p class="wf-text wf-s474ef39e">→</p>
+                                        <p class="wf-text wf-sd76507ea">live in 412 ms</p>
+                                    </div>
+                                </div>
+                                <div class="wf-row wf-s3ab7a0d6">
+                                    <div class="wf-stack wf-sc69a3b8a">
+                                        <p class="wf-text wf-s295231da">BUILD</p>
+                                        <p class="wf-text wf-s05773b53">22.4 s</p>
+                                    </div>
+                                    <div class="wf-stack wf-sc69a3b8a">
+                                        <p class="wf-text wf-s295231da">PROPAGATE</p>
+                                        <p class="wf-text wf-saac7aa29">412 ms</p>
+                                    </div>
+                                    <div class="wf-stack wf-sc69a3b8a">
+                                        <p class="wf-text wf-s295231da">DROPPED</p>
+                                        <p class="wf-text wf-sa4a61132">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wf-row wf-align--center wf-s8621d66d" aria-label="Regions Halyard deploys to">
+                            <div class="wf-row wf-align--center wf-s0f56af42">
+                                <div class="wf-row wf-align--center wf-s8c61347e">
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">fra1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">iad1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">cdg1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">sfo1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">gru1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">hnd1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">syd1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">bom1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">jnb1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">arn1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">dub1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">sin1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">yyz1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">icn1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">cpt1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">lhr1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">ams1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">nrt1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">pdx1</p>
+                                    </div>
+                                </div>
+                                <div class="wf-row wf-align--center wf-s8c61347e" aria-hidden="true">
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">fra1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">iad1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">cdg1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">sfo1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">gru1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">hnd1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">syd1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">bom1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">jnb1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">arn1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">dub1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">sin1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">yyz1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">icn1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">cpt1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">lhr1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">ams1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">nrt1</p>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3123d9fb">
+                                        <div class="wf-container wf-sd16e0aed"></div>
+                                        <p class="wf-text wf-sd76507ea">pdx1</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s5ef733ff">
+                    <div class="wf-row wf-align--baseline wf-s8e09f16f">
+                        <p class="wf-text wf-s295231da">THE HALYARD DEMO PROJECT, LAST 24 HOURS</p>
+                        <div class="wf-container wf-sb36d98f8"></div>
+                        <a class="wf-link wf-s3f65fccc" href="/app/observability">Open the live view</a>
+                    </div>
+                    <div class="wf-grid wf-s3eeb4980" data-cols="4">
+                        <div class="wf-stack wf-scb16cbc0" data-interactive="true">
+                            <p class="wf-text wf-s295231da">MEDIAN BUILD</p>
+                            <div class="wf-row wf-align--baseline wf-s3393c8ac">
+                                <p class="wf-text wf-s8cbcb49c">22.4</p>
+                                <p class="wf-text wf-s28b26b52">s</p>
+                            </div>
+                            <div class="wf-row wf-align--end wf-s26919b25">
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                                <div class="wf-container wf-s0cb93ddd"></div>
+                            </div>
+                            <p class="wf-text wf-s6ef35384">− 18% vs last week</p>
+                        </div>
+                        <div class="wf-stack wf-scb16cbc0" data-interactive="true">
+                            <p class="wf-text wf-s295231da">GLOBAL PROPAGATION</p>
+                            <div class="wf-row wf-align--baseline wf-s3393c8ac">
+                                <p class="wf-text wf-s8cbcb49c">412</p>
+                                <p class="wf-text wf-s28b26b52">ms p95</p>
+                            </div>
+                            <div class="wf-row wf-align--end wf-s26919b25">
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                                <div class="wf-container wf-sb318ea1c"></div>
+                            </div>
+                            <p class="wf-text wf-sd99101d7">steady, last 24h</p>
+                        </div>
+                        <div class="wf-stack wf-scb16cbc0" data-interactive="true">
+                            <p class="wf-text wf-s295231da">COLD START</p>
+                            <div class="wf-row wf-align--baseline wf-s3393c8ac">
+                                <p class="wf-text wf-s8cbcb49c">8.1</p>
+                                <p class="wf-text wf-s28b26b52">ms</p>
+                            </div>
+                            <div class="wf-row wf-align--end wf-s26919b25">
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                                <div class="wf-container wf-sb51c0717"></div>
+                            </div>
+                            <p class="wf-text wf-s6ef35384">− 2.4 ms since v9</p>
+                        </div>
+                        <div class="wf-stack wf-scb16cbc0" data-interactive="true">
+                            <p class="wf-text wf-s295231da">ROLLBACKS COMPLETED</p>
+                            <div class="wf-row wf-align--baseline wf-s3393c8ac">
+                                <p class="wf-text wf-s8cbcb49c">1,204</p>
+                                <p class="wf-text wf-s28b26b52">this quarter</p>
+                            </div>
+                            <div class="wf-row wf-align--end wf-s26919b25">
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                                <div class="wf-container wf-s537fd676"></div>
+                            </div>
+                            <p class="wf-text wf-sd99101d7">all under 600 ms</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s3a4a2d06">
+                    <div class="wf-row wf-align--center wf-s9e3fac76">
+                        <p class="wf-text wf-s143d6c57">Replace these with your customer wordmarks.</p>
+                        <div class="wf-grid wf-s549d23ae" data-cols="5">
+                            <p class="wf-text wf-sdc7f3ff1">[LOGO 1]</p>
+                            <p class="wf-text wf-sdc7f3ff1">[LOGO 2]</p>
+                            <p class="wf-text wf-sdc7f3ff1">[LOGO 3]</p>
+                            <p class="wf-text wf-sdc7f3ff1">[LOGO 4]</p>
+                            <p class="wf-text wf-sdc7f3ff1">[LOGO 5]</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-stack wf-s2ac528cf">
+                        <p class="wf-text wf-s295231da">WHAT THE RUNTIME DOES</p>
+                        <h2 class="wf-heading wf-s793b9786">Six things, and none of them are a dashboard toggle.</h2>
+                        <p class="wf-text wf-sa1d20350">Everything that changes how a request is answered lives in the repository and ships with the build. If it is not in the artifact, it cannot break production.</p>
+                    </div>
+                    <div class="wf-grid wf-s970ff161" data-cols="3">
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="upload"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">Atomic global deploys</h3>
+                            <p class="wf-text wf-sa490b507">Every build lands in all 19 regions in the same second. There is no region flag to set and no staged rollout to configure, because there is no staged rollout.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="check"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">Signed, reproducible builds</h3>
+                            <p class="wf-text wf-sa490b507">Each build is content-addressed and signed at the end of the pipeline. Rebuild the same commit next year and the hash matches or the deploy is refused.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="filter"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">Request-level routing</h3>
+                            <p class="wf-text wf-sa490b507">Route on header, cookie, geo or a value you compute in a 2 ms middleware. Rules are versioned with the deploy, not with a dashboard toggle.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="copy"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">Edge state that is not a cache</h3>
+                            <p class="wf-text wf-sa490b507">Strongly consistent KV and queues that read in the region the request landed in. Writes replicate in under 90 ms p95 between any two regions.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="eye"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">A trace on every request</h3>
+                            <p class="wf-text wf-sa490b507">Not a sample. Every request carries a trace with the build hash, the region, the route rule that matched and the cold-start cost, kept for 30 days.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                        <div class="wf-stack wf-s0650f925" data-interactive="true">
+                            <div class="wf-container wf-s310ea037">
+                                <i class="wf-icon wf-s0eee5881" data-icon="arrow-left"></i>
+                            </div>
+                            <h3 class="wf-heading wf-s757af2a5">Rollback by hash</h3>
+                            <p class="wf-text wf-sa490b507">Any build that ever ran is one command away. Rollback is a routing change, not a rebuild, so it completes in about 400 ms worldwide.</p>
+                            <i class="wf-icon wf-sd0330ba4" data-icon="arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-stack wf-s09416818">
+                        <div class="wf-row wf-align--end wf-s74fadcb5">
+                            <div class="wf-stack wf-s2873b654">
+                                <p class="wf-text wf-s295231da">ONE PIPELINE, THREE VIEWS</p>
+                                <h2 class="wf-heading wf-s793b9786">Watch the same release from three sides.</h2>
+                            </div>
+                            <div class="wf-row wf-sa3ff38cc" role="tablist" aria-label="Release views">
+                                <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="true">Build</button>
+                                <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="false">Route</button>
+                                <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="false">Observe</button>
+                            </div>
+                        </div>
+                        <div class="wf-container wf-s03b67061">
+                            <div class="wf-container wf-sb36d98f8"></div>
+                        </div>
+                        <div class="wf-row wf-se6cf7cdb">
+                            <div class="wf-stack wf-s4d3b0f90">
+                                <p class="wf-text wf-sff82a98b">halyard build</p>
+                                <div class="wf-row wf-align--center wf-secd47516">
+                                    <div class="wf-container wf-s6b9ac204"></div>
+                                    <p class="wf-text wf-s0eca5e32">Resolved 412 modules from the lockfile</p>
+                                    <p class="wf-text wf-s30e7a470">0.9 s</p>
+                                </div>
+                                <div class="wf-row wf-align--center wf-secd47516">
+                                    <div class="wf-container wf-s6b9ac204"></div>
+                                    <p class="wf-text wf-s0eca5e32">Compiled 38 routes to the edge target</p>
+                                    <p class="wf-text wf-s30e7a470">14.2 s</p>
+                                </div>
+                                <div class="wf-row wf-align--center wf-secd47516">
+                                    <div class="wf-container wf-s6b9ac204"></div>
+                                    <p class="wf-text wf-s0eca5e32">Signed artifact sha256:8f2c41…a7</p>
+                                    <p class="wf-text wf-s30e7a470">0.4 s</p>
+                                </div>
+                                <div class="wf-row wf-align--center wf-secd47516">
+                                    <div class="wf-container wf-s6b9ac204"></div>
+                                    <p class="wf-text wf-s0eca5e32">Packed 6.8 MB, 2.1 MB gzipped</p>
+                                    <p class="wf-text wf-s30e7a470">1.1 s</p>
+                                </div>
+                                <div class="wf-row wf-align--center wf-secd47516">
+                                    <div class="wf-container wf-s6b9ac204"></div>
+                                    <p class="wf-text wf-s0eca5e32">Uploading to 19 regions</p>
+                                    <p class="wf-text wf-s30e7a470">5.8 s</p>
+                                </div>
+                            </div>
+                            <div class="wf-stack wf-s0cdd0e15">
+                                <p class="wf-text wf-s295231da">WHAT YOU ARE LOOKING AT</p>
+                                <p class="wf-text wf-sf40cf999">The pipeline is a list of named steps. Each one is cacheable on its own, so a dependency change does not re-run the compile.</p>
+                                <div class="wf-container wf-s19652b94">
+                                    <a class="wf-link wf-s7d7880c1" href="/app/builds/8f2c41" data-variant="secondary" data-size="sm">Open a build</a>
+                                </div>
+                                <div class="wf-stack wf-sc8a1f616">
+                                    <p class="wf-text wf-s295231da">RELEASE</p>
+                                    <p class="wf-text wf-s322fdf4a">sha256:8f2c41…a7</p>
+                                    <p class="wf-text wf-sd99101d7">Promoted 14:02 UTC by [YOUR NAME]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-row wf-sfe202d53">
+                        <div class="wf-stack wf-s945f4ad4">
+                            <p class="wf-text wf-s295231da">THE WHOLE INTERFACE</p>
+                            <h2 class="wf-heading wf-s793b9786">A config file, a CLI, and one REST route.</h2>
+                            <p class="wf-text wf-s5b3793d3">Anything the dashboard can do, the CLI can do, and anything the CLI can do is one HTTP call. The dashboard is a reader of the same API you get.</p>
+                            <div class="wf-container wf-s19652b94">
+                                <a class="wf-link wf-s7d7880c1" href="/docs" data-variant="ghost" data-size="sm">Full API reference</a>
+                            </div>
+                        </div>
+                        <div class="wf-stack wf-s293804b8">
+                            <div class="wf-row wf-align--center wf-s3adbe750">
+                                <div class="wf-row wf-align--center wf-sa082ef15" role="tablist" aria-label="Interface">
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="true">
+                                        halyard.config.ts
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="false">
+                                        Terminal
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="false">
+                                        REST
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                </div>
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="copy" aria-label="Copy snippet" title="Copy snippet" type="button" data-variant="ghost"></button>
+                            </div>
+                            <code class="wf-code wf-code--block wf-s9a14252c">export default defineConfig({
+  runtime: &#x27;edge&#x27;,
+  regions: &#x27;all&#x27;,  // 19 today, more as they open
+  build: { command: &#x27;pnpm build&#x27;, reproducible: true },
+  routes: [
+    { match: &#x27;/api/*&#x27;, fn: &#x27;api&#x27;, timeout: 10_000 },
+    { match: { cookie: { ht_beta: &#x27;1&#x27; } }, build: &#x27;8f2c41&#x27; },
+  ],
+})</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-stack wf-s3a0efa09">
+                        <p class="wf-text wf-sdacac4ba">[Replace with a real customer quote. Keep it to one claim about one measurable change — a number before and a number after — rather than a sentence about how much they enjoy the product.]</p>
+                        <div class="wf-row wf-gap--sm wf-align--center wf-scca7cba9">
+                            <p class="wf-text wf-s63db5b3d">[NAME]</p>
+                            <p class="wf-text wf-s28b26b52">[ROLE] at [COMPANY]</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-row wf-align--end wf-justify--between wf-seb0c126d">
+                        <div class="wf-stack wf-s666f063b">
+                            <p class="wf-text wf-s295231da">PRICING</p>
+                            <h2 class="wf-heading wf-s793b9786">Pay for requests, not for seats you forgot.</h2>
+                        </div>
+                        <a class="wf-link wf-s7d7880c1" href="/pricing" data-variant="secondary" data-size="md">Compare every line</a>
+                    </div>
+                    <div class="wf-grid wf-sefce287b" data-cols="3">
+                        <div class="wf-stack wf-s7bdb4799">
+                            <div class="wf-row wf-align--center wf-scca7cba9">
+                                <h3 class="wf-heading wf-s4cfe2c56">Hobby</h3>
+                            </div>
+                            <div class="wf-row wf-align--baseline wf-s22411b77">
+                                <p class="wf-text wf-s1f942229">0</p>
+                                <p class="wf-text wf-s28b26b52">forever</p>
+                            </div>
+                            <div class="wf-container wf-sb36d98f8"></div>
+                            <div class="wf-stack wf-s3df5f255">
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">100k requests a month</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">1 concurrent build</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">7-day traces</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">1 custom domain</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Community support</p>
+                                </div>
+                            </div>
+                            <div class="wf-container wf-sfe59ed57">
+                                <a class="wf-link wf-s7d7880c1" href="/pricing" data-variant="secondary" data-size="md">Choose Hobby</a>
+                            </div>
+                        </div>
+                        <div class="wf-stack wf-s7bdb4799">
+                            <div class="wf-row wf-align--center wf-scca7cba9">
+                                <h3 class="wf-heading wf-s4cfe2c56">Team</h3>
+                                <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="brand">
+                                    <p class="wf-text wf-sd76507ea">Most teams</p>
+                                </div>
+                            </div>
+                            <div class="wf-row wf-align--baseline wf-s22411b77">
+                                <p class="wf-text wf-s1f942229">[YOUR PRICE]</p>
+                                <p class="wf-text wf-s28b26b52">per seat, per month</p>
+                            </div>
+                            <div class="wf-container wf-sb36d98f8"></div>
+                            <div class="wf-stack wf-s3df5f255">
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">2M pooled requests a month</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">8 concurrent builds</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">30-day traces</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Preview deploy per pull request</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Routing rules, edge KV and queues</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Deploy approvals and audit log</p>
+                                </div>
+                            </div>
+                            <div class="wf-container wf-sfe59ed57">
+                                <a class="wf-link wf-s7d7880c1" href="/pricing" data-variant="primary" data-size="md">Start a 14-day trial</a>
+                            </div>
+                        </div>
+                        <div class="wf-stack wf-s7bdb4799">
+                            <div class="wf-row wf-align--center wf-scca7cba9">
+                                <h3 class="wf-heading wf-s4cfe2c56">Enterprise</h3>
+                            </div>
+                            <div class="wf-row wf-align--baseline wf-s22411b77">
+                                <p class="wf-text wf-s1f942229">Talk to us</p>
+                                <p class="wf-text wf-s28b26b52">billed annually</p>
+                            </div>
+                            <div class="wf-container wf-sb36d98f8"></div>
+                            <div class="wf-stack wf-s3df5f255">
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Negotiated request volume</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Unlimited builds</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">1-year traces and export</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Dedicated regions or your own cloud</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">SSO, SCIM and a 3-year audit log</p>
+                                </div>
+                                <div class="wf-row wf-s5d21f7f9">
+                                    <i class="wf-icon wf-s2eab4bbd" data-icon="check"></i>
+                                    <p class="wf-text wf-sa0558b0c">Named support engineer</p>
+                                </div>
+                            </div>
+                            <div class="wf-container wf-sfe59ed57">
+                                <a class="wf-link wf-s7d7880c1" href="/pricing" data-variant="secondary" data-size="md">Choose Enterprise</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-row wf-s3377709d">
+                        <div class="wf-stack wf-sf0c55b4a">
+                            <p class="wf-text wf-s295231da">QUESTIONS WE ACTUALLY GET</p>
+                            <h2 class="wf-heading wf-s793b9786">The five that decide it.</h2>
+                        </div>
+                        <div class="wf-stack wf-sc8dce2a7">
+                            <div class="wf-stack wf-sd3ebe84a">
+                                <button class="wf-btn wf-s8c7dcd83" type="button" aria-expanded="true">
+                                    
+                                    <p class="wf-text wf-sf3209d15">What happens to in-flight requests during a deploy?</p>
+                                    <i class="wf-icon wf-sa41a3f19" data-icon="chevron-down"></i>
+                                </button>
+                                <p class="wf-text wf-sdf0b0e91">They finish on the build they started on. Halyard switches routing, not processes: the old build keeps serving anything already in its queue and is drained once the last response leaves, usually inside two seconds.</p>
+                            </div>
+                            <div class="wf-stack wf-sd3ebe84a">
+                                <button class="wf-btn wf-s8c7dcd83" type="button" aria-expanded="false">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Can I keep a region out?</p>
+                                    <i class="wf-icon wf-scfa18bb7" data-icon="chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="wf-stack wf-sd3ebe84a">
+                                <button class="wf-btn wf-s8c7dcd83" type="button" aria-expanded="false">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Is the edge KV eventually consistent?</p>
+                                    <i class="wf-icon wf-scfa18bb7" data-icon="chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="wf-stack wf-sd3ebe84a">
+                                <button class="wf-btn wf-s8c7dcd83" type="button" aria-expanded="false">
+                                    
+                                    <p class="wf-text wf-sf3209d15">How do you price a request that fans out?</p>
+                                    <i class="wf-icon wf-scfa18bb7" data-icon="chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="wf-stack wf-sd3ebe84a">
+                                <button class="wf-btn wf-s8c7dcd83" type="button" aria-expanded="false">
+                                    
+                                    <p class="wf-text wf-sf3209d15">What do I have to change to move an existing app?</p>
+                                    <i class="wf-icon wf-scfa18bb7" data-icon="chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-container wf-s24c4d618">
+                    <div class="wf-row wf-align--center wf-sf1cbdc17">
+                        <div class="wf-container wf-s070595d3"></div>
+                        <div class="wf-stack wf-sd90ac6a2">
+                            <h2 class="wf-heading wf-s793b9786">Your first deploy takes about four minutes.</h2>
+                            <p class="wf-text wf-sa1d20350">Point Halyard at a repository. It detects the framework, imports your environment, and tells you what will break before it builds.</p>
+                        </div>
+                        <div class="wf-stack wf-s8d74f4f1">
+                            <a class="wf-link wf-s7d7880c1" href="/new" data-variant="primary" data-size="lg">Connect a repository</a>
+                            <a class="wf-link wf-s7d7880c1" href="/docs" data-variant="ghost" data-size="lg">Read the docs first</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="wf-stack wf-s27fe5be9" role="contentinfo">
+                    <div class="wf-row wf-s3f4befcb">
+                        <div class="wf-stack wf-sc8171f50">
+                            <a class="wf-link wf-se0661cf6 active" href="/" aria-current="page">
+                                <div class="wf-container wf-sb156c596">
+                                    <div class="wf-container wf-sa8c29ac4"></div>
+                                    <div class="wf-container wf-s8c25beec"></div>
+                                </div>
+                                <p class="wf-text wf-sf4ee2e17">Halyard</p>
+                            </a>
+                            <p class="wf-text wf-sc037a734">An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.</p>
+                        </div>
+                        <div class="wf-grid wf-sa67b3221" data-cols="4">
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">PRODUCT</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Overview</a>
+                                <a class="wf-link wf-se0f15d82" href="/pricing">Pricing</a>
+                                <a class="wf-link wf-se0f15d82" href="/changelog">Changelog</a>
+                                <a class="wf-link wf-se0f15d82" href="/status">Status</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">DEVELOPERS</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82" href="/docs">Docs</a>
+                                <a class="wf-link wf-se0f15d82" href="/docs">API reference</a>
+                                <a class="wf-link wf-se0f15d82" href="/docs">CLI</a>
+                                <a class="wf-link wf-se0f15d82" href="/app">Dashboard</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">COMPANY</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">About</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Careers</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Security</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Press</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">LEGAL</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Terms</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Privacy</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">Subprocessors</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/" aria-current="page">DPA</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wf-container wf-sb36d98f8"></div>
+                    <div class="wf-row wf-align--center wf-s3f3291cc">
+                        <a class="wf-link wf-sc82e59ea" href="/status">
+                            <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="success">
+                                <div class="wf-container wf-sff322a94"></div>
+                                <p class="wf-text wf-sd76507ea">All 19 regions operational</p>
+                            </div>
+                        </a>
+                        <div class="wf-container wf-s53707169"></div>
+                        <p class="wf-text wf-sd99101d7">© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

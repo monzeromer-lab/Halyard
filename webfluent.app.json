@@ -7,7 +7,7 @@
     "builtin": "structural"
   },
   "build": {
-    "output": "./build",
+    "output": "./docs",
     "minify": true,
     "ssg": true,
     "csp": true,

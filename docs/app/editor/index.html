@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing rules</title>
+    <meta name="description" content="Edit routing rules and see how a request resolves.">
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Routing rules">
+    <meta property="og:site_name" content="Halyard">
+    <meta property="og:description" content="Edit routing rules and see how a request resolves.">
+    <meta property="og:url" content="https://halyard.example.com/app/editor">
+    <meta property="og:locale" content="en">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Routing rules">
+    <meta name="twitter:description" content="Edit routing rules and see how a request resolves.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://halyard.example.com/#website","url":"https://halyard.example.com/","name":"Halyard"},{"@type":"Organization","@id":"https://halyard.example.com/#organization","name":"Halyard","url":"https://halyard.example.com/"},{"@type":"WebPage","@id":"https://halyard.example.com/app/editor#webpage","url":"https://halyard.example.com/app/editor","name":"Routing rules","isPartOf":{"@id":"https://halyard.example.com/#website"},"description":"Edit routing rules and see how a request resolves."},{"@type":"BreadcrumbList","@id":"https://halyard.example.com/app/editor#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://halyard.example.com/"},{"@type":"ListItem","position":2,"name":"Overview","item":"https://halyard.example.com/app"},{"@type":"ListItem","position":3,"name":"Routing rules","item":"https://halyard.example.com/app/editor"}]}]}</script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../pages/AppEditor.css" data-wf-page-css="AppEditor">
+    <script src="../../app.js" defer></script>
+    <script src="../../pages/AppEditor.js" data-wf-page="AppEditor" defer></script>
+</head>
+<body>
+    <a class="wf-skip-link" href="#wf-main">Skip to content</a>
+    <div id="app">
+        <div class="wf-stack">
+            <main id="wf-main">
+                <div class="wf-stack wf-s4f89cb52">
+                    <div class="wf-row wf-align--center wf-sd520b684">
+                        <button class="wf-icon-btn wf-sf51d60e5" data-icon="arrow-left" aria-label="Back to the project" title="Back to the project" type="button" data-variant="ghost"></button>
+                        <div class="wf-stack wf-s46af4ad9">
+                            <h1 class="wf-heading wf-s757af2a5">Routing rules</h1>
+                            <p class="wf-text wf-sd99101d7">storefront-edge · apps/storefront · a diff you commit like anything else</p>
+                        </div>
+                        <a class="wf-link wf-s7d7880c1" href="/app/builds/8f2c41" data-variant="secondary" data-size="sm">Commit 2 files</a>
+                    </div>
+                    <div class="wf-row wf-align--stretch wf-s8e74269c">
+                        <div class="wf-stack wf-s8cbfcb75" aria-label="Explorer">
+                            <div class="wf-row wf-align--center wf-sfa4b9f02">
+                                <div class="wf-container wf-s9e7c635e">
+                                    <p class="wf-text wf-s295231da">EXPLORER</p>
+                                </div>
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="plus" aria-label="New file" title="New file" type="button" data-variant="ghost"></button>
+                            </div>
+                            <div class="wf-stack wf-s92d44683" role="group" aria-label="Files">
+                                <!--wf-for-->
+                            </div>
+                        </div>
+                        <div class="wf-stack wf-s0260736b">
+                            <div class="wf-row wf-sddda8709" role="tablist" aria-label="Open files">
+                                <!--wf-for-->
+                            </div>
+                            <div class="wf-stack wf-sa1d14aa8" role="region" aria-label="routes.halyard.ts">
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">1</p>
+                                    <code class="wf-code wf-s335e505a">import { defineRoutes } from &#x27;halyard&#x27;</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">2</p>
+                                    <code class="wf-code wf-s335e505a"></code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">3</p>
+                                    <code class="wf-code wf-s335e505a">export default defineRoutes([</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">4</p>
+                                    <code class="wf-code wf-s335e505a">  // the beta cohort stays on a known build</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">5</p>
+                                    <code class="wf-code wf-s335e505a">  { match: { cookie: { ht_beta: &#x27;1&#x27; } }, build: &#x27;8f2c41&#x27; },</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">6</p>
+                                    <code class="wf-code wf-s335e505a"></code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">7</p>
+                                    <code class="wf-code wf-s335e505a">  // EU traffic prefers fra1, then falls through</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">8</p>
+                                    <code class="wf-code wf-s335e505a">  { match: { geo: { country: [&#x27;DE&#x27;, &#x27;FR&#x27;, &#x27;NL&#x27;] } }, region: &#x27;fra1&#x27; },</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">9</p>
+                                    <code class="wf-code wf-s335e505a"></code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">10</p>
+                                    <code class="wf-code wf-s335e505a">  { match: { path: &#x27;/api/*&#x27; }, fn: &#x27;api&#x27;, timeout: 10_000 },</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="warn">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">11</p>
+                                    <code class="wf-code wf-s335e505a">  { match: { path: &#x27;/*&#x27; }, build: &#x27;current&#x27;, weight: 99 },</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="error">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">12</p>
+                                    <code class="wf-code wf-s335e505a">  { match: { path: &#x27;/legacy/*&#x27; }, build: &#x27;deleted&#x27; },</code>
+                                </div>
+                                <div class="wf-row wf-s7e2ab946" data-mark="">
+                                    <p class="wf-text wf-s77711c73" aria-hidden="true">13</p>
+                                    <code class="wf-code wf-s335e505a">])</code>
+                                </div>
+                            </div>
+                            <div class="wf-stack wf-s9bdaed67">
+                                <div class="wf-row wf-align--center wf-sdaca4013">
+                                    <div class="wf-row wf-align--baseline wf-s8f32f17d">
+                                        <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="true">Problems</button>
+                                        <p class="wf-text wf-s2502edbe">2</p>
+                                    </div>
+                                    <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="false">Terminal</button>
+                                    <button class="wf-btn wf-sd5f6e1fa" type="button" role="tab" aria-selected="false">Preview log</button>
+                                    <div class="wf-container wf-s9e7c635e"></div>
+                                    <button class="wf-btn wf-se75a35bc" data-variant="ghost" data-size="sm" disabled>Hide panel</button>
+                                </div>
+                                <div class="wf-stack wf-sfd58ca23" role="list" aria-label="Problems">
+                                    <div class="wf-row wf-align--start wf-s675cb3bd" role="listitem">
+                                        <i class="wf-icon wf-se06605a6" data-icon="close"></i>
+                                        <div class="wf-stack wf-sb454602e">
+                                            <p class="wf-text wf-s1a077b1e">build &#x27;deleted&#x27; does not exist. Pin a hash that is still retained, or use &#x27;current&#x27;.</p>
+                                            <p class="wf-text wf-saad5a499">routes.halyard.ts:12</p>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="danger">
+                                            <p class="wf-text wf-sd76507ea">HL-4019</p>
+                                        </div>
+                                    </div>
+                                    <div class="wf-row wf-align--start wf-s675cb3bd" role="listitem">
+                                        <i class="wf-icon wf-se06605a6" data-icon="warning"></i>
+                                        <div class="wf-stack wf-sb454602e">
+                                            <p class="wf-text wf-s1a077b1e">Weighted rules in this group sum to 99. Add the missing 1% or remove the weight.</p>
+                                            <p class="wf-text wf-saad5a499">routes.halyard.ts:11</p>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="warning">
+                                            <p class="wf-text wf-sd76507ea">HL-4021</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wf-row wf-align--center wf-sff571887">
+                                <p class="wf-text wf-sbfe2cccd">main</p>
+                                <p class="wf-text wf-sbfe2cccd">Ln 13, Col 1</p>
+                                <p class="wf-text wf-sbfe2cccd">TypeScript</p>
+                                <p class="wf-text wf-sbfe2cccd">UTF-8</p>
+                                <div class="wf-container wf-s9e7c635e"></div>
+                                <div class="wf-row wf-align--center wf-sf539eb24" role="status">
+                                    <div class="wf-container wf-s092ba5d1"></div>
+                                    <p class="wf-text wf-sd76507ea">1 error, deploy blocked</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wf-stack wf-s6cab38bf" aria-label="Resolved routing">
+                            <div class="wf-row wf-align--center wf-s35d04fe4">
+                                <div class="wf-container wf-s9e7c635e">
+                                    <p class="wf-text wf-s295231da">RESOLVED ROUTING</p>
+                                </div>
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="settings" aria-label="Re-evaluate" title="Re-evaluate" type="button" data-variant="ghost"></button>
+                            </div>
+                            <div class="wf-stack wf-s5648cc5c">
+                                <p class="wf-text wf-s1d3faa6b">Evaluated top to bottom against a sample request. The first match answers.</p>
+                                <div class="wf-stack wf-s32fe6372" data-mark="ok">
+                                    <div class="wf-row wf-align--center wf-s97f0187e">
+                                        <p class="wf-text wf-scff83554">1</p>
+                                        <p class="wf-text wf-s04699123">cookie ht_beta=1</p>
+                                        <p class="wf-text wf-s12be14cd">ok</p>
+                                    </div>
+                                    <p class="wf-text wf-s0148356e">→ build 8f2c41</p>
+                                </div>
+                                <div class="wf-stack wf-s32fe6372" data-mark="ok">
+                                    <div class="wf-row wf-align--center wf-s97f0187e">
+                                        <p class="wf-text wf-scff83554">2</p>
+                                        <p class="wf-text wf-s04699123">geo.country in DE, FR, NL</p>
+                                        <p class="wf-text wf-s12be14cd">ok</p>
+                                    </div>
+                                    <p class="wf-text wf-s0148356e">→ region fra1</p>
+                                </div>
+                                <div class="wf-stack wf-s32fe6372" data-mark="ok">
+                                    <div class="wf-row wf-align--center wf-s97f0187e">
+                                        <p class="wf-text wf-scff83554">3</p>
+                                        <p class="wf-text wf-s04699123">path /api/*</p>
+                                        <p class="wf-text wf-s12be14cd">ok</p>
+                                    </div>
+                                    <p class="wf-text wf-s0148356e">→ fn api, 10 s</p>
+                                </div>
+                                <div class="wf-stack wf-s32fe6372" data-mark="warn">
+                                    <div class="wf-row wf-align--center wf-s97f0187e">
+                                        <p class="wf-text wf-scff83554">4</p>
+                                        <p class="wf-text wf-s04699123">path /*</p>
+                                        <p class="wf-text wf-s12be14cd">warning</p>
+                                    </div>
+                                    <p class="wf-text wf-s0148356e">→ build current, weight 99</p>
+                                </div>
+                                <div class="wf-stack wf-s32fe6372" data-mark="error">
+                                    <div class="wf-row wf-align--center wf-s97f0187e">
+                                        <p class="wf-text wf-scff83554">5</p>
+                                        <p class="wf-text wf-s04699123">path /legacy/*</p>
+                                        <p class="wf-text wf-s12be14cd">error</p>
+                                    </div>
+                                    <p class="wf-text wf-s0148356e">→ build deleted</p>
+                                </div>
+                            </div>
+                            <div class="wf-container wf-s6db5d5d4">
+                                <div class="wf-field">
+                                    <label class="wf-label" for="wf-field-1">Test a request</label>
+                                    <input class="wf-input hl-mono hl-compact" type="text" id="wf-field-1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

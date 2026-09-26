@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing rules</title>
+    <meta name="description" content="A routing rule decides which build or function answers a request. Rules live in your repository.">
+    <link rel="canonical" href="https://halyard.example.com/docs">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Routing rules">
+    <meta property="og:site_name" content="Halyard">
+    <meta property="og:description" content="A routing rule decides which build or function answers a request. Rules live in your repository.">
+    <meta property="og:url" content="https://halyard.example.com/docs">
+    <meta property="og:locale" content="en">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Routing rules">
+    <meta name="twitter:description" content="A routing rule decides which build or function answers a request. Rules live in your repository.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://halyard.example.com/#website","url":"https://halyard.example.com/","name":"Halyard"},{"@type":"Organization","@id":"https://halyard.example.com/#organization","name":"Halyard","url":"https://halyard.example.com/"},{"@type":"WebPage","@id":"https://halyard.example.com/docs#webpage","url":"https://halyard.example.com/docs","name":"Routing rules","isPartOf":{"@id":"https://halyard.example.com/#website"},"description":"A routing rule decides which build or function answers a request. Rules live in your repository."},{"@type":"BreadcrumbList","@id":"https://halyard.example.com/docs#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://halyard.example.com/"},{"@type":"ListItem","position":2,"name":"Routing rules","item":"https://halyard.example.com/docs"}]}]}</script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../pages/Docs.css" data-wf-page-css="Docs">
+    <script src="../app.js" defer></script>
+    <script src="../pages/Docs.js" data-wf-page="Docs" defer></script>
+</head>
+<body>
+    <a class="wf-skip-link" href="#wf-main">Skip to content</a>
+    <div id="app">
+        <div class="wf-stack">
+            <main id="wf-main">
+                <div class="wf-row wf-align--center wf-s2539ed54" role="banner">
+                    <a class="wf-link wf-se0661cf6" href="/">
+                        <div class="wf-container wf-sb156c596">
+                            <div class="wf-container wf-sa8c29ac4"></div>
+                            <div class="wf-container wf-s8c25beec"></div>
+                        </div>
+                        <p class="wf-text wf-sf202558c">Halyard</p>
+                    </a>
+                    <div class="wf-row wf-align--center wf-se8aec2f6" role="navigation" aria-label="Primary">
+                        <a class="wf-link wf-se5a013ae" href="/">Product</a>
+                        <a class="wf-link wf-se5a013ae" href="/pricing">Pricing</a>
+                        <a class="wf-link wf-se5a013ae active" href="/docs" aria-current="page">Docs</a>
+                        <a class="wf-link wf-se5a013ae" href="/changelog">Changelog</a>
+                        <a class="wf-link wf-se5a013ae" href="/status">Status</a>
+                    </div>
+                    <div class="wf-row wf-align--center wf-s26e0b757">
+                        <button class="wf-btn wf-s6521032c" type="button" data-variant="ghost" data-size="sm">
+                            Search
+                            <i class="wf-icon wf-s68131ad8" data-icon="search"></i>
+                            <p class="wf-text wf-sfca99c1b">⌘K</p>
+                        </button>
+                        <a class="wf-link wf-s7d7880c1" href="/app" data-variant="ghost" data-size="sm">Sign in</a>
+                        <a class="wf-link wf-s7d7880c1" href="/new" data-variant="primary" data-size="sm">Start building</a>
+                    </div>
+                </div>
+                <div class="wf-row wf-align--center wf-sfdb1e816">
+                    <div class="wf-row wf-align--center wf-s851d02f9" role="navigation" aria-label="Breadcrumb">
+                        <a class="wf-link wf-s0edd1c66 active" href="/docs" aria-current="page">Docs</a>
+                        <i class="wf-icon wf-s5aa7fc43" data-icon="chevron-right"></i>
+                        <p class="wf-text wf-s0290ba2a">Runtime</p>
+                        <i class="wf-icon wf-s5aa7fc43" data-icon="chevron-right"></i>
+                        <p class="wf-text wf-s63c6f588" aria-current="page">Routing rules</p>
+                    </div>
+                    <div class="wf-row wf-s4fee6d55" role="group" aria-label="API version">
+                        <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="true">v3</button>
+                        <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="false">v2</button>
+                        <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="false">Beta</button>
+                    </div>
+                    <button class="wf-btn wf-s1bb3b644" type="button" data-variant="secondary" data-size="sm">
+                        Search docs
+                        <p class="wf-text wf-sfca99c1b">/</p>
+                    </button>
+                </div>
+                <div class="wf-row wf-s74adbb96">
+                    <div class="wf-stack wf-s0302c025" role="navigation" aria-label="Documentation">
+                        <div class="wf-stack wf-s48cc4233">
+                            <button class="wf-btn wf-s8f51e32c" type="button" aria-expanded="false">
+                                
+                                <i class="wf-icon wf-sb98148be" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s3d5e50a0">Start</p>
+                                <p class="wf-text wf-s1cb8a84b">4</p>
+                            </button>
+                        </div>
+                        <div class="wf-stack wf-s48cc4233">
+                            <button class="wf-btn wf-s8f51e32c" type="button" aria-expanded="true">
+                                
+                                <i class="wf-icon wf-sb98148be" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s3d5e50a0">Runtime</p>
+                                <p class="wf-text wf-s1cb8a84b">6</p>
+                            </button>
+                            <a class="wf-link wf-s17892ed3 active" href="/docs" aria-current="page">Edge functions</a>
+                            <a class="wf-link wf-s510cd232 active" href="/docs" aria-current="page" aria-current="page">Routing rules</a>
+                            <a class="wf-link wf-s17892ed3 active" href="/docs" aria-current="page">Middleware</a>
+                            <a class="wf-link wf-s17892ed3 active" href="/docs" aria-current="page">Edge KV</a>
+                            <a class="wf-link wf-s17892ed3 active" href="/docs" aria-current="page">Queues</a>
+                            <a class="wf-link wf-s17892ed3 active" href="/docs" aria-current="page">Limits</a>
+                        </div>
+                        <div class="wf-stack wf-s48cc4233">
+                            <button class="wf-btn wf-s8f51e32c" type="button" aria-expanded="false">
+                                
+                                <i class="wf-icon wf-sb98148be" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s3d5e50a0">Builds</p>
+                                <p class="wf-text wf-s1cb8a84b">4</p>
+                            </button>
+                        </div>
+                        <div class="wf-stack wf-s48cc4233">
+                            <button class="wf-btn wf-s8f51e32c" type="button" aria-expanded="false">
+                                
+                                <i class="wf-icon wf-sb98148be" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s3d5e50a0">Operate</p>
+                                <p class="wf-text wf-s1cb8a84b">4</p>
+                            </button>
+                        </div>
+                        <div class="wf-stack wf-s48cc4233">
+                            <button class="wf-btn wf-s8f51e32c" type="button" aria-expanded="false">
+                                
+                                <i class="wf-icon wf-sb98148be" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s3d5e50a0">Reference</p>
+                                <p class="wf-text wf-s1cb8a84b">4</p>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="wf-stack wf-s44bf8e9f">
+                        <div class="wf-container wf-s54dfd924">
+                            <p class="wf-text wf-s295231da">RUNTIME</p>
+                        </div>
+                        <h1 class="wf-heading wf-sdd050eba">Routing rules</h1>
+                        <p class="wf-text wf-sa1d20350">A routing rule decides which build or function answers a request. Rules live in your repository, ship inside the artifact, and are evaluated at the edge before anything of yours runs.</p>
+                        <div class="wf-row wf-se427b98d">
+                            <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="success">
+                                <p class="wf-text wf-sd76507ea">Stable since v9</p>
+                            </div>
+                            <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="info">
+                                <p class="wf-text wf-sd76507ea">Edge only</p>
+                            </div>
+                            <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="brass">
+                                <p class="wf-text wf-sd76507ea">2 ms budget</p>
+                            </div>
+                        </div>
+                        <h2 class="wf-heading wf-s5d180bc9">The match object</h2>
+                        <p class="wf-text wf-sfbf12fcc">Every rule is { match, target }. The match object is a conjunction: each key you set must be satisfied, and keys you omit are not consulted. A rule with an empty match is the fallback and must be last.</p>
+                        <div class="wf-stack wf-scb262b63">
+                            <div class="wf-row wf-align--center wf-s3adbe750">
+                                <div class="wf-row wf-align--center wf-sa082ef15" role="tablist" aria-label="Route definition format">
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="true">
+                                        routes.halyard.ts
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="false">
+                                        routes.json
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                    <button class="wf-btn wf-s16a73f79" type="button" role="tab" aria-selected="false">
+                                        CLI
+                                        <div class="wf-container wf-s7de6720f"></div>
+                                    </button>
+                                </div>
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="copy" aria-label="Copy snippet" title="Copy snippet" type="button" data-variant="ghost"></button>
+                            </div>
+                            <code class="wf-code wf-code--block wf-sed39002f">import { defineRoutes } from &#x27;halyard&#x27;
+
+export default defineRoutes([
+  // pin the beta cohort to a known build
+  { match: { cookie: { ht_beta: &#x27;1&#x27; } }, build: &#x27;8f2c41&#x27; },
+
+  // EU traffic prefers fra1, then falls through
+  { match: { geo: { country: [&#x27;DE&#x27;, &#x27;FR&#x27;, &#x27;NL&#x27;] } }, region: &#x27;fra1&#x27; },
+
+  { match: { path: &#x27;/api/*&#x27; }, fn: &#x27;api&#x27;, timeout: 10_000 },
+  { match: { path: &#x27;/*&#x27; }, build: &#x27;current&#x27; },
+])</code>
+                        </div>
+                        <div class="wf-row wf-sae861e36" data-tone="info">
+                            <i class="wf-icon wf-sfecbb5d4"></i>
+                            <div class="wf-stack wf-secfd2254">
+                                <p class="wf-text wf-s6008d0d1">Rules are part of the build</p>
+                                <p class="wf-text wf-sda989eac">Changing a rule produces a new artifact and a new hash. That is deliberate: it means a rollback restores the routing that shipped with the code, not whatever the dashboard happened to say at the time.</p>
+                            </div>
+                        </div>
+                        <h2 class="wf-heading wf-s5d180bc9">Evaluation order</h2>
+                        <p class="wf-text wf-sfbf12fcc">Rules are read top to bottom and the first match answers. There is no scoring and no specificity system to learn: if two rules could both match, the one written first wins. The CLI refuses a deploy where a later rule is unreachable.</p>
+                        <ol class="wf-list wf-s19bce65a">
+                            <li class="wf-list__item wf-s9c877493">
+                                <p class="wf-text wf-s6943917b">Cookie and header rules, because they are the narrowest.</p>
+                            </li>
+                            <li class="wf-list__item wf-s9c877493">
+                                <p class="wf-text wf-s6943917b">Geo rules, which only choose a preferred region.</p>
+                            </li>
+                            <li class="wf-list__item wf-s9c877493">
+                                <p class="wf-text wf-s6943917b">Path rules that send traffic to a function.</p>
+                            </li>
+                            <li class="wf-list__item wf-s9c877493">
+                                <p class="wf-text wf-s6943917b">The fallback, which is always a build hash.</p>
+                            </li>
+                        </ol>
+                        <h2 class="wf-heading wf-s5d180bc9">Targets</h2>
+                        <p class="wf-text wf-sfbf12fcc">A rule sends the request to exactly one of three things: a build, an edge fn, or a preferred region. A region target does not answer the request; it only reorders which region is asked first, and the next rule still applies.</p>
+                        <div class="wf-row wf-sae861e36" data-tone="warning">
+                            <i class="wf-icon wf-sfecbb5d4"></i>
+                            <div class="wf-stack wf-secfd2254">
+                                <p class="wf-text wf-s6008d0d1">Weighted rules must sum to 100</p>
+                                <p class="wf-text wf-sda989eac">If you split traffic with weight, every rule in that group has to add up to exactly 100. A group that sums to 99 or 101 fails the deploy with HL-4021 rather than silently sending the remainder to the fallback.</p>
+                            </div>
+                        </div>
+                        <h2 class="wf-heading wf-s5d180bc9">Computed rules</h2>
+                        <p class="wf-text wf-sfbf12fcc">When a header comparison is not enough, match.fn takes a pure function that receives the request and returns a boolean. It runs inside a 2 ms budget on the same isolate that will serve the request, so it has no network and no KV access. Throwing counts as no match and is recorded on the trace.</p>
+                        <h2 class="wf-heading wf-s5d180bc9">Rule parameters</h2>
+                        <div class="wf-container wf-s00a04278">
+                            <table class="wf-table wf-sd7397531">
+                                <caption class="wf-visually-hidden">Routing rule parameters, their types and defaults</caption>
+                                <thead>
+                                    <tr>
+                                        <th class="wf-s36f12dec" data-numeric="false" scope="col">Key</th>
+                                        <th class="wf-s36f12dec" data-numeric="false" scope="col">Type</th>
+                                        <th class="wf-s36f12dec" data-numeric="false" scope="col">Default</th>
+                                        <th class="wf-s36f12dec" data-numeric="false" scope="col">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">match.path</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">string | string[]</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Glob against the pathname. A trailing /* matches any depth; /*.js matches one segment.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">match.header</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Record&lt;string, string&gt;</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">All listed headers must match. Values are compared case-insensitively after trimming.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">match.cookie</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Record&lt;string, string&gt;</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Exact cookie value match. Absent cookies never match, including against an empty string.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">match.geo</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">{ country?, region?, asn? }</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Resolved at the edge from the client address. Falls through when the lookup is unavailable.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">match.fn</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">(req) =&gt; boolean</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">A pure function evaluated in under 2 ms. Throwing counts as no match and is logged.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">build</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">string</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">current</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">A build hash, or current. Pinning a hash freezes this rule until you change it.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">fn</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">string</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">—</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Name of an edge function in this project. Mutually exclusive with build.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">timeout</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">number</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">10000</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Milliseconds before the request is cut and a 504 is returned to the client.</td>
+                                    </tr>
+                                    <tr class="wf-s1b018b01">
+                                        <td class="wf-sd7a11179" data-numeric="false">weight</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">number</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">100</td>
+                                        <td class="wf-sd7a11179" data-numeric="false">Share of matching traffic, 0 to 100. Weighted rules must sum to 100 or the deploy is refused.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h2 class="wf-heading wf-s5d180bc9">What goes wrong</h2>
+                        <p class="wf-text wf-sfbf12fcc">Three errors account for most refused deploys. Each one is reported with the rule index and the line in your source, before anything is uploaded.</p>
+                        <div class="wf-stack wf-s1f55e271">
+                            <div class="wf-row wf-align--baseline wf-secd47516">
+                                <p class="wf-text wf-s74e5ff4a">HL-4019</p>
+                                <p class="wf-text wf-s276a7d01">A rule after the fallback can never match.</p>
+                            </div>
+                            <div class="wf-row wf-align--baseline wf-secd47516">
+                                <p class="wf-text wf-s74e5ff4a">HL-4021</p>
+                                <p class="wf-text wf-s276a7d01">Weighted rules in a group do not sum to 100.</p>
+                            </div>
+                            <div class="wf-row wf-align--baseline wf-secd47516">
+                                <p class="wf-text wf-s74e5ff4a">HL-4033</p>
+                                <p class="wf-text wf-s276a7d01">match.fn exceeded the 2 ms budget during the deploy check.</p>
+                            </div>
+                        </div>
+                        <div class="wf-grid wf-sa842bc20" data-cols="2">
+                            <a class="wf-link wf-s135873d0 active" href="/docs" aria-current="page">
+                                <p class="wf-text wf-s295231da">PREVIOUS</p>
+                                <p class="wf-text wf-sf4410a93">Edge functions</p>
+                            </a>
+                            <a class="wf-link wf-s0f376696 active" href="/docs" aria-current="page">
+                                <p class="wf-text wf-s295231da">NEXT</p>
+                                <p class="wf-text wf-sf4410a93">Middleware</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="wf-stack wf-s6e166926" role="navigation" aria-label="On this page">
+                        <p class="wf-text wf-s295231da">ON THIS PAGE</p>
+                        <div class="wf-stack wf-sa8e464d0">
+                            <a class="wf-link wf-s161d5c40 active" href="/docs" aria-current="page" aria-current="true">The match object</a>
+                            <a class="wf-link wf-se5638239 active" href="/docs" aria-current="page">Evaluation order</a>
+                            <a class="wf-link wf-se5638239 active" href="/docs" aria-current="page">Targets</a>
+                            <a class="wf-link wf-se5638239 active" href="/docs" aria-current="page">Computed rules</a>
+                            <a class="wf-link wf-se5638239 active" href="/docs" aria-current="page">Rule parameters</a>
+                            <a class="wf-link wf-se5638239 active" href="/docs" aria-current="page">What goes wrong</a>
+                        </div>
+                        <div class="wf-container wf-sb36d98f8"></div>
+                        <a class="wf-link wf-s7d7880c1" href="/app/editor" data-variant="ghost" data-size="sm">Try it in the editor</a>
+                        <a class="wf-link wf-s7d7880c1 active" href="/docs" aria-current="page" data-variant="ghost" data-size="sm">Edit this page</a>
+                    </div>
+                </div>
+                <div class="wf-stack wf-s27fe5be9" role="contentinfo">
+                    <div class="wf-row wf-s3f4befcb">
+                        <div class="wf-stack wf-sc8171f50">
+                            <a class="wf-link wf-se0661cf6" href="/">
+                                <div class="wf-container wf-sb156c596">
+                                    <div class="wf-container wf-sa8c29ac4"></div>
+                                    <div class="wf-container wf-s8c25beec"></div>
+                                </div>
+                                <p class="wf-text wf-sf4ee2e17">Halyard</p>
+                            </a>
+                            <p class="wf-text wf-sc037a734">An edge runtime that treats a deploy as a routing change. Built as a design reference, not a real service.</p>
+                        </div>
+                        <div class="wf-grid wf-sa67b3221" data-cols="4">
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">PRODUCT</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82" href="/">Overview</a>
+                                <a class="wf-link wf-se0f15d82" href="/pricing">Pricing</a>
+                                <a class="wf-link wf-se0f15d82" href="/changelog">Changelog</a>
+                                <a class="wf-link wf-se0f15d82" href="/status">Status</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">DEVELOPERS</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82 active" href="/docs" aria-current="page">Docs</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/docs" aria-current="page">API reference</a>
+                                <a class="wf-link wf-se0f15d82 active" href="/docs" aria-current="page">CLI</a>
+                                <a class="wf-link wf-se0f15d82" href="/app">Dashboard</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">COMPANY</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82" href="/">About</a>
+                                <a class="wf-link wf-se0f15d82" href="/">Careers</a>
+                                <a class="wf-link wf-se0f15d82" href="/">Security</a>
+                                <a class="wf-link wf-se0f15d82" href="/">Press</a>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s8d96e1b9">
+                                    <p class="wf-text wf-s295231da">LEGAL</p>
+                                </div>
+                                <a class="wf-link wf-se0f15d82" href="/">Terms</a>
+                                <a class="wf-link wf-se0f15d82" href="/">Privacy</a>
+                                <a class="wf-link wf-se0f15d82" href="/">Subprocessors</a>
+                                <a class="wf-link wf-se0f15d82" href="/">DPA</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wf-container wf-sb36d98f8"></div>
+                    <div class="wf-row wf-align--center wf-s3f3291cc">
+                        <a class="wf-link wf-sc82e59ea" href="/status">
+                            <div class="wf-row wf-align--center wf-s3f096eaf" data-tone="success">
+                                <div class="wf-container wf-sff322a94"></div>
+                                <p class="wf-text wf-sd76507ea">All 19 regions operational</p>
+                            </div>
+                        </a>
+                        <div class="wf-container wf-s53707169"></div>
+                        <p class="wf-text wf-sd99101d7">© [YEAR] [YOUR COMPANY]. A fictional product drawn with Fluant.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

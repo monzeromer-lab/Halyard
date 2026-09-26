@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observability</title>
+    <meta name="description" content="Response time, status classes and traffic by route.">
+    <meta name="robots" content="noindex, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Observability">
+    <meta property="og:site_name" content="Halyard">
+    <meta property="og:description" content="Response time, status classes and traffic by route.">
+    <meta property="og:url" content="https://halyard.example.com/app/observability">
+    <meta property="og:locale" content="en">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Observability">
+    <meta name="twitter:description" content="Response time, status classes and traffic by route.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://halyard.example.com/#website","url":"https://halyard.example.com/","name":"Halyard"},{"@type":"Organization","@id":"https://halyard.example.com/#organization","name":"Halyard","url":"https://halyard.example.com/"},{"@type":"WebPage","@id":"https://halyard.example.com/app/observability#webpage","url":"https://halyard.example.com/app/observability","name":"Observability","isPartOf":{"@id":"https://halyard.example.com/#website"},"description":"Response time, status classes and traffic by route."},{"@type":"BreadcrumbList","@id":"https://halyard.example.com/app/observability#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://halyard.example.com/"},{"@type":"ListItem","position":2,"name":"Overview","item":"https://halyard.example.com/app"},{"@type":"ListItem","position":3,"name":"Observability","item":"https://halyard.example.com/app/observability"}]}]}</script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'self'">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../pages/AppObservability.css" data-wf-page-css="AppObservability">
+    <script src="../../app.js" defer></script>
+    <script src="../../pages/AppObservability.js" data-wf-page="AppObservability" defer></script>
+</head>
+<body>
+    <a class="wf-skip-link" href="#wf-main">Skip to content</a>
+    <div id="app">
+        <div class="wf-stack">
+            <main id="wf-main">
+                <div class="wf-row wf-s64f2a1ee">
+                    <div class="wf-stack wf-sb992d013" role="navigation" aria-label="Project">
+                        <a class="wf-link wf-sda062b69" href="/">
+                            <div class="wf-container wf-sb156c596">
+                                <div class="wf-container wf-sa8c29ac4"></div>
+                                <div class="wf-container wf-s8c25beec"></div>
+                            </div>
+                            <p class="wf-text wf-s65d752a5">Halyard</p>
+                        </a>
+                        <button class="wf-btn wf-saa88fd40" type="button" aria-label="HL storefront-edge, switch project">
+                            
+                            <p class="wf-text wf-sb4683083">HL</p>
+                            <div class="wf-stack wf-s43fdf509">
+                                <p class="wf-text wf-s163ee328">storefront-edge</p>
+                                <p class="wf-text wf-s5186612b">hl-2201 · production</p>
+                            </div>
+                            <i class="wf-icon wf-sb19103a4" data-icon="chevron-down"></i>
+                        </button>
+                        <div class="wf-container wf-se77782b0">
+                            <p class="wf-text wf-s295231da">PROJECT</p>
+                        </div>
+                        <div class="wf-stack wf-s5dc8df55">
+                            <a class="wf-link wf-s61278238" href="/app">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="home"></i>
+                                <p class="wf-text wf-sd76507ea">Overview</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/deployments">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="upload"></i>
+                                <p class="wf-text wf-sd76507ea">Deployments</p>
+                            </a>
+                            <a class="wf-link wf-s61278238 active" href="/app/observability" aria-current="page">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="eye"></i>
+                                <p class="wf-text wf-sd76507ea">Observability</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/logs">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="menu"></i>
+                                <p class="wf-text wf-sd76507ea">Logs</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/builds/8f2c41">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="settings"></i>
+                                <p class="wf-text wf-sd76507ea">Builds</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/explorer">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="search"></i>
+                                <p class="wf-text wf-sd76507ea">Explorer</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/settings">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="settings"></i>
+                                <p class="wf-text wf-sd76507ea">Settings</p>
+                            </a>
+                        </div>
+                        <div class="wf-container wf-se77782b0">
+                            <p class="wf-text wf-s295231da">TOOLS</p>
+                        </div>
+                        <div class="wf-stack wf-se8e8f072">
+                            <a class="wf-link wf-s61278238" href="/app/editor">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <p class="wf-text wf-sd76507ea">Routing rules</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/app/graph">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <p class="wf-text wf-sd76507ea">Infrastructure</p>
+                            </a>
+                            <a class="wf-link wf-s61278238" href="/status">
+                                <div class="wf-container wf-se1d7d124"></div>
+                                <i class="wf-icon wf-sc7639283" data-icon="info"></i>
+                                <p class="wf-text wf-sd76507ea">Status page</p>
+                            </a>
+                        </div>
+                        <div class="wf-stack wf-sa190b11f">
+                            <a class="wf-link wf-sb06af7f1" href="/status">
+                                <div class="wf-container wf-s30de2b35"></div>
+                                <p class="wf-text wf-s699d0377">18/19 regions healthy</p>
+                            </a>
+                            <div class="wf-row wf-align--center wf-s36f6ba85">
+                                <p class="wf-text wf-sd0ed63e8">YN</p>
+                                <p class="wf-text wf-s02a2dc6d">[YOUR NAME]</p>
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="menu" aria-label="Account menu" title="Account menu" type="button" data-variant="ghost"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wf-stack wf-sb99ddc27">
+                        <div class="wf-row wf-align--center wf-s36773543" role="banner">
+                            <div class="wf-row wf-align--center wf-s5c32b333" role="navigation" aria-label="Breadcrumb">
+                                <a class="wf-link wf-scc3ce241" href="/app">storefront-edge</a>
+                                <i class="wf-icon wf-s5aa7fc43" data-icon="chevron-right"></i>
+                                <p class="wf-text wf-s97a4e1a5" aria-current="page">Observability</p>
+                            </div>
+                            <button class="wf-btn wf-sf6c8e7b1" type="button" aria-label="Search, command palette, ⌘K">
+                                
+                                <i class="wf-icon wf-s245be740" data-icon="search"></i>
+                                <p class="wf-text wf-sfca99c1b">⌘K</p>
+                            </button>
+                            <div class="wf-container wf-sdffe7117">
+                                <button class="wf-icon-btn wf-sf51d60e5" data-icon="bell" aria-label="Notifications" title="Notifications" type="button" data-variant="ghost"></button>
+                                <div class="wf-container wf-s5dad5d58"></div>
+                            </div>
+                            <p class="wf-text wf-sfa995850">YN</p>
+                        </div>
+                        <h1 class="wf-heading wf-sa8459168">Observability</h1>
+                        <div class="wf-row wf-align--center wf-sd5dbc32b">
+                            <div class="wf-row wf-s4fee6d55" role="group" aria-label="Time range">
+                                <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="false">1h</button>
+                                <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="true">24h</button>
+                                <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="false">7d</button>
+                                <button class="wf-btn wf-sb8a0d275" type="button" aria-pressed="false">30d</button>
+                            </div>
+                            <p class="wf-text wf-s9003f1ba">Region</p>
+                            <select class="wf-select wf-s45f2fb48" value="all" aria-labelledby="obs-region-label">
+                                <option value="all">All 19 regions</option>
+                                <option value="fra1">fra1</option>
+                                <option value="iad1">iad1</option>
+                                <option value="sin1">sin1</option>
+                                <option value="gru1">gru1</option>
+                            </select>
+                            <p class="wf-text wf-s9003f1ba">Environment</p>
+                            <select class="wf-select wf-s23ef18ba" value="production" aria-labelledby="obs-env-label">
+                                <option value="production">production</option>
+                                <option value="preview">preview</option>
+                            </select>
+                            <div class="wf-container wf-s9e7c635e"></div>
+                            <button class="wf-btn wf-se75a35bc" data-variant="secondary" data-size="sm" disabled>Table view</button>
+                            <a class="wf-link wf-s7d7880c1" href="/app/logs" data-variant="ghost" data-size="sm">Open logs</a>
+                        </div>
+                        <div class="wf-grid wf-s24555282" data-cols="2">
+                            <div class="wf-stack wf-s1dcf74f3">
+                                <div class="wf-stack wf-se40a1724">
+                                    <h2 class="wf-heading wf-s08d66f47">Response time, p95</h2>
+                                    <p class="wf-text wf-sd99101d7">Milliseconds at the edge. Four busiest regions; click a name to hide it.</p>
+                                </div>
+                                <div class="wf-container wf-s8dcbd431">
+                                    <div class="wf-row wf-justify--end wf-sdc8e97ed">
+                                        <button class="wf-btn wf-sf080306b" type="button" aria-pressed="true">
+                                            fra1
+                                            <div class="wf-container wf-s5c9455c3"></div>
+                                        </button>
+                                        <button class="wf-btn wf-sf080306b" type="button" aria-pressed="true">
+                                            iad1
+                                            <div class="wf-container wf-s5c9455c3"></div>
+                                        </button>
+                                        <button class="wf-btn wf-sf080306b" type="button" aria-pressed="true">
+                                            sin1
+                                            <div class="wf-container wf-s5c9455c3"></div>
+                                        </button>
+                                        <button class="wf-btn wf-sf080306b" type="button" aria-pressed="true">
+                                            gru1
+                                            <div class="wf-container wf-s5c9455c3"></div>
+                                        </button>
+                                    </div>
+                                    <div class="wf-container wf-s517f57e3" role="img" aria-label="Response time p95 by region over the selected range, as grouped bars">
+                                        <!--wf-for-->
+                                        <div class="wf-row wf-align--end wf-s0639dbcf">
+                                            <!--wf-for-->
+                                        </div>
+                                    </div>
+                                    <div class="wf-row wf-s7782b30c">
+                                        <!--wf-for-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wf-stack wf-s1dcf74f3">
+                                <div class="wf-stack wf-se40a1724">
+                                    <h2 class="wf-heading wf-s08d66f47">Responses by status class</h2>
+                                    <p class="wf-text wf-sd99101d7">Thousands of responses per two-hour bucket, last 24 hours.</p>
+                                </div>
+                                <div class="wf-container wf-s8dcbd431">
+                                    <div class="wf-row wf-align--end wf-s477841ec">
+                                        <div class="wf-stack wf-s91de0797">
+                                            <p class="wf-text wf-s3f28ba6b"></p>
+                                            <p class="wf-text wf-s3f28ba6b">0</p>
+                                        </div>
+                                        <div class="wf-container wf-s994ae83b" role="img" aria-label="Responses by status class per two-hour bucket, as stacked bars">
+                                            <div class="wf-row wf-align--end wf-s4a79dc3b">
+                                                <!--wf-for-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="wf-row wf-s2fb5591f">
+                                        <!--wf-for-->
+                                    </div>
+                                    <div class="wf-row wf-s82fcd4ab">
+                                        <!--wf-for-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wf-stack wf-s1dcf74f3">
+                                <div class="wf-stack wf-se40a1724">
+                                    <h2 class="wf-heading wf-s08d66f47">Latency by hour of week</h2>
+                                    <p class="wf-text wf-sd99101d7">p95 across all regions. The Wednesday afternoon band is the weekly catalogue import.</p>
+                                </div>
+                                <div class="wf-container wf-s8dcbd431">
+                                    <div class="wf-stack wf-se8e8f072" role="img" aria-label="Response time p95 by weekday and hour of day, as a heatmap; the Wednesday 13:00 to 16:00 band peaks at 114 ms">
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Mon</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 00:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 01:00 — 28 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 02:00 — 35 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 03:00 — 34 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 04:00 — 41 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 05:00 — 39 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 06:00 — 47 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 07:00 — 45 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 08:00 — 52 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 09:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 10:00 — 56 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 11:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 12:00 — 60 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 13:00 — 65 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 14:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 15:00 — 66 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 16:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 17:00 — 65 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 18:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 19:00 — 62 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 20:00 — 65 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 21:00 — 58 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 22:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Mon 23:00 — 52 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Tue</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 00:00 — 28 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 01:00 — 26 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 02:00 — 33 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 03:00 — 32 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 04:00 — 39 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 05:00 — 37 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 06:00 — 45 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 07:00 — 52 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 08:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 09:00 — 57 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 10:00 — 54 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 11:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 12:00 — 58 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 13:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 14:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 15:00 — 64 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 16:00 — 68 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 17:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 18:00 — 66 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 19:00 — 60 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 20:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 21:00 — 56 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 22:00 — 57 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Tue 23:00 — 50 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Wed</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 00:00 — 26 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 01:00 — 24 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 02:00 — 31 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 03:00 — 39 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 04:00 — 37 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 05:00 — 44 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 06:00 — 43 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 07:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 08:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 09:00 — 55 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 10:00 — 52 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 11:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 12:00 — 65 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 13:00 — 109 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 14:00 — 114 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 15:00 — 110 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 16:00 — 114 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 17:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 18:00 — 64 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 19:00 — 58 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 20:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 21:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 22:00 — 55 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Wed 23:00 — 57 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Thu</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 00:00 — 24 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 01:00 — 31 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 02:00 — 29 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 03:00 — 37 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 04:00 — 35 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 05:00 — 42 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 06:00 — 41 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 07:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 08:00 — 55 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 09:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 10:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 11:00 — 57 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 12:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 13:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 14:00 — 64 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 15:00 — 60 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 16:00 — 64 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 17:00 — 68 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 18:00 — 62 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 19:00 — 65 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 20:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 21:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 22:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Thu 23:00 — 55 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Fri</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 00:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 01:00 — 29 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 02:00 — 27 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 03:00 — 35 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 04:00 — 42 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 05:00 — 40 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 06:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 07:00 — 46 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 08:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 09:00 — 51 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 10:00 — 57 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 11:00 — 55 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 12:00 — 61 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 13:00 — 66 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 14:00 — 62 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 15:00 — 67 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 16:00 — 62 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 17:00 — 66 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 18:00 — 60 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 19:00 — 63 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 20:00 — 57 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 21:00 — 59 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 22:00 — 60 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Fri 23:00 — 53 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Sat</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 00:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 01:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 02:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 03:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 04:00 — 26 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 05:00 — 24 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 06:00 — 32 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 07:00 — 30 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 08:00 — 37 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 09:00 — 44 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 10:00 — 41 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 11:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 12:00 — 45 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 13:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 14:00 — 46 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 15:00 — 51 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 16:00 — 46 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 17:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 18:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 19:00 — 47 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 20:00 — 50 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 21:00 — 43 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 22:00 — 44 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sat 23:00 — 37 ms p95"></div>
+                                        </div>
+                                        <div class="wf-row wf-align--center wf-sf8872210">
+                                            <div class="wf-container wf-sa25565d6">
+                                                <p class="wf-text wf-s3f28ba6b">Sun</p>
+                                            </div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 00:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 01:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 02:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 03:00 — 22 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 04:00 — 24 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 05:00 — 31 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 06:00 — 30 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 07:00 — 37 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 08:00 — 35 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 09:00 — 42 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 10:00 — 39 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 11:00 — 46 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 12:00 — 43 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 13:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 14:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 15:00 — 49 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 16:00 — 53 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 17:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 18:00 — 51 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 19:00 — 45 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 20:00 — 48 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 21:00 — 41 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 22:00 — 42 ms p95"></div>
+                                            <div class="wf-container wf-s86082a54" title="Sun 23:00 — 44 ms p95"></div>
+                                        </div>
+                                    </div>
+                                    <div class="wf-row wf-sb68e2d2a">
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">00</p>
+                                        </div>
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">04</p>
+                                        </div>
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">08</p>
+                                        </div>
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">12</p>
+                                        </div>
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">16</p>
+                                        </div>
+                                        <div class="wf-container wf-s9a0c08a2">
+                                            <p class="wf-text wf-s3f28ba6b">20</p>
+                                        </div>
+                                    </div>
+                                    <div class="wf-row wf-align--center wf-s3aa512dd">
+                                        <p class="wf-text wf-s3f28ba6b">22 ms</p>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <div class="wf-container wf-s0e62cd06"></div>
+                                        <p class="wf-text wf-s3f28ba6b">130 ms</p>
+                                        <div class="wf-container wf-s9e7c635e"></div>
+                                        <p class="wf-text wf-sff4d29f0">One hue, light to dark. Hover a cell for the value.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wf-stack wf-s1dcf74f3">
+                                <div class="wf-stack wf-se40a1724">
+                                    <h2 class="wf-heading wf-s08d66f47">Share of requests by route</h2>
+                                    <p class="wf-text wf-sd99101d7">One series, so the values are labelled directly and there is no legend.</p>
+                                </div>
+                                <div class="wf-container wf-s8dcbd431">
+                                    <div class="wf-stack wf-s4175c76d">
+                                        <!--wf-for-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <dialog class="wf-modal hl-palette" title="Command palette">
+                        <div class="wf-row wf-align--center wf-sbcb1863b">
+                            <i class="wf-icon wf-s037e648e" data-icon="search"></i>
+                            <input class="wf-input wf-s521d7fb0" placeholder="Search commands, builds, domains" aria-label="Search commands" type="search">
+                            <p class="wf-text wf-sfca99c1b">esc</p>
+                        </div>
+                        <div class="wf-stack wf-s6ce58240" role="listbox" aria-label="Results">
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s9b439ff4">
+                                    <p class="wf-text wf-s295231da">Go to</p>
+                                </div>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Overview">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Overview</p>
+                                    <p class="wf-text wf-sfca99c1b">G then O</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Deployments">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Deployments</p>
+                                    <p class="wf-text wf-sfca99c1b">G then D</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Logs">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Logs</p>
+                                    <p class="wf-text wf-sfca99c1b">G then L</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Settings">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Settings</p>
+                                    <p class="wf-text wf-sfca99c1b">G then S</p>
+                                </button>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s9b439ff4">
+                                    <p class="wf-text wf-s295231da">Actions</p>
+                                </div>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Deploy the current branch">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Deploy the current branch</p>
+                                    <p class="wf-text wf-sfca99c1b">⌘ ⇧ D</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Roll back to the previous build">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Roll back to the previous build</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Invite a team member">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Invite a team member</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Open the routing rules">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Open the routing rules</p>
+                                </button>
+                            </div>
+                            <div class="wf-stack wf-sa8e464d0">
+                                <div class="wf-container wf-s9b439ff4">
+                                    <p class="wf-text wf-s295231da">Recent</p>
+                                </div>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Build 8f2c41">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Build 8f2c41</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Trace tr_140241118">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Trace tr_140241118</p>
+                                </button>
+                                <button class="wf-btn wf-sb1022ae1" type="button" role="option" aria-label="Domain storefront.example.com">
+                                    
+                                    <p class="wf-text wf-sf3209d15">Domain storefront.example.com</p>
+                                </button>
+                            </div>
+                            <!--wf-if-->
+                        </div>
+                        <div class="wf-row wf-align--center wf-s993a28dc">
+                            <div class="wf-row wf-align--center wf-s9faf6089">
+                                <p class="wf-text wf-sfca99c1b">↑↓</p>
+                                <p class="wf-text wf-s44516737">move</p>
+                            </div>
+                            <div class="wf-row wf-align--center wf-s9faf6089">
+                                <p class="wf-text wf-sfca99c1b">↵</p>
+                                <p class="wf-text wf-s44516737">run</p>
+                            </div>
+                            <div class="wf-container wf-s9e7c635e"></div>
+                            <p class="wf-text wf-s060dd73b"></p>
+                        </div>
+                    </dialog>
+                    <div class="wf-stack wf-s6c7d2b03" role="region" aria-live="polite" aria-label="Notifications">
+                    </div>
+                    <div class="wf-row wf-sa4d782c1" role="navigation" aria-label="Sections">
+                        <a class="wf-link wf-s0613e1ab" href="/app">
+                            <i class="wf-icon wf-sffd16ff9" data-icon="home"></i>
+                            <p class="wf-text wf-sd76507ea">Overview</p>
+                        </a>
+                        <a class="wf-link wf-s0613e1ab" href="/app/deployments">
+                            <i class="wf-icon wf-sffd16ff9" data-icon="upload"></i>
+                            <p class="wf-text wf-sd76507ea">Deploys</p>
+                        </a>
+                        <a class="wf-link wf-s0613e1ab" href="/app/logs">
+                            <i class="wf-icon wf-sffd16ff9" data-icon="menu"></i>
+                            <p class="wf-text wf-sd76507ea">Logs</p>
+                        </a>
+                        <a class="wf-link wf-s0613e1ab" href="/app/settings">
+                            <i class="wf-icon wf-sffd16ff9" data-icon="user"></i>
+                            <p class="wf-text wf-sd76507ea">You</p>
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
