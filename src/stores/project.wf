@@ -1,6 +1,6 @@
 // The demo project: its identity, the live release, the 19 regions and the
 // overview timeline. All fictional.
-Store ProjectStore {
+store ProjectStore {
     state name = "storefront-edge"
     state id = "hl-2201"
     state env = "production"

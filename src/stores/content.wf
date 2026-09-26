@@ -1,7 +1,7 @@
 // Marketing content: the landing page's panels, code samples and FAQ, the
 // plans, the changelog and the docs tree. All of it is the design's seed
 // data; nothing here is invented.
-Store ContentStore {
+store ContentStore {
     state regions = ["fra1", "iad1", "cdg1", "sfo1", "gru1", "hnd1", "syd1", "bom1", "jnb1", "arn1", "dub1", "sin1", "yyz1", "icn1", "cpt1", "lhr1", "ams1", "nrt1", "pdx1"]
 
     state features = [

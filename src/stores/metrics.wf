@@ -2,7 +2,7 @@
 // over 13 two-hourly buckets, responses by status class, the hour-of-week
 // heatmap and the share by route. Series are drawn in viz order, never
 // reordered, and never more than four on one chart.
-Store MetricsStore {
+store MetricsStore {
     state range = "24h"
     state off = []
     state region = "all"
@@ -86,9 +86,9 @@ Store MetricsStore {
     action ceilTo(n: Number, step: Number) { return Math.max(Math.ceil(n / step) * step, step) }
     action pctOf(v: Number, top: Number) { return "{Math.round(v / top * 1000) / 10}%" }
     action shareOf(v: Number, total: Number) { return "{Math.round(v / total * 1000) / 10}%" }
-    action sumOf(xs: List) { return xs.reduce((a, b) => a + b, 0) }
+    action sumOf(xs: [Any]) { return xs.reduce((a, b) => a + b, 0) }
     action leftOf(i: Number) {
-        at = Math.min(i * 100 / 12 + 3, 72)
+        let at = Math.min(i * 100 / 12 + 3, 72)
         return "{at}%"
     }
     action pad(n: Number) { return if n < 10 { "0" + n } else { "" + n } }

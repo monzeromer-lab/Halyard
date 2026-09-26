@@ -1,7 +1,7 @@
 // The estimator: four dials in billing units (no currency is invented), the
 // breakdown, and the plan the volume points at. The dial positions are
 // indices into fixed steps, as the design's sliders are.
-Store PricingStore {
+store PricingStore {
     state period = "annual"
     state req = 4
     state build = 3

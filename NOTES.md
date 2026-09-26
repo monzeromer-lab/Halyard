@@ -250,9 +250,9 @@ the library uses `pressed`, `checked` and `note`.
   to call `focus()` after a render.
 - **Tooltips** are the builtin `Tooltip`, hover-only; its text box takes the
   structural sheet's inverted colours.
-- A handler written as a block on a component call must be action
-  statements only; an `if` inside makes it content, so the palette's
-  options use an explicit `on:click { }`.
+- A handler is `on click { }` inside the call's block; what the block
+  holds otherwise is content. (WebFluent 3 — the older shorthand, a block
+  of action statements, is gone; `wf migrate` rewrote it.)
 - Compiler fixes this milestone needed: an icon button drew its glyph twice
   (runtime); `data-state:` was a parse error because `state` is a keyword.
 

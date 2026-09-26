@@ -1,7 +1,7 @@
 // Overlay and notification state shared by every page: which overlay is
 // open (command palette, modal, drawer, menu, popover), the palette query
 // and its groups, the drawer's filter state, the toast stack.
-Store UiStore {
+store UiStore {
     state overlay = ""
     state query = ""
     state toasts = []
@@ -16,7 +16,6 @@ Store UiStore {
     derived drawerOpen = overlay == "drawer"
     derived menuOpen = overlay == "menu"
     derived popoverOpen = overlay == "popover"
-    derived anyOpen = overlay != ""
 
     state groupList = [
         { name: "Go to", items: [{ label: "Overview", hint: "G then O", to: "/app" }, { label: "Deployments", hint: "G then D", to: "/app/deployments" }, { label: "Logs", hint: "G then L", to: "/app/logs" }, { label: "Settings", hint: "G then S", to: "/app/settings" }] },
@@ -58,7 +57,7 @@ Store UiStore {
     action toggleTraced() { traced = !traced }
 
     action toast(kind: String, title: String, body: String) {
-        next = toasts.slice(-3)
+        let next = toasts.slice(-3)
         toasts = next.concat([{ id: nextToast, kind: kind, title: title, body: body }])
         nextToast = nextToast + 1
     }

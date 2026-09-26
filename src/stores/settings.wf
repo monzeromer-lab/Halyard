@@ -1,7 +1,7 @@
 // Project settings: the open section, the general form with its live
 // validation, the domains form, the variables with per-row reveal, the
 // team, and the delete confirmation.
-Store SettingsStore {
+store SettingsStore {
     state section = "general"
     state name = "storefront-edge"
     state saved = false
@@ -75,8 +75,8 @@ Store SettingsStore {
     action save() { saved = true }
     action setDomain(v: String) { domain = v  domainMsg = ""  domainBad = false }
     action addDomain() {
-        d = domain.trim()
-        ok = RegExp("^[a-z0-9-]+(\\.[a-z0-9-]+)+$").test(d)
+        let d = domain.trim()
+        let ok = RegExp("^[a-z0-9-]+(\\.[a-z0-9-]+)+$").test(d)
         domainBad = !ok
         domainMsg = if ok { "Add a CNAME for " + d + " pointing at cname.halyard.dev, then it starts serving." } else { "That is not a hostname. Enter something like shop.example.com, with no scheme and no path." }
     }

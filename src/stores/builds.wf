@@ -1,7 +1,7 @@
 // One build per hash: the pipeline stages, the output per stage, the diff,
 // the artifacts and the attestation. The page opens a hash from the URL;
 // an unknown hash is an empty state, not a crash.
-Store BuildStore {
+store BuildStore {
     state hash = "8f2c41"
     state stage = "compile"
     state tab = "output"

@@ -1,6 +1,6 @@
 // The public status page: five components with 90 days of history, the 19
 // regions, three incidents, the history filter and the subscribe form.
-Store StatusStore {
+store StatusStore {
     state components = [
         { name: "Edge runtime", uptime: "100.000%", bad: [] },
         { name: "Builds", uptime: "99.981%", bad: [{ day: 56, kind: "partial" }, { day: 55, kind: "partial" }, { day: 19, kind: "partial" }] },
@@ -48,7 +48,7 @@ Store StatusStore {
     derived helpColor = if sent { "var(--text-success)" } else if invalid { "var(--text-danger)" } else { "var(--text-tertiary)" }
 
     action dayOf(c: Map, age: Number) {
-        hit = c.bad.filter(b => b.day == age)
+        let hit = c.bad.filter(b => b.day == age)
         if hit.length == 0 {
             return { color: "var(--success)", title: age + " days ago — no incidents" }
         }
@@ -69,7 +69,7 @@ Store StatusStore {
     action toggle(id: Number) { if open == id { open = -1 } else { open = id } }
     action setEmail(v: String) { email = v  invalid = false  sent = false }
     action subscribe() {
-        ok = email.indexOf("@") > 0 && email.indexOf(".", email.indexOf("@")) > email.indexOf("@") + 1
+        let ok = email.indexOf("@") > 0 && email.indexOf(".", email.indexOf("@")) > email.indexOf("@") + 1
         sent = ok
         invalid = !ok
     }

@@ -1,34 +1,15 @@
 // One router, two layouts: every page brings its own chrome — SiteNav/SiteFooter
 // on the marketing pages, AppShell on the product pages — so the root only
 // paints the canvas.
-App {
+app {
     Stack {
         style {
-            background: "var(--surface-canvas)"
-            color: "var(--text-primary)"
-            font-family: "var(--font-sans)"
-            min-height: "100vh"
+            background: $surface-canvas
+            color: $text-primary
+            font-family: $font-sans
+            min-height: 100vh
         }
 
-        Router {
-            Route(path: "/", page: Home)
-            Route(path: "/pricing", page: Pricing)
-            Route(path: "/docs", page: Docs)
-            Route(path: "/changelog", page: Changelog)
-            Route(path: "/status", page: Status)
-            Route(path: "/app", page: AppOverview)
-            Route(path: "/app/deployments", page: AppDeployments)
-            Route(path: "/app/observability", page: AppObservability)
-            Route(path: "/app/logs", page: AppLogs)
-            Route(path: "/app/builds/:hash", page: AppBuild)
-            Route(path: "/app/settings", page: AppSettings)
-            Route(path: "/app/explorer", page: AppExplorer)
-            Route(path: "/app/graph", page: AppGraph)
-            Route(path: "/app/editor", page: AppEditor)
-            Route(path: "/new", page: Onboarding)
-            Route(path: "/ui", page: Overlays)
-            Route(path: "/patterns", page: Patterns)
-            Route(path: "*", page: NotFound)
-        }
+        Router
     }
 }

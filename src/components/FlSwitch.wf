@@ -1,27 +1,27 @@
 // A switch is a button with role=switch; its state is aria-checked and the
 // CSS keys off it. The handler written on the call flips the caller's state.
 // With `labelId`, the name is an element the caller renders.
-Component FlSwitch (checked: Bool, label: String, id: String, labelId: String = "") {
+component FlSwitch(checked: Bool, label: String, id: String, labelId: String = "") {
     derived by = if labelId == "" { id } else { labelId }
     derived bg = if checked { "var(--accent)" } else { "var(--surface-inset)" }
     derived edge = if checked { "var(--accent)" } else { "var(--border-control)" }
     derived knob = if checked { "translateX(18px)" } else { "translateX(0)" }
     derived knobBg = if checked { "var(--on-accent)" } else { "var(--text-secondary)" }
-    Row(align: center) {
-        style { display: "inline-flex"  flex-wrap: "nowrap"  gap: "12px"  width: "fit-content" }
+    Row(align: .center) {
+        style { display: inline-flex; flex-wrap: nowrap; gap: 12px; width: fit-content }
         Button("", type: "button", role: "switch", aria-checked: checked, aria-labelledby: by) {
             style {
-                display: "inline-flex"  align-items: "center"  width: "40px"  height: "22px"  flex: "none"  padding: "2px"
-                border-radius: "var(--radius-pill)"  background: bg  border: "1px solid var(--edge)"  --edge: edge  cursor: "pointer"
-                transition: "background var(--d-fast) var(--ease-standard), border-color var(--d-fast) var(--ease-standard)"
+                display: inline-flex; align-items: center; width: 40px; height: 22px; flex: none; padding: 2px
+                border-radius: $radius-pill; background: {bg}; border: 1px solid var(--edge); --edge: {edge}; cursor: pointer
+                transition: background $d-fast $ease-standard, border-color $d-fast $ease-standard
             }
             Container {
                 style {
-                    width: "16px"  height: "16px"  border-radius: "50%"  background: knobBg  transform: knob  padding: "0"  margin: "0"
-                    transition: "transform var(--d-fast) var(--ease-spring), background var(--d-fast) var(--ease-standard)"
+                    width: 16px; height: 16px; border-radius: 50%; background: {knobBg}; transform: {knob}; padding: 0; margin: 0
+                    transition: transform $d-fast $ease-spring, background $d-fast $ease-standard
                 }
             }
         }
-        if label != "" { Text(label, id: id) { style { margin: "0"  font-size: "14px"  color: "var(--text-secondary)" } } }
+        if label != "" { Text(label, id: id) { style { margin: 0; font-size: 14px; color: $text-secondary } } }
     }
 }

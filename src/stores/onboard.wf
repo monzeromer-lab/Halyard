@@ -1,7 +1,7 @@
 // Onboarding: four steps, the picked repository, the repository filter,
 // the environment variables to import, and what each step needs before
 // the next one opens.
-Store OnboardStore {
+store OnboardStore {
     state step = 0
     state repo = "storefront"
     state query = ""

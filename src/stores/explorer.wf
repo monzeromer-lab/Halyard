@@ -1,7 +1,7 @@
 // The query builder: saved queries, the source, filter rows that can be
 // added and removed, the generated HQL, and the result view. Rows are
 // replaced, never mutated, so the list re-renders.
-Store ExplorerStore {
+store ExplorerStore {
     state saved = "slow-gru"
     state source = "traces"
     state view = "table"
@@ -53,7 +53,7 @@ Store ExplorerStore {
     action opOf(id: Number) { return ops[id] }
     action valueOf(id: Number) { return values[id] }
     action withKey(m: Map, id: Number, v: String) {
-        copy = Object.assign({}, m)
+        let copy = Object.assign({}, m)
         copy[id] = v
         return copy
     }

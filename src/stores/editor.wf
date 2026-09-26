@@ -2,7 +2,7 @@
 // open file with their marks, the problems, and the resolved routing
 // preview with a request to test. No syntax highlighting: lines are text,
 // marks are data attributes.
-Store EditorStore {
+store EditorStore {
     state file = "routes.halyard.ts"
     state panel = true
     state request = "GET /api/cart"
@@ -54,7 +54,7 @@ Store EditorStore {
     state openFiles = ["routes.halyard.ts", "session.ts", "cart.ts", "halyard.config.ts"]
 
     action worstOf(name: String) {
-        list = if problemsOf[name] != undefined { problemsOf[name] } else { [] }
+        let list = if problemsOf[name] != undefined { problemsOf[name] } else { [] }
         if list.filter(p => p.k == "error").length > 0 { return "error" }
         if list.length > 0 { return "warn" }
         return ""

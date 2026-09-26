@@ -1,6 +1,6 @@
 // Infrastructure: the request path as an ordered list of hops (the artboard's
 // node graph), the selected hop, its detail rows and its neighbours.
-Store GraphStore {
+store GraphStore {
     state sel = "pop"
     state hops = [
         { id: "clients", label: "Browser / Mobile app / Partner API", kind: "client", what: "where the request starts", sub: "storefront.example.com, iOS and Android, server to server" },
@@ -23,7 +23,6 @@ Store GraphStore {
     ]
     state kindLabel = { client: "CLIENT", edge: "EDGE", compute: "COMPUTE", state: "STATE", external: "OUTSIDE HALYARD" }
     state kindColor = { client: "var(--viz-7)", edge: "var(--viz-1)", compute: "var(--viz-2)", state: "var(--viz-3)", external: "var(--text-tertiary)" }
-    state kindTone = { client: "brand", edge: "brand", compute: "success", state: "brass", external: "neutral" }
     state kinds = [
         { id: "client", label: "Client" }, { id: "edge", label: "Edge" }, { id: "compute", label: "Compute" }, { id: "state", label: "State" }, { id: "external", label: "Outside Halyard" }
     ]

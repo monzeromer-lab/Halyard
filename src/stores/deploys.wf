@@ -1,6 +1,6 @@
 // Deployments: the 12 rows the table shows (of a pretended 128), the search,
 // the status facets, the sort, the selection, the density and the page.
-Store DeployStore {
+store DeployStore {
     state all = [
         { h: "8f2c41", msg: "Pin beta cohort to a known build", br: "main", env: "production", st: "ready", dur: 22.4, reg: 19, when: "2 min ago", age: 0 },
         { h: "7c91de", msg: "Bump edge runtime to v9.4", br: "main", env: "production", st: "ready", dur: 24.1, reg: 19, when: "4 h ago", age: 1 },
@@ -70,8 +70,8 @@ Store DeployStore {
         return "neutral"
     }
 
-    action sortRows(list: List) {
-        copy = list.slice()
+    action sortRows(list: [Any]) {
+        let copy = list.slice()
         dir = if sortDir == "asc" { 1 } else { -1 }
         if sortKey == "created" {
             copy.sort((a, b) => (b.age - a.age) * dir)
@@ -93,8 +93,8 @@ Store DeployStore {
     }
 
     action compareBy(a: Map, b: Map, key: String) {
-        x = a[key]
-        y = b[key]
+        let x = a[key]
+        let y = b[key]
         if Number.isFinite(x) && Number.isFinite(y) { return x - y }
         return String(x).localeCompare(String(y))
     }

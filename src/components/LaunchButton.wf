@@ -1,13 +1,13 @@
 // A launcher on the overlays board: the overlay's name and its key, if any.
-Component LaunchButton (label: String, hint: String = "") {
+component LaunchButton(label: String, hint: String = "") {
     Button("", type: "button", aria-label: label) {
         style {
-            display: "flex"  align-items: "center"  gap: "10px"  width: "100%"  background: "var(--surface-raised)"  border: "1px solid var(--line-default)"  padding: "12px 14px"
-            border-radius: "var(--radius-sm)"  cursor: "pointer"  text-align: "left"  font: "600 14px/1.3 var(--font-sans)"  color: "var(--text-primary)"
-            transition: "border-color var(--d-fast) var(--ease-standard), background var(--d-fast) var(--ease-standard)"
-            hover { border-color: "var(--line-strong)"  background: "var(--surface-hover)" }
+            display: flex; align-items: center; gap: 10px; width: 100%; background: $surface-raised; border: 1px solid $line-default; padding: 12px 14px
+            border-radius: $radius-sm; cursor: pointer; text-align: left; font: 600 14px/1.3 $font-sans; color: $text-primary
+            transition: border-color $d-fast $ease-standard, background $d-fast $ease-standard
+            &:hover { border-color: $line-strong; background: $surface-hover }
         }
-        Text(label) { style { margin: "0"  flex-grow: "1"  font: "inherit"  color: "inherit" } }
+        Text(label) { style { margin: 0; flex-grow: 1; font: inherit; color: inherit } }
         if hint != "" { Kbd(text: hint) }
     }
 }
