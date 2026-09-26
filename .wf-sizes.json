@@ -1,6 +1,6 @@
 {
   "404.html": 2086,
-  "app.js": 57481,
+  "app.js": 56495,
   "app/deployments/index.html": 5439,
   "app/editor/index.html": 2825,
   "app/explorer/index.html": 4496,
@@ -9,7 +9,6 @@
   "app/logs/index.html": 4188,
   "app/observability/index.html": 5045,
   "app/settings/index.html": 4333,
-  "base.css": 186,
   "changelog/index.html": 4930,
   "docs/index.html": 5183,
   "index.html": 6979,
