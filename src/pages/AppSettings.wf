@@ -23,13 +23,13 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                 Stack(aria-label: "General settings") { style { gap: 0 }
                     SectionTitle(title: "General", lead: "Everything here is stored on the project, not on the build. Changing it takes effect on the next deploy.")
                     SettingRow(title: "Project name", help: "Shown in the dashboard and used for preview URLs.") {
-                        Field(label: "Name", id: "s-name", help: SettingsStore.nameHelp, error: SettingsStore.nameError) {
-                            FlInput(id: "s-name", value: nameDraft, invalid: SettingsStore.nameBad, labelId: "s-name-label") { on input(event) { nameDraft = event.target.value  SettingsStore.setName(event.target.value) } } } }
+                        Input(bind: nameDraft, id: "s-name", label: "Name", hint: SettingsStore.nameHelp, error: SettingsStore.nameError).text {
+                            on input { SettingsStore.setName(nameDraft) } } }
                     SettingRow(title: "Framework preset", help: "Detected from the repository. Override it only if detection is wrong.") {
-                        Field(label: "Preset", id: "s-fw", help: "Changing this clears the build cache once.") {
-                            FlSelect(id: "s-fw", labelId: "s-fw-label") { Select.Option("Detected: Next.js 15", value: "next")  Select.Option("Astro", value: "astro")  Select.Option("SvelteKit", value: "sveltekit")  Select.Option("Remix", value: "remix")  Select.Option("No framework", value: "none") } } }
+                        Select(id: "s-fw", label: "Preset", hint: "Changing this clears the build cache once.") {
+                            Select.Option("Detected: Next.js 15", value: "next")  Select.Option("Astro", value: "astro")  Select.Option("SvelteKit", value: "sveltekit")  Select.Option("Remix", value: "remix")  Select.Option("No framework", value: "none") } }
                     SettingRow(title: "Root directory", help: "The folder inside the repository that Halyard builds.") {
-                        Field(label: "Path", id: "s-root") { FlInput(id: "s-root", value: "apps/storefront", mono: true, labelId: "s-root-label") } }
+                        Input(value: "apps/storefront", id: "s-root", label: "Path", class: "hl-mono").text }
                     SettingRow(title: "Build behaviour", help: "Two switches that change every future build.") {
                         Stack { style { gap: 14px }
                             Row(align: .start) { style { gap: 14px; flex-wrap: nowrap; align-items: flex-start }
@@ -59,8 +59,8 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                         on submit(event) { event.preventDefault()  SettingsStore.addDomain() }
                         Row(align: .end) { style { gap: 10px; flex-wrap: nowrap; align-items: flex-end; @media (max-width: 480px) { flex-wrap: wrap } }
                             Container { style { flex-grow: 1; padding: 0; width: auto; min-width: 0 }
-                                Field(label: "Add a domain", id: "s-domain", help: SettingsStore.domainHelp, error: SettingsStore.domainError) {
-                                    FlInput(id: "s-domain", value: domainDraft, placeholder: "shop.example.com", invalid: SettingsStore.domainBad, labelId: "s-domain-label") { on input(event) { domainDraft = event.target.value  SettingsStore.setDomain(event.target.value) } } } }
+                                Input(bind: domainDraft, id: "s-domain", label: "Add a domain", placeholder: "shop.example.com", hint: SettingsStore.domainHelp, error: SettingsStore.domainError).text {
+                                    on input { SettingsStore.setDomain(domainDraft) } } }
                             Container { style { padding: 0 0 0; width: auto; flex: none; align-self: flex-start; margin-top: 26px }  FlButton(label: "Add domain", variant: "primary", submit: true) } } }
                     Container { style { border: 1px solid $line-default; border-radius: $radius-md; overflow: auto; padding: 0; width: 100%; max-width: 100% }
                         Table(caption: "Domains attached to this project") {
@@ -117,9 +117,9 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                         on submit(event) { event.preventDefault() }
                         Row(align: .end) { style { gap: 10px; flex-wrap: nowrap; align-items: flex-end; @media (max-width: 768px) { flex-wrap: wrap } }
                             Container { style { flex-grow: 1; padding: 0; width: auto; min-width: 0 }
-                                Field(label: "Invite by email", id: "s-invite") { FlInput(id: "s-invite", kind: "email", value: invite, placeholder: "name@company.com", labelId: "s-invite-label") { on input(event) { invite = event.target.value } } } }
+                                Input(bind: invite, id: "s-invite", label: "Invite by email", placeholder: "name@company.com").email }
                             Container { style { width: 160px; flex: none; padding: 0 }
-                                Field(label: "Role", id: "s-role") { FlSelect(id: "s-role", labelId: "s-role-label") { Select.Option("Developer", value: "developer")  Select.Option("Admin", value: "admin")  Select.Option("Viewer", value: "viewer") } } }
+                                Select(id: "s-role", label: "Role") { Select.Option("Developer", value: "developer")  Select.Option("Admin", value: "admin")  Select.Option("Viewer", value: "viewer") } }
                             Container { style { padding: 0; width: auto; flex: none; align-self: flex-start; margin-top: 26px }  FlButton(label: "Send invitation", variant: "primary", submit: true) } } }
                     Stack { style { gap: 2px }
                         for m in SettingsStore.members by m.email {
@@ -128,7 +128,8 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                                 Stack { style { flex-grow: 1; min-width: 0; gap: 2px }
                                     Text(m.name) { style { margin: 0; font: 600 14px/1.3 $font-sans; color: $text-primary } }
                                     Text(m.email) { style { margin: 0; font-size: 12px; color: $text-tertiary } } }
-                                FlSelect(id: "role-{m.initials}", label: "Role for {m.name}", width: "148px", height: "32px") { Select.Option("Owner", value: "owner")  Select.Option("Admin", value: "admin")  Select.Option("Developer", value: "developer")  Select.Option("Viewer", value: "viewer") }
+                                Container { style { width: 148px; flex: none; padding: 0 }
+                                    Select(id: "role-{m.initials}", aria-label: "Role for {m.name}", class: "hl-compact") { Select.Option("Owner", value: "owner")  Select.Option("Admin", value: "admin")  Select.Option("Developer", value: "developer")  Select.Option("Viewer", value: "viewer") } }
                                 IconBtn(icon: "close", label: "Remove {m.name}", size: 30) }
                         } }
                 }
@@ -151,8 +152,8 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                                 Text("Removes 128 builds, 4 domains, every trace and the edge KV namespace. The project name becomes available to anyone immediately. There is no export afterwards.") { style { margin: 0; font-size: 13px; line-height: 1.6; color: $text-secondary; max-width: 62ch } } } }
                         Row(align: .end) { style { gap: 12px; max-width: 620px; flex-wrap: nowrap; align-items: flex-end; @media (max-width: 480px) { flex-wrap: wrap } }
                             Container { style { flex-grow: 1; padding: 0; width: auto; min-width: 0 }
-                                Field(label: "Type storefront-edge to confirm", id: "s-confirm") {
-                                    FlInput(id: "s-confirm", value: confirmDraft, placeholder: "storefront-edge", labelId: "s-confirm-label") { on input(event) { confirmDraft = event.target.value  SettingsStore.setConfirm(event.target.value) } } } }
+                                Input(bind: confirmDraft, id: "s-confirm", label: "Type storefront-edge to confirm", placeholder: "storefront-edge").text {
+                                    on input { SettingsStore.setConfirm(confirmDraft) } } }
                             Container { style { padding: 0; width: auto; flex: none; align-self: flex-start; margin-top: 26px }  FlButton(label: "Delete this project", variant: "danger", disabled: SettingsStore.cannotDelete) } } }
                 }
             }

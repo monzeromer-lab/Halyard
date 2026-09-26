@@ -81,8 +81,8 @@ page AppEditor(path: "/app/editor", title: "Routing rules", description: "Edit r
                             Text(r.to) { style { margin: 0; padding-left: 20px; font: 400 11.5px/1.4 $font-mono; color: $text-tertiary } } }
                     } }
                 Container { style { padding: 14px 16px; border-top: 1px solid $line-hairline; width: auto; margin: 0 }
-                    Field(label: "Test a request", id: "ed-test", help: EditorStore.testHelp) {
-                        FlInput(id: "ed-test", value: req, mono: true, labelId: "ed-test-label", height: "32px") { on input(event) { req = event.target.value  EditorStore.setRequest(event.target.value) } } } }
+                    Input(bind: req, id: "ed-test", label: "Test a request", hint: EditorStore.testHelp, class: "hl-mono hl-compact").text {
+                        on input { EditorStore.setRequest(req) } } }
             }
         }
     }

@@ -149,12 +149,10 @@ page Patterns(path: "/patterns", title: "Design reference", description: "The Fl
             SectionHead(number: "05", title: "Forms")
             Text("The label, the help text and the error message are part of the field, not decoration around it.") { style { margin: 0 0 4px; font-size: 14px; line-height: 1.6; color: $text-tertiary } }
             Spec(note: "Every input has a real label. An invalid field carries aria-invalid; the error states cause and next move.") {
-                Field(label: "Project name", id: "p-name", help: "Lower case, digits and hyphens.", error: "", width: "300px") {
-                    Input(id: "p-name", aria-labelledby: "p-name-label", value: "storefront-edge", aria-invalid: "false").text { style { height: 38px; width: 100%; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 12px; font: 400 14px/1.2 $font-sans; &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary } } }
-                }
-                Field(label: "Custom domain", id: "p-bad", help: "", error: "That is not a hostname. Drop the scheme.", width: "300px") {
-                    Input(id: "p-bad", aria-labelledby: "p-bad-label", value: "https://shop", aria-invalid: "true").text { style { height: 38px; width: 100%; background: $surface-inset; border: 1px solid $danger; border-radius: $radius-sm; color: $text-primary; padding: 0 12px; font: 400 14px/1.2 $font-sans } }
-                }
+                Container { style { width: 300px; max-width: 100%; padding: 0 }
+                    Input(id: "p-name", value: "storefront-edge", label: "Project name", hint: "Lower case, digits and hyphens.").text }
+                Container { style { width: 300px; max-width: 100%; padding: 0 }
+                    Input(id: "p-bad", value: "https://shop", label: "Custom domain", error: "That is not a hostname. Drop the scheme.").text }
                 FlSwitch(checked: switchOn, label: "Reuse the build cache", id: "p-sw") { on click { switchOn = !switchOn } }
                 SegGroup(label: "Range") {
                     SegButton(label: "1h", pressed: seg == "1h") { on click { seg = "1h" } }

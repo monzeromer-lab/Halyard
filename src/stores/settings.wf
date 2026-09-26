@@ -27,7 +27,6 @@ store SettingsStore {
     derived isDanger = section == "danger"
 
     derived nameOk = RegExp("^[a-z0-9][a-z0-9-]\{1,38\}$").test(name)
-    derived nameBad = !nameOk
     derived nameHelp = if nameOk { "Lower case, digits and hyphens. Preview URLs become " + name + "-<branch>.halyard.app." } else { "" }
     derived nameError = if nameOk { "" } else { "Lower case letters, digits and hyphens only, between 2 and 39 characters." }
     derived saveLabel = if saved { "Saved" } else { "Save changes" }

@@ -20,13 +20,13 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
             Stack { style { gap: 16px; padding: 20px 28px; border-bottom: 1px solid $line-hairline; @media (max-width: 768px) { padding: 16px } }
                 Row(align: .end) { style { gap: 14px; flex-wrap: wrap; align-items: flex-end }
                     Container { style { width: 180px; padding: 0; @media (max-width: 480px) { width: 100% } }
-                        Field(label: "Source", id: "ex-src") { FlSelect(id: "ex-src", labelId: "ex-src-label", value: ExplorerStore.source) { on change(event) { ExplorerStore.setSource(event.target.value) }  Select.Option("traces", value: "traces")  Select.Option("logs", value: "logs")  Select.Option("builds", value: "builds") } } }
+                        Select(id: "ex-src", label: "Source", value: ExplorerStore.source) { on change(event) { ExplorerStore.setSource(event.target.value) }  Select.Option("traces", value: "traces")  Select.Option("logs", value: "logs")  Select.Option("builds", value: "builds") } }
                     Container { style { width: 180px; padding: 0; @media (max-width: 480px) { width: 100% } }
-                        Field(label: "Time range", id: "ex-range") { FlSelect(id: "ex-range", labelId: "ex-range-label") { Select.Option("Last 24 hours", value: "24h")  Select.Option("Last hour", value: "1h")  Select.Option("Last 7 days", value: "7d")  Select.Option("Custom…", value: "custom") } } }
+                        Select(id: "ex-range", label: "Time range") { Select.Option("Last 24 hours", value: "24h")  Select.Option("Last hour", value: "1h")  Select.Option("Last 7 days", value: "7d")  Select.Option("Custom…", value: "custom") } }
                     Container { style { width: 200px; padding: 0; @media (max-width: 480px) { width: 100% } }
-                        Field(label: "Group by", id: "ex-group") { FlSelect(id: "ex-group", labelId: "ex-group-label") { Select.Option("region, route", value: "region-route")  Select.Option("region", value: "region")  Select.Option("route", value: "route")  Select.Option("build", value: "build") } } }
+                        Select(id: "ex-group", label: "Group by") { Select.Option("region, route", value: "region-route")  Select.Option("region", value: "region")  Select.Option("route", value: "route")  Select.Option("build", value: "build") } }
                     Container { style { width: 180px; padding: 0; @media (max-width: 480px) { width: 100% } }
-                        Field(label: "Measure", id: "ex-agg") { FlSelect(id: "ex-agg", labelId: "ex-agg-label") { Select.Option("count, p50, p99", value: "all")  Select.Option("count", value: "count")  Select.Option("p95 duration", value: "p95")  Select.Option("error rate", value: "errors") } } }
+                        Select(id: "ex-agg", label: "Measure") { Select.Option("count, p50, p99", value: "all")  Select.Option("count", value: "count")  Select.Option("p95 duration", value: "p95")  Select.Option("error rate", value: "errors") } }
                     Container { style { flex-grow: 1; padding: 0; width: auto } }
                     FlButton(label: ExplorerStore.runLabel, variant: "primary", icon: "check") { on click { ExplorerStore.run() } }
                 }
@@ -36,17 +36,16 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
                         for f in ExplorerStore.filterRows by f.id {
                             Row(align: .center) { style { gap: 10px; padding: 10px 12px; background: $surface-inset; border: 1px solid $line-hairline; border-radius: $radius-sm; flex-wrap: nowrap; @media (max-width: 768px) { flex-wrap: wrap } }
                                 Num(text: f.n, size: "11px", color: "var(--text-disabled)", weight: "400")
-                                Text("Field", id: "{f.fieldId}-label") { style { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 } }
-                                FlSelect(id: f.fieldId, labelId: "{f.fieldId}-label", value: ExplorerStore.fieldOf(f.id), width: "180px", height: "32px", mono: true) {
+                                Container { style { width: 180px; flex: none; padding: 0 }
+                                  Select(id: f.fieldId, aria-label: "Field", value: ExplorerStore.fieldOf(f.id), class: "hl-mono hl-compact") {
                                     on change(event) { ExplorerStore.setField(f.id, event.target.value) }
-                                    Select.Option("region", value: "region")  Select.Option("route", value: "route")  Select.Option("status", value: "status")  Select.Option("duration_ms", value: "duration_ms")  Select.Option("build", value: "build")  Select.Option("rule", value: "rule")  Select.Option("cold_start", value: "cold_start")  Select.Option("country", value: "country") }
-                                Text("Operator", id: "{f.opId}-label") { style { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 } }
-                                FlSelect(id: f.opId, labelId: "{f.opId}-label", value: ExplorerStore.opOf(f.id), width: "116px", height: "32px") {
+                                    Select.Option("region", value: "region")  Select.Option("route", value: "route")  Select.Option("status", value: "status")  Select.Option("duration_ms", value: "duration_ms")  Select.Option("build", value: "build")  Select.Option("rule", value: "rule")  Select.Option("cold_start", value: "cold_start")  Select.Option("country", value: "country") } }
+                                Container { style { width: 116px; flex: none; padding: 0 }
+                                  Select(id: f.opId, aria-label: "Operator", value: ExplorerStore.opOf(f.id), class: "hl-compact") {
                                     on change(event) { ExplorerStore.setOp(f.id, event.target.value) }
-                                    Select.Option("is", value: "is")  Select.Option("is not", value: "is not")  Select.Option("contains", value: "contains")  Select.Option(">", value: ">")  Select.Option("<", value: "<")  Select.Option("in", value: "in") }
-                                Text("Value", id: "{f.valId}-label") { style { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 } }
+                                    Select.Option("is", value: "is")  Select.Option("is not", value: "is not")  Select.Option("contains", value: "contains")  Select.Option(">", value: ">")  Select.Option("<", value: "<")  Select.Option("in", value: "in") } }
                                 Container { style { flex-grow: 1; padding: 0; width: auto; min-width: 120px }
-                                    FlInput(id: f.valId, value: ExplorerStore.valueOf(f.id), placeholder: "value", mono: true, labelId: "{f.valId}-label", height: "32px") { on input(event) { ExplorerStore.setValue(f.id, event.target.value) } } }
+                                    Input(id: f.valId, value: ExplorerStore.valueOf(f.id), placeholder: "value", aria-label: "Value", class: "hl-mono hl-compact").text { on input(event) { ExplorerStore.setValue(f.id, event.target.value) } } }
                                 IconBtn(icon: "close", label: f.removeLabel, size: 30) { on click { ExplorerStore.removeFilter(f.id) } }
                             }
                         }

@@ -25,3 +25,28 @@ body { -webkit-font-smoothing: antialiased; }
   @keyframes hl-marquee { from, to { transform: translateX(0); } }
   @keyframes hl-pulse { from, to { box-shadow: none; } }
 }
+
+/* Form fields. The engine wraps a labelled control in `.wf-field` and links
+   its hint and its error to it; these are the Fluant Ink clothes for that
+   markup, so a field is one line of .wf source. */
+.wf-field { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 100%; }
+.wf-label { display: block; font: 600 14px/1.2 var(--font-sans); color: var(--text-secondary); margin: 0 0 8px; }
+.wf-field__hint { font: 400 12px/1.5 var(--font-sans); color: var(--text-tertiary); margin: 6px 0 0; }
+.wf-field__error { font: 400 12px/1.5 var(--font-sans); color: var(--text-danger); margin: 6px 0 0; }
+
+.wf-input, .wf-select {
+  height: 38px; width: 100%; max-width: 100%;
+  background: var(--surface-inset); border: 1px solid var(--border-control);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  padding: 0 12px; font: 400 14px/1.2 var(--font-sans);
+  transition: border-color var(--d-fast) var(--ease-standard);
+}
+.wf-select { padding: 0 10px; }
+.wf-input:hover, .wf-select:hover { border-color: #8a929e; }
+.wf-input:focus-visible, .wf-select:focus-visible { border-color: var(--focus-ring); }
+.wf-input::placeholder { color: var(--text-tertiary); }
+.wf-input[aria-invalid="true"] { border-color: var(--danger); }
+
+/* Two shapes a control takes in this design, named where they are used. */
+.hl-mono { font-family: var(--font-mono); font-size: 13px; }
+.hl-compact { height: 32px; font-size: 13px; }

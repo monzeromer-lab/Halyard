@@ -40,10 +40,10 @@ page Onboarding(path: "/new", title: "New project", description: "Connect a repo
                         Container { style { max-width: 620px; margin: 0 0 24px; padding: 0; width: 100% }
                             Callout(tone: "success", title: "Next.js 15 detected from package.json", body: "38 routes, 6 of them dynamic.") }
                         Grid(columns: 2) { style { gap: 18px; max-width: 620px; @media (max-width: 480px) { grid-template-columns: 1fr } }
-                            Field(label: "Framework preset", id: "ob-fw") { FlSelect(id: "ob-fw", labelId: "ob-fw-label") { Select.Option("Next.js 15", value: "next")  Select.Option("Astro", value: "astro")  Select.Option("SvelteKit", value: "sveltekit")  Select.Option("Remix", value: "remix") } }
-                            Field(label: "Node version", id: "ob-node") { FlSelect(id: "ob-node", labelId: "ob-node-label") { Select.Option("22.x", value: "22")  Select.Option("20.x", value: "20")  Select.Option("18.x", value: "18") } }
-                            Field(label: "Build command", id: "ob-cmd") { FlInput(id: "ob-cmd", value: "pnpm build", mono: true, labelId: "ob-cmd-label") }
-                            Field(label: "Output directory", id: "ob-out") { FlInput(id: "ob-out", value: ".halyard/edge", mono: true, labelId: "ob-out-label") } }
+                            Select(id: "ob-fw", label: "Framework preset") { Select.Option("Next.js 15", value: "next")  Select.Option("Astro", value: "astro")  Select.Option("SvelteKit", value: "sveltekit")  Select.Option("Remix", value: "remix") }
+                            Select(id: "ob-node", label: "Node version") { Select.Option("22.x", value: "22")  Select.Option("20.x", value: "20")  Select.Option("18.x", value: "18") }
+                            Input(value: "pnpm build", id: "ob-cmd", label: "Build command", class: "hl-mono").text
+                            Input(value: ".halyard/edge", id: "ob-out", label: "Output directory", class: "hl-mono").text }
                         Stack { style { margin: 26px 0 0; max-width: 620px; gap: 12px }
                             Overline(text: "2 THINGS TO LOOK AT")
                             Callout(tone: "danger", title: "src/lib/session.ts imports node:fs", body: "The edge runtime has no filesystem. Move the session store to edge KV, or keep this route on a node function.")

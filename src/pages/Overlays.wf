@@ -98,14 +98,14 @@ page Overlays(path: "/ui", title: "Interface inventory", description: "Every ove
                 Heading("Filter traces", id: "dr-t").h2 { style { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1 } }
                 IconBtn(icon: "close", label: "Close", size: 32) { on click { UiStore.close() } } }
             Stack { style { gap: 22px; padding: 22px; flex-grow: 1 }
-                Field(label: "Time range", id: "dr-range") { FlSelect(id: "dr-range", labelId: "dr-range-label") { Select.Option("Last 15 minutes", value: "15m")  Select.Option("Last hour", value: "1h")  Select.Option("Last 24 hours", value: "24h")  Select.Option("Custom…", value: "custom") } }
+                Select(id: "dr-range", label: "Time range") { Select.Option("Last 15 minutes", value: "15m")  Select.Option("Last hour", value: "1h")  Select.Option("Last 24 hours", value: "24h")  Select.Option("Custom…", value: "custom") }
                 Stack { style { gap: 10px }
                     Text("Status class", id: "dr-classes") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
                     Row(role: "group", aria-labelledby: "dr-classes") { style { gap: 8px; flex-wrap: wrap }
                         for c in UiStore.drawerChips by c.label { Chip(label: c.label, pressed: c.pressed) { on click { UiStore.toggleChip(c.label) } } } } }
-                Field(label: "Region", id: "dr-region") { FlSelect(id: "dr-region", labelId: "dr-region-label") { Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("gru1", value: "gru1") } }
-                Field(label: "Slower than", id: "dr-min", help: "Milliseconds. Leave empty to include everything.") {
-                    Container { style { width: 140px; padding: 0; margin: 0 }  FlInput(id: "dr-min", value: slow, mono: true, labelId: "dr-min-label") { on input(event) { slow = event.target.value } } } }
+                Select(id: "dr-region", label: "Region") { Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("gru1", value: "gru1") }
+                Container { style { width: 140px; padding: 0; margin: 0 }
+                    Input(bind: slow, id: "dr-min", label: "Slower than", hint: "Milliseconds. Leave empty to include everything.", class: "hl-mono").text }
                 Stack { style { gap: 12px }
                     Text("Only show") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
                     FlSwitch(checked: UiStore.cold, label: "Requests that paid a cold start", id: "dsw-cold") { on click { UiStore.toggleCold() } }
