@@ -27,7 +27,7 @@ page AppOverview(path: "/app", title: "Overview", description: "The live release
 
     Grid(columns: 4) {
         style { gap: 16px; padding: 20px 28px; @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)) }  @media (max-width: 768px) { padding: 16px }  @media (max-width: 480px) { grid-template-columns: 1fr } }
-        for t in MetricsStore.tiles {
+        for t in MetricsStore.tiles by t.label {
             StatTile(label: t.label, value: t.value, unit: t.unit, delta: t.delta, tone: t.tone, note: t.note, bars: t.bars, color: t.color)
         }
     }
@@ -35,7 +35,7 @@ page AppOverview(path: "/app", title: "Overview", description: "The live release
     Grid(columns: 2) {
         style { gap: 16px; padding: 0 28px 20px; grid-template-columns: 1.15fr 1fr; @media (max-width: 1024px) { grid-template-columns: 1fr }  @media (max-width: 768px) { padding: 0 16px 16px } }
         Panel(title: "Recent deployments", link: "See all 128", to: "/app/deployments") {
-            for d in DeployStore.recent {
+            for d in DeployStore.recent by d.h {
                 DeployRow(h: d.h, msg: d.msg, br: d.br, when: d.when, duration: d.duration, status: d.status, tone: d.tone)
             }
         }

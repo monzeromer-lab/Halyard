@@ -47,7 +47,7 @@ page Changelog(path: "/changelog", title: "Changelog", description: "Every chang
                     Chip(label: "Security", pressed: ContentStore.releaseFilter == "security", count: "{ContentStore.releaseCounts.security}") { on click { ContentStore.setReleaseFilter("security") } } }
                 Rule
                 Stack(role: "navigation", aria-label: "Releases") { style { gap: 2px }
-                    for r in ContentStore.filteredReleases {
+                    for r in ContentStore.filteredReleases by r.id {
                         ReleaseLink(id: r.id, date: r.date, title: r.title, tags: r.tags, current: r.current)
                     }
                     if ContentStore.filteredReleases.length == 0 {

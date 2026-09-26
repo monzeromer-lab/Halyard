@@ -34,7 +34,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
         // 1. Response time p95 — grouped bars, one per region per bucket
         ChartCard(title: "Response time, p95", lead: "Milliseconds at the edge. Four busiest regions; click a name to hide it.") {
             Row(justify: .end) { style { gap: 2px; flex-wrap: wrap; padding: 0 0 8px }
-                for l in MetricsStore.legend { LegendButton(name: l.name, shown: l.shown, swatch: l.swatch) { on click { MetricsStore.toggleSeries(l.name) } } } }
+                for l in MetricsStore.legend by l.name { LegendButton(name: l.name, shown: l.shown, swatch: l.swatch) { on click { MetricsStore.toggleSeries(l.name) } } } }
             Container(role: "img", aria-label: "Response time p95 by region over the selected range, as grouped bars") {
                 style { position: relative; height: 236px; margin: 0 0 0 44px; padding: 0; width: auto }
                 for y, i in MetricsStore.yLabels {
@@ -42,7 +42,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                         Container { style { position: absolute; right: 100%; top: 0; margin: -5px 8px 0 0; padding: 0; width: auto }  AxisLabel(text: y, align: "right") } }
                 }
                 Row(align: .end) { style { position: absolute; left: 0; right: 0; top: 0; bottom: 0; gap: 6px; flex-wrap: nowrap; align-items: flex-end; @media (max-width: 480px) { gap: 3px } }
-                    for b in MetricsStore.buckets {
+                    for b in MetricsStore.buckets by b.index {
                         Row(align: .end) {
                             style { flex: 1 1 0; height: 100%; gap: 2px; flex-wrap: nowrap; align-items: flex-end; justify-content: center; border-radius: 3px; min-width: 0; --hover-bg: rgba(255, 255, 255, 0.04); &:hover { background: var(--hover-bg) } }
                             on mouseenter { MetricsStore.setHover(b.index) }
@@ -61,7 +61,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                     Stack(role: "status").fadeIn.fast {
                         style { position: absolute; left: {MetricsStore.tipLeft}; top: 10px; min-width: 150px; gap: 4px; background: $surface-overlay; border: 1px solid $line-strong; border-radius: $radius-sm; padding: 10px 12px; box-shadow: $shadow-md; pointer-events: none; z-index: 600 }
                         Container { style { padding: 0 0 4px; width: auto }  Overline(text: MetricsStore.tipTime) }
-                        for t in MetricsStore.tipRows {
+                        for t in MetricsStore.tipRows by t.name {
                             Row(align: .center) { style { gap: 8px; flex-wrap: nowrap }
                                 Container { style { width: 8px; height: 8px; border-radius: 2px; background: {t.color}; flex: none; padding: 0; margin: 0 } }
                                 Text(t.name) { style { margin: 0; flex-grow: 1; font-size: 12px; color: $text-secondary } }
@@ -71,7 +71,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                 }
             }
             Row { style { margin: 8px 0 0 44px; gap: 6px; flex-wrap: nowrap; @media (max-width: 480px) { gap: 3px } }
-                for b in MetricsStore.buckets {
+                for b in MetricsStore.buckets by b.index {
                     Container { style { flex: 1 1 0; min-width: 0; padding: 0; margin: 0; text-align: center }
                         if b.labelled { AxisLabel(text: b.hour, align: "center") } }
                 }
@@ -87,7 +87,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                 Container(role: "img", aria-label: "Responses by status class per two-hour bucket, as stacked bars") {
                     style { flex-grow: 1; height: 180px; padding: 0; width: auto; min-width: 0 }
                     Row(align: .end) { style { height: 100%; gap: 12px; flex-wrap: nowrap; align-items: flex-end; @media (max-width: 480px) { gap: 4px } }
-                        for s in MetricsStore.statusBuckets {
+                        for s in MetricsStore.statusBuckets by s.hour {
                             Stack(title: s.title) { style { flex: 1 1 0; height: 100%; gap: 0; justify-content: flex-end; min-width: 0; max-width: 30px; cursor: default }
                                 Container { style { height: {s.worse}; min-height: 1px; background: $danger; border: 1px solid $surface-raised; border-radius: 2px; padding: 0; margin: 0; width: auto } }
                                 Container { style { height: {s.bad}; min-height: 1px; background: $warning; border: 1px solid $surface-raised; border-radius: 2px; padding: 0; margin: 0; width: auto } }
@@ -98,7 +98,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                 }
             }
             Row { style { margin: 6px 0 0 34px; gap: 12px; flex-wrap: nowrap; @media (max-width: 480px) { gap: 4px } }
-                for s in MetricsStore.statusBuckets {
+                for s in MetricsStore.statusBuckets by s.hour {
                     Container { style { flex: 1 1 0; max-width: 30px; min-width: 0; padding: 0; margin: 0; text-align: center }  AxisLabel(text: s.hour, align: "center") }
                 }
             }
@@ -116,7 +116,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
         ChartCard(title: "Latency by hour of week", lead: "p95 across all regions. The Wednesday afternoon band is the weekly catalogue import.") {
             Stack(role: "img", aria-label: "Response time p95 by weekday and hour of day, as a heatmap; the Wednesday 13:00 to 16:00 band peaks at 114 ms") {
                 style { gap: 2px }
-                for d in MetricsStore.heatRows {
+                for d in MetricsStore.heatRows by d.day {
                     Row(align: .center) { style { gap: 2px; flex-wrap: nowrap }
                         Container { style { width: 34px; flex: none; padding: 0; margin: 0 }  AxisLabel(text: d.day) }
                         for c in d.cells {
@@ -144,7 +144,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
         // 4. Share of requests by route — horizontal bars with the value beside each
         ChartCard(title: "Share of requests by route", lead: "One series, so the values are labelled directly and there is no legend.") {
             Stack { style { gap: 10px; padding: 0 0 2px }
-                for r in MetricsStore.routeRows {
+                for r in MetricsStore.routeRows by r.route {
                     Row(align: .center) { style { gap: 12px; flex-wrap: nowrap }
                         Text(r.route) { style { margin: 0; width: 152px; flex: none; font: 400 12px/1.2 $font-mono; color: $text-secondary; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; @media (max-width: 480px) { width: 104px } } }
                         Container(role: "img", aria-label: "{r.route} {r.label}") { style { flex-grow: 1; height: 16px; background: $surface-inset; border-radius: 3px; overflow: hidden; padding: 0; margin: 0; width: auto; min-width: 0 }
@@ -164,9 +164,9 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                     style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans }
                     Table.Head { Table.Row {
                         Th(text: "Hour")
-                        for l in MetricsStore.legend { Th(text: l.name, numeric: true) } } }
+                        for l in MetricsStore.legend by l.name { Th(text: l.name, numeric: true) } } }
                     Table.Body {
-                        for row in MetricsStore.tableRows {
+                        for row in MetricsStore.tableRows by row.hour {
                             Table.Row {
                                 Td(text: row.hour, mono: true, color: "var(--text-secondary)")
                                 for c in row.cells { Td(text: c.value, numeric: true) } }

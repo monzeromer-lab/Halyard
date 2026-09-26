@@ -4,7 +4,7 @@ component ToastStack {
     use UiStore
     Stack(role: "region", aria-live: "polite", aria-label: "Notifications") {
         style { position: fixed; right: 24px; bottom: 24px; z-index: 950; gap: 10px; width: 356px; max-width: calc(100vw - 32px); @media (max-width: 768px) { right: 16px; bottom: 76px } }
-        for t in UiStore.toastRows {
+        for t in UiStore.toastRows by t.id {
             Row(align: .start) {
                 style { gap: 12px; padding: 14px 16px; background: $surface-overlay; border: 1px solid var(--edge); --edge: {t.edge}; border-radius: $radius-md; box-shadow: $shadow-md; flex-wrap: nowrap; align-items: flex-start }
                 Container { style { width: 9px; height: 9px; border-radius: 50%; background: {t.color}; flex: none; margin: 5px 0 0; padding: 0 } }

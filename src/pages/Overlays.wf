@@ -53,9 +53,9 @@ page Overlays(path: "/ui", title: "Interface inventory", description: "Every ove
             Stack { style { gap: 12px }
                 Overline(text: "TOOLTIP, ON HOVER")
                 Row { style { gap: 12px; flex-wrap: wrap }
-                    Tooltip(text: "Builds and ships the current branch") { FlButton(label: "Deploy", variant: "secondary", size: "sm", icon: "upload") }
-                    Tooltip(text: "Routing change only, about 400 ms") { FlButton(label: "Roll back", variant: "secondary", size: "sm", icon: "arrow-left") { on click { UiStore.open("modal") } } }
-                    Tooltip(text: "Streams logs to your own sink") { FlButton(label: "Drain", variant: "secondary", size: "sm", icon: "download") } } }
+                    Tooltip("Builds and ships the current branch") { FlButton(label: "Deploy", variant: "secondary", size: "sm", icon: "upload") }
+                    Tooltip("Routing change only, about 400 ms") { FlButton(label: "Roll back", variant: "secondary", size: "sm", icon: "arrow-left") { on click { UiStore.open("modal") } } }
+                    Tooltip("Streams logs to your own sink") { FlButton(label: "Drain", variant: "secondary", size: "sm", icon: "download") } } }
             Stack { style { gap: 12px }
                 Overline(text: "TOASTS")
                 Row { style { gap: 10px; flex-wrap: wrap }
@@ -102,7 +102,7 @@ page Overlays(path: "/ui", title: "Interface inventory", description: "Every ove
                 Stack { style { gap: 10px }
                     Text("Status class", id: "dr-classes") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
                     Row(role: "group", aria-labelledby: "dr-classes") { style { gap: 8px; flex-wrap: wrap }
-                        for c in UiStore.drawerChips { Chip(label: c.label, pressed: c.pressed) { on click { UiStore.toggleChip(c.label) } } } } }
+                        for c in UiStore.drawerChips by c.label { Chip(label: c.label, pressed: c.pressed) { on click { UiStore.toggleChip(c.label) } } } } }
                 Field(label: "Region", id: "dr-region") { FlSelect(id: "dr-region", labelId: "dr-region-label") { Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("gru1", value: "gru1") } }
                 Field(label: "Slower than", id: "dr-min", help: "Milliseconds. Leave empty to include everything.") {
                     Container { style { width: 140px; padding: 0; margin: 0 }  FlInput(id: "dr-min", value: slow, mono: true, labelId: "dr-min-label") { on input(event) { slow = event.target.value } } } }

@@ -16,7 +16,7 @@ page AppLogs(path: "/app/logs", title: "Logs", description: "Request logs across
         Chip(label: ".*", pressed: LogStore.regex) { on click { LogStore.toggleRegex() } }
         Container { style { width: 1px; height: 22px; background: $line-default; padding: 0; margin: 0; flex: none; @media (max-width: 768px) { display: none } } }
         Row { style { gap: 8px; flex-grow: 1 }
-            for f in LogStore.facets {
+            for f in LogStore.facets by f.id {
                 Chip(label: f.label, pressed: f.pressed, count: f.count) { on click { LogStore.toggleLevel(f.id) } }
             } }
         FlSwitch(checked: LogStore.follow, label: "Follow", id: "follow-label") { on click { LogStore.toggleFollow() } }
@@ -38,7 +38,7 @@ page AppLogs(path: "/app/logs", title: "Logs", description: "Request logs across
                     if event.key == "ArrowDown" { event.preventDefault()  LogStore.move(1) }
                     if event.key == "ArrowUp" { event.preventDefault()  LogStore.move(-1) }
                 }
-                for r in LogStore.rows {
+                for r in LogStore.rows by r.time {
                     LogLine(time: r.time, level: r.level, color: r.color, region: r.region, route: r.route, status: r.status, statusColor: r.statusColor, ms: r.ms, msColor: r.msColor, message: r.message, selected: r.selected) { on click { LogStore.pick(r.time) } }
                 }
                 if LogStore.empty {
@@ -71,7 +71,7 @@ page AppLogs(path: "/app/logs", title: "Logs", description: "Request logs across
                 Stack { style { gap: 22px; padding: 18px 20px; flex-grow: 1 }
                     DetailSection(title: "SPANS") {
                         Stack { style { gap: 7px }
-                            for s in LogStore.spans { SpanRow(name: s.name, left: s.left, width: s.width, color: s.color, ms: s.ms) } } }
+                            for s in LogStore.spans by s.name { SpanRow(name: s.name, left: s.left, width: s.width, color: s.color, ms: s.ms) } } }
                     DetailSection(title: "MESSAGE") {
                         Text("{LogStore.current.message}") { style { margin: 0; padding: 12px 14px; font: 400 12.5px/1.6 $font-mono; background: $surface-sunken; border: 1px solid $line-hairline; border-radius: $radius-sm; color: $text-secondary; white-space: pre-wrap } } }
                     DetailSection(title: "REQUEST HEADERS") {

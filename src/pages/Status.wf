@@ -39,7 +39,7 @@ page Status(path: "/status", title: "Halyard status", description: "Live status 
                 Heading("Components").h2 { style { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1 } }
                 Text("Each bar is one day. Hover for the detail.") { style { margin: 0; font-size: 12px; color: $text-tertiary } } }
             Stack { style { gap: 0; border: 1px solid $line-default; border-radius: $radius-lg; background: $surface-raised; padding: 4px 24px; @media (max-width: 768px) { padding: 4px 12px } }
-                for c in StatusStore.rows {
+                for c in StatusStore.rows by c.name {
                     Stack { style { gap: 12px; padding: 20px 0; border-bottom: 1px solid $line-hairline }
                         Row(align: .center) { style { flex-wrap: nowrap; gap: 12px }
                             Dot(color: "var(--success)", size: 8)
@@ -64,7 +64,7 @@ page Status(path: "/status", title: "Halyard status", description: "Live status 
                 Heading("Regions").h2 { style { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1 } }
                 Text("p95 response, milliseconds, last 5 minutes") { style { margin: 0; font-size: 12px; color: $text-tertiary } } }
             Grid(columns: 5) { style { gap: 10px; @media (max-width: 1024px) { grid-template-columns: repeat(3, minmax(0, 1fr)) }  @media (max-width: 480px) { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-                for r in StatusStore.regionCards {
+                for r in StatusStore.regionCards by r.code {
                     RegionCard(code: r.code, p95: r.p95, label: r.label, tone: r.tone, degraded: r.degraded)
                 }
             }

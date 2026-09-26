@@ -10,7 +10,7 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
                 Container { style { flex-grow: 1; padding: 0; width: auto }  Overline(text: "SAVED QUERIES") }
                 IconBtn(icon: "plus", label: "New query", size: 26) }
             Stack(role: "group", aria-label: "Saved queries") { style { gap: 2px; @media (max-width: 1024px) { flex-direction: row; flex-wrap: wrap } }
-                for s in ExplorerStore.savedRows { SavedQuery(name: s.name, meta: s.meta, current: s.current) { on click { ExplorerStore.pickSaved(s.id) } } } }
+                for s in ExplorerStore.savedRows by s.id { SavedQuery(name: s.name, meta: s.meta, current: s.current) { on click { ExplorerStore.pickSaved(s.id) } } } }
             Container { style { margin: auto 0 0; padding: 14px 12px 0; border-top: 1px solid $line-hairline; width: auto; @media (max-width: 1024px) { display: none } }
                 Text("A saved query is a file in the repository too. Editing one here writes a diff you commit like anything else.") { style { margin: 0; font-size: 12px; line-height: 1.6; color: $text-tertiary } } }
         }
@@ -33,7 +33,7 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
                 Stack { style { gap: 10px }
                     Overline(text: "FILTERS, ALL OF WHICH MUST MATCH")
                     Stack(role: "group", aria-label: "Filters") { style { gap: 8px; max-width: 900px }
-                        for f in ExplorerStore.filterRows {
+                        for f in ExplorerStore.filterRows by f.id {
                             Row(align: .center) { style { gap: 10px; padding: 10px 12px; background: $surface-inset; border: 1px solid $line-hairline; border-radius: $radius-sm; flex-wrap: nowrap; @media (max-width: 768px) { flex-wrap: wrap } }
                                 Num(text: f.n, size: "11px", color: "var(--text-disabled)", weight: "400")
                                 Text("Field", id: "{f.fieldId}-label") { style { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 } }
@@ -75,7 +75,7 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
                             style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans; min-width: 640px }
                             Table.Head { Table.Row { Th(text: "Region")  Th(text: "Route")  Th(text: "Requests", numeric: true)  Th(text: "p50 ms", numeric: true)  Th(text: "p99 ms", numeric: true)  Th(text: "Share %", numeric: true) } }
                             Table.Body {
-                                for r in ExplorerStore.rows {
+                                for r in ExplorerStore.rows by r.label {
                                     Table.Row {
                                         Td(text: r.region, mono: true, color: "var(--text-primary)")
                                         Td(text: r.route, mono: true, color: "var(--text-secondary)")
@@ -89,7 +89,7 @@ page AppExplorer(path: "/app/explorer", title: "Explorer", description: "Query t
                     Stack { style { gap: 18px; border: 1px solid $line-default; border-radius: $radius-md; padding: 22px 26px; background: $surface-raised }
                         Text("Requests per region and route. One series, so every bar carries its own value and there is no legend.") { style { margin: 0; font-size: 13px; color: $text-tertiary } }
                         Stack { style { gap: 12px }
-                            for r in ExplorerStore.rows {
+                            for r in ExplorerStore.rows by r.label {
                                 Row(align: .center) { style { gap: 14px; flex-wrap: nowrap }
                                     Text(r.label) { style { margin: 0; width: 190px; flex: none; font: 400 12px/1.3 $font-mono; color: $text-secondary; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; @media (max-width: 480px) { width: 120px } } }
                                     Container(role: "img", aria-label: "{r.label} {r.n} requests") { style { flex-grow: 1; height: 20px; background: $surface-inset; border-radius: 3px; padding: 0; margin: 0; width: auto; min-width: 0; overflow: hidden }

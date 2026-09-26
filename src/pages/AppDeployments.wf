@@ -45,7 +45,7 @@ page AppDeployments(path: "/app/deployments", title: "Deployments", description:
                         Text("Row actions") { style { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); margin: 0 } } }
                 } }
                 Table.Body {
-                    for r in DeployStore.rows {
+                    for r in DeployStore.rows by r.h {
                         Table.Row(aria-selected: r.selected) {
                             style { height: {DeployStore.rowHeight}; transition: background $d-instant $ease-standard; &:hover { background: $surface-hover }  &[aria-selected="true"] { background: $brand-soft } }
                             Table.Cell("") { style { padding: 12px; border-bottom: 1px solid $line-hairline }
@@ -89,7 +89,7 @@ page AppDeployments(path: "/app/deployments", title: "Deployments", description:
 
         // Phone: the same rows as cards
         Stack { style { display: none; gap: 8px; @media (max-width: 768px) { display: flex } }
-            for r in DeployStore.rows {
+            for r in DeployStore.rows by r.h {
                 Link(to: "/app/builds/{r.h}") {
                     style { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; background: $surface-raised; border: 1px solid $line-default; border-radius: $radius-md; text-decoration: none }
                     Row(align: .center) { style { flex-wrap: nowrap; gap: 10px }

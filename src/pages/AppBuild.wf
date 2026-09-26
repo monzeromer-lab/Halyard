@@ -29,7 +29,7 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
         // Pipeline strip
         Row(align: .stretch, role: "group", aria-label: "Pipeline stages") {
             style { padding: 18px 28px; border-bottom: 1px solid $line-hairline; gap: 0; flex-wrap: nowrap; align-items: stretch; @media (max-width: 1024px) { flex-wrap: wrap; gap: 8px 12px }  @media (max-width: 768px) { padding: 16px } }
-            for s in BuildStore.stages {
+            for s in BuildStore.stages by s.id {
                 StageButton(label: s.label, dur: s.dur, note: s.note, selected: s.selected, active: s.active) { on click { BuildStore.pickStage(s.id) } }
                 if !s.last {
                     Container { style { width: 22px; flex: none; display: flex; align-items: center; justify-content: center; color: $line-strong; padding: 0; margin: 0; @media (max-width: 1024px) { display: none } }
@@ -41,7 +41,7 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
         // Tabs
         Row(align: .end, role: "tablist", aria-label: "Build detail") {
             style { padding: 0 28px; border-bottom: 1px solid $line-hairline; gap: 26px; flex-wrap: wrap; align-items: flex-end; @media (max-width: 768px) { padding: 0 16px; gap: 18px } }
-            for t in BuildStore.tabs {
+            for t in BuildStore.tabs by t.id {
                 Container { style { padding: 14px 0 0; width: auto; margin: 0; flex: none; display: flex; align-items: baseline; gap: 7px }
                     TabButton(label: t.label, selected: t.selected) { on click { BuildStore.pickTab(t.id) } }
                     if t.count != "" { Num(text: t.count, size: "13px", color: "var(--text-disabled)", weight: "500") } }
@@ -66,7 +66,7 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
             Row(align: .stretch) { style { gap: 0; flex-wrap: nowrap; align-items: stretch; flex-grow: 1; @media (max-width: 768px) { flex-wrap: wrap } }
                 Stack { style { width: 280px; flex: none; gap: 2px; border-right: 1px solid $line-hairline; padding: 14px 10px; @media (max-width: 768px) { width: 100%; border-right: 0; border-bottom: 1px solid $line-hairline } }
                     Container { style { padding: 0 12px 10px; width: auto; margin: 0 }  Overline(text: "4 FILES CHANGED") }
-                    for f in BuildStore.files { FileButton(name: f.name, add: f.add, del: f.del, current: f.current) { on click { BuildStore.pickFile(f.name) } } } }
+                    for f in BuildStore.files by f.name { FileButton(name: f.name, add: f.add, del: f.del, current: f.current) { on click { BuildStore.pickFile(f.name) } } } }
                 Stack { style { flex-grow: 1; min-width: 0; gap: 0; background: $surface-sunken; padding: 16px 0; overflow-x: auto }
                     Text("@@ -12,7 +12,8 @@ {BuildStore.diffFile}") { style { margin: 0 0 10px; padding: 0 24px; font: 400 12px/1.5 $font-mono; color: $text-tertiary } }
                     for l in BuildStore.diffLines {
@@ -86,7 +86,7 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
                         style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans; min-width: 640px }
                         Table.Head { Table.Row { Th(text: "Path")  Th(text: "Content type")  Th(text: "Size", numeric: true)  Th(text: "Digest", numeric: true)  Th(text: "Download") } }
                         Table.Body {
-                            for a in BuildStore.artifacts {
+                            for a in BuildStore.artifacts by a.path {
                                 Table.Row {
                                     Td(text: a.path, mono: true, color: "var(--text-primary)")
                                     Td(text: a.type, mono: true, color: "var(--text-secondary)")

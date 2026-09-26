@@ -18,7 +18,7 @@ page AppGraph(path: "/app/graph", title: "Infrastructure", description: "The pat
                         style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans; min-width: 720px }
                         Table.Head { Table.Row { Th(text: "Hop")  Th(text: "Kind")  Th(text: "What it does")  Th(text: "Traffic") } }
                         Table.Body {
-                            for h in GraphStore.rows {
+                            for h in GraphStore.rows by h.id {
                                 HopRow(n: h.n, label: h.label, kindWord: h.kindWord, color: h.color, what: h.what, selected: h.selected, hot: h.hot, external: h.external) { on click { GraphStore.pick(h.id) } }
                             } } } }
                 Row(align: .center) { style { gap: 16px; flex-wrap: wrap; padding: 14px 16px; background: $surface-raised; border: 1px solid $line-default; border-radius: $radius-md; width: fit-content; max-width: 100% }
@@ -39,7 +39,7 @@ page AppGraph(path: "/app/graph", title: "Infrastructure", description: "The pat
                     Text("{GraphStore.current.sub}") { style { margin: 0; font-size: 13px; color: $text-tertiary } }
                     if GraphStore.current.external { Callout(tone: "warning", title: "Outside Halyard", body: "The only hop Halyard does not control. Its latency and failures show up as 504s at the edge.") } }
                 Stack { style { gap: 0; padding: 8px 22px; flex-grow: 1 }
-                    for d in GraphStore.details {
+                    for d in GraphStore.details by d.k {
                         Row(align: .start) { style { gap: 12px; padding: 10px 0; border-bottom: 1px solid $line-hairline; flex-wrap: nowrap; align-items: flex-start }
                             Text(d.k) { style { margin: 0; width: 132px; flex: none; font: 600 13px/1.4 $font-sans; color: $text-tertiary } }
                             Text(d.v) { style { margin: 0; flex-grow: 1; min-width: 0; font-size: 13px; line-height: 1.5; color: $text-primary } } }
@@ -47,7 +47,7 @@ page AppGraph(path: "/app/graph", title: "Infrastructure", description: "The pat
                     Stack { style { gap: 10px; margin: 20px 0 0 }
                         Overline(text: "CONNECTED TO")
                         Row { style { gap: 8px; flex-wrap: wrap }
-                            for nb in GraphStore.neighbours { Chip(label: nb.label) { on click { GraphStore.pick(nb.id) } } } } }
+                            for nb in GraphStore.neighbours by nb.id { Chip(label: nb.label) { on click { GraphStore.pick(nb.id) } } } } }
                 }
                 Stack { style { gap: 10px; padding: 16px 22px; border-top: 1px solid $line-hairline }
                     FlButton(label: "Open its metrics", variant: "primary", size: "sm", to: "/app/observability", width: "100%")

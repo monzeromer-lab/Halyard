@@ -12,7 +12,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
         Stack { style { width: 232px; flex: none; gap: 0; border-right: 1px solid $line-hairline; padding: 20px 12px; @media (max-width: 768px) { width: 100%; border-right: 0; border-bottom: 1px solid $line-hairline; padding: 12px 16px } }
             Container { style { padding: 0 12px 10px; width: auto; margin: 0; @media (max-width: 768px) { display: none } }  Overline(text: "PROJECT SETTINGS") }
             Stack(role: "group", aria-label: "Settings sections") { style { gap: 2px; @media (max-width: 768px) { flex-direction: row; overflow-x: auto; gap: 4px } }
-                for t in SettingsStore.tabs { SubNavLink(label: t.label, icon: t.icon, current: t.current, danger: t.danger) { on click { SettingsStore.pick(t.id) } } } }
+                for t in SettingsStore.tabs by t.id { SubNavLink(label: t.label, icon: t.icon, current: t.current, danger: t.danger) { on click { SettingsStore.pick(t.id) } } } }
             Container { style { margin: 18px 0; width: auto; padding: 0; @media (max-width: 768px) { display: none } }  Rule }
             Text("Organisation-wide settings, including SSO and the audit log, live one level up.") { style { margin: 0; padding: 0 12px; font-size: 12px; line-height: 1.6; color: $text-tertiary; @media (max-width: 768px) { display: none } } }
         }
@@ -44,7 +44,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                                     Text("A build whose digest does not match a second independent run is refused rather than shipped.") { style { margin: 0; font-size: 13px; line-height: 1.5; color: $text-tertiary } } } } } }
                     SettingRow(title: "Deploy approvals", help: "Who has to approve before traffic moves to a new build.", last: true) {
                         Stack(role: "radiogroup", aria-label: "Deploy approvals") { style { gap: 10px }
-                            for a in SettingsStore.approvalRows { RadioCard(label: a.label, help: a.help, checked: a.checked) { on click { SettingsStore.setApproval(a.id) } } } } }
+                            for a in SettingsStore.approvalRows by a.id { RadioCard(label: a.label, help: a.help, checked: a.checked) { on click { SettingsStore.setApproval(a.id) } } } } }
                     Row { style { gap: 10px; padding: 22px 0 0 }
                         FlButton(label: SettingsStore.saveLabel, variant: "primary") { on click { SettingsStore.save() } }
                         FlButton(label: "Discard changes", variant: "ghost") }
@@ -67,7 +67,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                             style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans; min-width: 640px }
                             Table.Head { Table.Row { Th(text: "Domain")  Th(text: "Role")  Th(text: "Environment")  Th(text: "Certificate")  Th(text: "Actions") } }
                             Table.Body {
-                                for d in SettingsStore.domains {
+                                for d in SettingsStore.domains by d.host {
                                     Table.Row {
                                         Td(text: d.host, mono: true, color: "var(--text-primary)")
                                         Table.Cell("") { style { padding: 12px; border-bottom: 1px solid $line-hairline }  StatusBadge(label: d.role, tone: d.tone, dot: false) }
@@ -93,7 +93,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                             style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans; min-width: 640px }
                             Table.Head { Table.Row { Th(text: "Key")  Th(text: "Value")  Th(text: "Applies to")  Th(text: "Actions") } }
                             Table.Body {
-                                for v in SettingsStore.varRows {
+                                for v in SettingsStore.varRows by v.key {
                                     Table.Row {
                                         Table.Cell("") { style { padding: 12px; border-bottom: 1px solid $line-hairline; white-space: nowrap }
                                             Row(align: .center) { style { gap: 8px; flex-wrap: nowrap; display: inline-flex }
@@ -122,7 +122,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
                                 Field(label: "Role", id: "s-role") { FlSelect(id: "s-role", labelId: "s-role-label") { Select.Option("Developer", value: "developer")  Select.Option("Admin", value: "admin")  Select.Option("Viewer", value: "viewer") } } }
                             Container { style { padding: 0; width: auto; flex: none; align-self: flex-start; margin-top: 26px }  FlButton(label: "Send invitation", variant: "primary", submit: true) } } }
                     Stack { style { gap: 2px }
-                        for m in SettingsStore.members {
+                        for m in SettingsStore.members by m.email {
                             Row(align: .center) { style { gap: 14px; padding: 12px 14px; border: 1px solid $line-hairline; border-radius: $radius-sm; flex-wrap: nowrap; @media (max-width: 480px) { flex-wrap: wrap } }
                                 Text(m.initials, aria-hidden: "true") { style { width: 34px; height: 34px; border-radius: 50%; flex: none; background: $surface-active; display: inline-flex; align-items: center; justify-content: center; font: 700 12px/1 $font-sans; color: $text-secondary; margin: 0 } }
                                 Stack { style { flex-grow: 1; min-width: 0; gap: 2px }
