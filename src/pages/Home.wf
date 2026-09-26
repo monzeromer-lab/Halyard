@@ -58,16 +58,34 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
                     }
                 }
             }
-            // The 19 regions. The design scrolls these as a marquee; there is no
-            // @keyframes in a style block, so they sit still (NOTES.md).
+            // The 19 regions, scrolling. The track holds the list twice so the
+            // -50% the keyframes ends on lands exactly where it started; the
+            // second copy is hidden from assistive technology, which reads the
+            // nineteen names once.
             Row(align: .center, aria-label: "Regions Halyard deploys to") {
                 style { margin-top: 64px; border-top: 1px solid $line-hairline; border-bottom: 1px solid $line-hairline; padding: 18px 0; gap: 0; overflow: hidden; flex-wrap: nowrap
                         mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent) }
-                for r in ContentStore.regions {
+                Row(align: .center) {
+                    style { gap: 0; flex-wrap: nowrap; width: max-content; animation: hl-marquee 42s linear infinite }
                     Row(align: .center) {
-                        style { display: inline-flex; flex-wrap: nowrap; gap: 10px; padding: 0 26px; font-family: $font-mono; font-size: 13px; color: $text-tertiary; white-space: nowrap }
-                        Dot(color: "var(--accent)", size: 5)
-                        Text(r) { style { margin: 0; font: inherit; color: inherit } }
+                        style { gap: 0; flex-wrap: nowrap }
+                        for r in ContentStore.regions by r {
+                            Row(align: .center) {
+                                style { display: inline-flex; flex-wrap: nowrap; gap: 10px; padding: 0 26px; font-family: $font-mono; font-size: 13px; color: $text-tertiary; white-space: nowrap }
+                                Dot(color: "var(--accent)", size: 5)
+                                Text(r) { style { margin: 0; font: inherit; color: inherit } }
+                            }
+                        }
+                    }
+                    Row(align: .center, aria-hidden: "true") {
+                        style { gap: 0; flex-wrap: nowrap }
+                        for r in ContentStore.regions by r {
+                            Row(align: .center) {
+                                style { display: inline-flex; flex-wrap: nowrap; gap: 10px; padding: 0 26px; font-family: $font-mono; font-size: 13px; color: $text-tertiary; white-space: nowrap }
+                                Dot(color: "var(--accent)", size: 5)
+                                Text(r) { style { margin: 0; font: inherit; color: inherit } }
+                            }
+                        }
                     }
                 }
             }

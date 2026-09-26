@@ -1,13 +1,16 @@
 // Status is never hue alone: every badge ships with a word. Tones: brand,
 // accent, success, warning, danger, info, brass, neutral.
-component StatusBadge(label: String, tone: String = "neutral", dot: Bool = true) {
+component StatusBadge(label: String, tone: String = "neutral", dot: Bool = true, live: Bool = false) {
+    // `live` breathes the ring of `hl-pulse` (src/styles.css), which a
+    // reader who asked for less motion is served as a still frame.
+    derived motion = if live { "hl-pulse 2.2s var(--ease-standard) infinite" } else { "none" }
     derived bg = if tone == "brand" { "var(--brand-soft)" } else if tone == "accent" { "var(--accent-soft)" } else if tone == "success" { "var(--success-soft)" } else if tone == "warning" { "var(--warning-soft)" } else if tone == "danger" { "var(--danger-soft)" } else if tone == "info" { "var(--info-soft)" } else if tone == "brass" { "var(--brass-soft)" } else { "var(--surface-active)" }
     derived fg = if tone == "brand" { "var(--text-brand)" } else if tone == "accent" { "var(--text-accent)" } else if tone == "success" { "var(--text-success)" } else if tone == "warning" { "var(--text-warning)" } else if tone == "danger" { "var(--text-danger)" } else if tone == "info" { "var(--text-info)" } else if tone == "brass" { "var(--text-brass)" } else { "var(--text-secondary)" }
     Row(align: .center, data-tone: tone) {
         style {
             display: inline-flex; flex-wrap: nowrap; gap: 6px; height: 22px; padding: 0 9px; width: fit-content
             border-radius: $radius-pill; font: 700 12px/1 $font-sans; border: 1px solid transparent
-            white-space: nowrap; background: {bg}; color: {fg}
+            white-space: nowrap; background: {bg}; color: {fg}; animation: {motion}
         }
         if dot {
             Container { style { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; padding: 0; margin: 0 } }

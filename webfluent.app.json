@@ -24,7 +24,6 @@
     "sitemap": true,
     "fonts": [
       "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..600&family=Manrope:wght@400..800&display=swap"
-    ],
-    "stylesheets": ["/base.css"]
+    ]
   }
 }
