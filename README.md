@@ -43,10 +43,11 @@ becomes the Mobile artboard's bottom tab bar and tables become card lists.
 src/
   App.wf           the router, 18 routes
   Theme.wf         Fluant Ink as 94 theme tokens (→ CSS custom properties)
+  Motion.wf        the two keyframe animations the design asks for
+  styles.css       what no element-level style block can say, bundled by the compiler
   pages/           one file per route
-  components/      95 components, the Fluant Ink library in .wf
-  stores/          14 stores: all data (seeded from the design) and all logic
-public/base.css    three lines no element-level style block can express
+  components/      the Fluant Ink library in .wf
+  stores/          14 stores: typed seed data and all the logic
 design/            the artboards (authoritative), previews, canvas
 HALYARD_BUILD.md   the build spec: routes, seed data, page specs, milestones
 NOTES.md           every adaptation, every compiler change, every remaining gap
@@ -55,10 +56,14 @@ AGENTS.md          the WebFluent language reference the build was written agains
 
 ## Building it
 
-You need the `wf` compiler at commit `d0888a8` or later — the build relies on
-features and fixes made for this project (component `children`, pseudo-state
-blocks, hyphenated `aria-*`/`data-*` arguments, reactive style values,
-`Tcell(header)`, `meta.fonts`, and more; see NOTES.md).
+The site is written in WebFluent 4. Install the compiler:
+
+```bash
+cargo install webfluent
+```
+
+It relies on fixes made while this site was built, so if `wf build`
+complains, build the compiler from source instead:
 
 ```bash
 git clone https://github.com/monzeromer-lab/WebFluent.git
@@ -97,3 +102,10 @@ The rules the port follows are the design's own: state lives in ARIA
 attributes, variants in `data-*`, every status carries a word beside its
 colour, one primary action per viewport, charts never exceed four series in a
 fixed order, and nothing is invented — every gap is a visible placeholder.
+
+It has since been moved to WebFluent 4: `wf migrate` for the grammar, then
+by hand for everything the new language does better — typed seed data,
+keyed lists, pages framed by a `layout:`, labelled controls that wrap
+themselves in a field, overlays that are native `<dialog>`s with the
+browser's own focus trap, and the two animations the design always wanted.
+The last section of [NOTES.md](NOTES.md) is the full account.

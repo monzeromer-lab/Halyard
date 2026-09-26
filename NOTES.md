@@ -312,6 +312,9 @@ calls attached to the root.
 
 ## Still not possible, and how the site lives with it
 
+As of WebFluent 2.1, when the site was first finished. See the section
+below for what the move to 4 changed.
+
 - No inline SVG, no `@keyframes`, no `try/catch`, no `new`, no regex
   literals, no `for` inside an action body, no way to call `focus()` after a
   render, no `indeterminate` property, no call-site `style { }` on a
@@ -319,3 +322,64 @@ calls attached to the root.
   component call's handler block, a `,` or `:` inside `{ }` in a string, a
   prop or key named `on`/`use`/`state`/`token`.
 - Each has a workaround recorded in the milestone it came up in.
+
+---
+
+# The move to WebFluent 4
+
+`wf migrate` rewrote the grammar — `page`/`component`/`store` lowercase,
+flags with a dot, `Table.Row`, `on click`, unquoted CSS values, `$token`,
+`&:hover` — and the rest was done by hand. What follows is what the new
+language could do that the old one could not, and what came out of the
+source because of it.
+
+## Gaps that closed
+
+| Was | Is |
+|---|---|
+| No `@keyframes`: the region strip sat still and the live badge did not pulse. | `animation Marquee { … }` and `animation Pulse { … }` in `src/Motion.wf`, reached from a style block by name. The strip scrolls and the badge breathes. |
+| Overlays were `div`s with `role="dialog"`: no focus trap, no focus restored, Escape only when focus was inside. | The palette, the rollback and the drawer are `Modal` — a native `<dialog>` opened with `showModal()`. The browser traps focus, Escape always closes, the page behind is inert and focus returns to whatever opened it. |
+| `Field`, `FlInput` and `FlSelect` built a labelled control by hand. | `Input(label:, hint:, error:)` and `Select(…)` wrap themselves in a field, link the hint and the error with `aria-describedby`, and manage `aria-invalid`. The three components are gone; their Fluant Ink clothes are `.wf-field`/`.wf-input` rules in `src/styles.css`. |
+| A stylesheet could only be linked from `public/`, through `meta.stylesheets`. | Any `.css` under `src/` is bundled. `public/base.css` became `src/styles.css`, and the config hook is gone. |
+| Every `for` re-rendered its list wholesale. | 48 loops carry `by` — the deployments table, the log filter, the explorer's filter rows, the toast stack — so an item keeps its nodes across inserts, removals and moves. |
+| Each product page wrapped its whole body in `AppShell(…) { … }`. | `AppShell` declares a `slot` and each page names it as its `layout:`. |
+| A dynamic route read `params.hash`. | `page AppBuild(path: "/app/builds/:hash", hash: String, …)`: the segment is a typed parameter the page and its layout both read. |
+| Nothing in the project was typed. | Eleven `type` records across nine stores. A misspelled field is `T05` at build time; `sortRows` and `shape` say what they take. |
+| `Tooltip(text: "…")`. | `Tooltip("…")`. |
+
+## What is still worked around
+
+- **No inline SVG** — `Unsafe.Html(markup: …)` exists now, so this is a
+  choice rather than a limit. The charts stay boxes: they are built from
+  the same layout primitives as the rest of the page, which is the more
+  honest demonstration. The brand mark is still two rotated squares.
+- **No `try/catch`** — the log page's regex is validated by a scan before
+  a `RegExp` is built from it.
+- **The select-all checkbox** is still a `button` with
+  `role="checkbox"`, because `aria-checked="mixed"` is a state the builtin
+  `Checkbox` does not carry.
+- **The row menu and the project switcher** are still hand-rolled popups:
+  the builtin `Menu` takes its trigger as a string label, and both of
+  these open from an icon button.
+- **Focus is not moved into the palette's search field** when it opens;
+  the language still has no way to call `focus()` after a render. The
+  browser's own focus trap now keeps the tab order inside the dialog.
+
+## Compiler changes this move needed
+
+One commit each in the WebFluent repository, with tests:
+
+- a store's `derived` may call an `action` declared below it (the checker
+  inferred each derived value as it met it, so half a store read as
+  undeclared);
+- a `sort` comparator is handed two elements, not an element and an index;
+- a layout's arguments read the route's parameters (a parameter named
+  `hash` compiled to `location.hash`);
+- an `if` on a `Bool` prop takes the branch the call renders, so a card
+  that is an `h2` under a page title and an `h3` inside a section is
+  judged as each caller uses it;
+- a select's value takes once its options arrive, wherever codegen put
+  them;
+- an animation the page never painted settles at its end, not its start —
+  a mount animation in a background tab left the element invisible for
+  good.
