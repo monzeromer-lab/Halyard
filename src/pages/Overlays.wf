@@ -69,52 +69,42 @@ page Overlays(path: "/ui", title: "Interface inventory", description: "Every ove
 
     CommandPalette
 
-    // Modal: a rollback confirmation
-    if UiStore.modalOpen {
-        Scrim(label: "Close the dialog").fadeIn.fast
-        DialogFrame(label: "Roll back", width: "520px", labelledBy: "md-t").fadeIn.fast {
-            Row(align: .start) { style { padding: 24px 26px 18px; gap: 16px; flex-wrap: nowrap; align-items: flex-start }
-                Container { style { width: 40px; height: 40px; border-radius: 50%; flex: none; background: $danger-soft; color: $danger; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin: 0 }
-                    Icon("warning") { style { display: inline-flex; font-size: 18px } } }
-                Stack { style { gap: 8px }
-                    Heading("Roll back to 7c91de?", id: "md-t").h2 { style { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em } }
-                    Text("Traffic moves off 8f2c41 in about 400 milliseconds. Requests already in flight finish on the build they started on. The routing rules that shipped with 7c91de come back with it.") { style { margin: 0; font-size: 14px; line-height: 1.6; color: $text-secondary } } } }
-            Container { style { padding: 0 26px 20px; width: auto; margin: 0 }
-                Callout(tone: "warning", title: "7c91de last ran four days ago", body: "It predates the cookie rule fix. The beta cohort will fall back to the default build.") }
-            Row(justify: .end) { style { gap: 10px; padding: 16px 26px; border-top: 1px solid $line-hairline; background: $surface-sunken }
-                FlButton(label: "Keep 8f2c41", variant: "ghost") { on click { UiStore.close() } }
-                FlButton(label: "Roll back now", variant: "danger") { on click { UiStore.close()  UiStore.toast("success", "Rolled back", "Traffic moved to 7c91de in 412 ms.") } } }
-        }
+    // Modal: a rollback confirmation. A native <dialog>: focus is trapped
+    // inside it, Escape closes it and the board behind it is inert.
+    Modal(visible: UiStore.modalOpen, title: "Roll back to 7c91de?") {
+        Row(align: .start) { style { gap: 16px; flex-wrap: nowrap; align-items: flex-start }
+            Container { style { width: 40px; height: 40px; border-radius: 50%; flex: none; background: $danger-soft; color: $danger; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin: 0 }
+                Icon("warning") { style { display: inline-flex; font-size: 18px } } }
+            Stack { style { gap: 14px }
+                Text("Traffic moves off 8f2c41 in about 400 milliseconds. Requests already in flight finish on the build they started on. The routing rules that shipped with 7c91de come back with it.") { style { margin: 0; font-size: 14px; line-height: 1.6; color: $text-secondary } }
+                Callout(tone: "warning", title: "7c91de last ran four days ago", body: "It predates the cookie rule fix. The beta cohort will fall back to the default build.") } }
+        Modal.Footer {
+            FlButton(label: "Keep 8f2c41", variant: "ghost") { on click { UiStore.close() } }
+            FlButton(label: "Roll back now", variant: "danger") { on click { UiStore.close()  UiStore.toast("success", "Rolled back", "Traffic moved to 7c91de in 412 ms.") } } }
     }
 
-    // Drawer: a trace filter panel
-    if UiStore.drawerOpen {
-        Scrim(label: "Close the panel").slideLeft.fast
-        Stack(role: "dialog", aria-modal: "true", aria-labelledby: "dr-t").slideLeft.fast {
-            style { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; max-width: 100vw; z-index: 900; gap: 0; background: $surface-overlay; border-left: 1px solid $line-strong; box-shadow: $shadow-lg; overflow: auto
-                    @media (max-width: 480px) { width: 100vw; border-left: 0 } }
-            on keydown(event) { if event.key == "Escape" { UiStore.close() } }
-            Row(align: .center) { style { gap: 12px; padding: 20px 22px; border-bottom: 1px solid $line-hairline; flex-wrap: nowrap }
-                Heading("Filter traces", id: "dr-t").h2 { style { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1 } }
-                IconBtn(icon: "close", label: "Close", size: 32) { on click { UiStore.close() } } }
-            Stack { style { gap: 22px; padding: 22px; flex-grow: 1 }
-                Select(id: "dr-range", label: "Time range") { Select.Option("Last 15 minutes", value: "15m")  Select.Option("Last hour", value: "1h")  Select.Option("Last 24 hours", value: "24h")  Select.Option("Custom…", value: "custom") }
-                Stack { style { gap: 10px }
-                    Text("Status class", id: "dr-classes") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
-                    Row(role: "group", aria-labelledby: "dr-classes") { style { gap: 8px; flex-wrap: wrap }
-                        for c in UiStore.drawerChips by c.label { Chip(label: c.label, pressed: c.pressed) { on click { UiStore.toggleChip(c.label) } } } } }
-                Select(id: "dr-region", label: "Region") { Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("gru1", value: "gru1") }
-                Container { style { width: 140px; padding: 0; margin: 0 }
-                    Input(bind: slow, id: "dr-min", label: "Slower than", hint: "Milliseconds. Leave empty to include everything.", class: "hl-mono").text }
-                Stack { style { gap: 12px }
-                    Text("Only show") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
-                    FlSwitch(checked: UiStore.cold, label: "Requests that paid a cold start", id: "dsw-cold") { on click { UiStore.toggleCold() } }
-                    FlSwitch(checked: UiStore.errors, label: "Requests that threw", id: "dsw-errors") { on click { UiStore.toggleErrors() } }
-                    FlSwitch(checked: UiStore.traced, label: "Requests with a full trace", id: "dsw-traced") { on click { UiStore.toggleTraced() } } } }
-            Row { style { gap: 10px; padding: 16px 22px; border-top: 1px solid $line-hairline; background: $surface-sunken; flex-wrap: nowrap }
-                FlButton(label: "Reset", variant: "ghost", width: "100%") { on click { UiStore.close() } }
-                FlButton(label: "Apply filters", variant: "primary", width: "100%") { on click { UiStore.close()  UiStore.toast("info", "Filters applied", "Showing traces slower than {slow} ms.") } } }
-        }
+    // Drawer: the same dialog, pinned to the right edge by its class.
+    Modal(visible: UiStore.drawerOpen, title: "Filter traces", class: "hl-drawer") {
+        // Escape and the backdrop close it; the design offers the button too.
+        Container(class: "hl-drawer__close") { style { padding: 0; width: auto; margin: 0 }
+            IconBtn(icon: "close", label: "Close", size: 32) { on click { UiStore.close() } } }
+        Stack { style { gap: 22px }
+            Select(id: "dr-range", label: "Time range") { Select.Option("Last 15 minutes", value: "15m")  Select.Option("Last hour", value: "1h")  Select.Option("Last 24 hours", value: "24h")  Select.Option("Custom…", value: "custom") }
+            Stack { style { gap: 10px }
+                Text("Status class", id: "dr-classes") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
+                Row(role: "group", aria-labelledby: "dr-classes") { style { gap: 8px; flex-wrap: wrap }
+                    for c in UiStore.drawerChips by c.label { Chip(label: c.label, pressed: c.pressed) { on click { UiStore.toggleChip(c.label) } } } } }
+            Select(id: "dr-region", label: "Region") { Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("gru1", value: "gru1") }
+            Container { style { width: 140px; padding: 0; margin: 0 }
+                Input(bind: slow, id: "dr-min", label: "Slower than", hint: "Milliseconds. Leave empty to include everything.", class: "hl-mono").text }
+            Stack { style { gap: 12px }
+                Text("Only show") { style { margin: 0; font: 600 14px/1.2 $font-sans; color: $text-secondary } }
+                FlSwitch(checked: UiStore.cold, label: "Requests that paid a cold start", id: "dsw-cold") { on click { UiStore.toggleCold() } }
+                FlSwitch(checked: UiStore.errors, label: "Requests that threw", id: "dsw-errors") { on click { UiStore.toggleErrors() } }
+                FlSwitch(checked: UiStore.traced, label: "Requests with a full trace", id: "dsw-traced") { on click { UiStore.toggleTraced() } } } }
+        Modal.Footer {
+            FlButton(label: "Reset", variant: "ghost", width: "100%") { on click { UiStore.close() } }
+            FlButton(label: "Apply filters", variant: "primary", width: "100%") { on click { UiStore.close()  UiStore.toast("info", "Filters applied", "Showing traces slower than {slow} ms.") } } }
     }
 
     // Dropdown menu: build actions

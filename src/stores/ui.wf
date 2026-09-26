@@ -2,7 +2,13 @@
 // open (command palette, modal, drawer, menu, popover), the palette query
 // and its groups, the drawer's filter state, the toast stack.
 store UiStore {
-    state overlay = ""
+    // One flag per overlay: a `<dialog>` writes its own back when the
+    // browser closes it — on Escape, or on the backdrop.
+    state paletteOpen = false
+    state modalOpen = false
+    state drawerOpen = false
+    state menuOpen = false
+    state popoverOpen = false
     state query = ""
     state toasts = []
     state nextToast = 1
@@ -10,12 +16,6 @@ store UiStore {
     state cold = true
     state errors = false
     state traced = true
-
-    derived paletteOpen = overlay == "palette"
-    derived modalOpen = overlay == "modal"
-    derived drawerOpen = overlay == "drawer"
-    derived menuOpen = overlay == "menu"
-    derived popoverOpen = overlay == "popover"
 
     state groupList = [
         { name: "Go to", items: [{ label: "Overview", hint: "G then O", to: "/app" }, { label: "Deployments", hint: "G then D", to: "/app/deployments" }, { label: "Logs", hint: "G then L", to: "/app/logs" }, { label: "Settings", hint: "G then S", to: "/app/settings" }] },
@@ -46,8 +46,16 @@ store UiStore {
         return "#46181a"
     }
 
-    action open(name: String) { overlay = name  query = "" }
-    action close() { overlay = "" }
+    // Only one at a time, by design.
+    action open(name: String) {
+        paletteOpen = name == "palette"
+        modalOpen = name == "modal"
+        drawerOpen = name == "drawer"
+        menuOpen = name == "menu"
+        popoverOpen = name == "popover"
+        query = ""
+    }
+    action close() { open("") }
     action setQuery(v: String) { query = v }
     action toggleChip(c: String) {
         if chips.indexOf(c) > -1 { chips = chips.filter(x => x != c) } else { chips = chips.concat([c]) }
