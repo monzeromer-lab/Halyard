@@ -1,7 +1,15 @@
 // The public status page: five components with 90 days of history, the 19
 // regions, three incidents, the history filter and the subscribe form.
+/// A component of the platform and its ninety days: `bad` names the days
+/// that were not clean.
+type Blip { day: Number, kind: String }
+type Component { name: String, uptime: String, bad: [Blip] }
+
+/// A region and the response time it is serving at.
+type Region { code: String, p95: Number }
+
 store StatusStore {
-    state components = [
+    state components: [Component] = [
         { name: "Edge runtime", uptime: "100.000%", bad: [] },
         { name: "Builds", uptime: "99.981%", bad: [{ day: 56, kind: "partial" }, { day: 55, kind: "partial" }, { day: 19, kind: "partial" }] },
         { name: "Edge KV", uptime: "99.997%", bad: [{ day: 38, kind: "partial" }] },
@@ -12,7 +20,7 @@ store StatusStore {
 
     derived rows = components.map(c => { name: c.name, uptime: c.uptime, days: dayIndex.map(i => dayOf(c, 89 - i)) })
 
-    state regions = [
+    state regions: [Region] = [
         { code: "fra1", p95: 34 }, { code: "iad1", p95: 41 }, { code: "cdg1", p95: 36 }, { code: "sfo1", p95: 52 }, { code: "gru1", p95: 148 },
         { code: "hnd1", p95: 61 }, { code: "syd1", p95: 74 }, { code: "bom1", p95: 88 }, { code: "jnb1", p95: 96 }, { code: "arn1", p95: 44 },
         { code: "dub1", p95: 39 }, { code: "sin1", p95: 67 }, { code: "yyz1", p95: 45 }, { code: "icn1", p95: 63 }, { code: "cpt1", p95: 104 },

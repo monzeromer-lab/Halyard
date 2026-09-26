@@ -1,8 +1,14 @@
 // Infrastructure: the request path as an ordered list of hops (the artboard's
 // node graph), the selected hop, its detail rows and its neighbours.
+/// One hop of the request path, in the order a request meets them.
+type Hop { id: String, label: String, kind: String, what: String, sub: String }
+
+/// A link between two hops; `hot` is the path every request takes.
+type Link { a: String, b: String, hot: Bool }
+
 store GraphStore {
     state sel = "pop"
-    state hops = [
+    state hops: [Hop] = [
         { id: "clients", label: "Browser / Mobile app / Partner API", kind: "client", what: "where the request starts", sub: "storefront.example.com, iOS and Android, server to server" },
         { id: "pop", label: "Anycast edge, 19 POPs", kind: "edge", what: "TLS terminated here; p95 accept 1.8 ms", sub: "19 points of presence" },
         { id: "rules", label: "Rule engine", kind: "edge", what: "5 rules, evaluated in order, 2 ms budget", sub: "5 rules, 2 ms budget" },
@@ -15,7 +21,7 @@ store GraphStore {
         { id: "queue", label: "Queue", kind: "state", what: "cart.updated", sub: "cart.updated" },
         { id: "upstream", label: "Upstream inventory", kind: "external", what: "[YOUR UPSTREAM HOST], p95 184 ms, 504 after 9.4 s", sub: "outside Halyard" }
     ]
-    state edges = [
+    state edges: [Link] = [
         { a: "clients", b: "pop", hot: true }, { a: "pop", b: "rules", hot: true }, { a: "pop", b: "mw", hot: true }, { a: "pop", b: "assets", hot: false },
         { a: "rules", b: "fnapi", hot: true }, { a: "mw", b: "fncheckout", hot: true }, { a: "mw", b: "render", hot: false },
         { a: "fnapi", b: "kv", hot: true }, { a: "fncheckout", b: "kv", hot: false }, { a: "fncheckout", b: "queue", hot: false },

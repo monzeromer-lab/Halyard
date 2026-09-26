@@ -1,26 +1,31 @@
 // Onboarding: four steps, the picked repository, the repository filter,
 // the environment variables to import, and what each step needs before
 // the next one opens.
+/// A step of the flow, a repository to pick, and a variable to import.
+type Step { id: String, label: String, note: String }
+type Repo { id: String, full: String, lang: String, meta: String }
+type EnvVar { k: String, v: String, secret: Bool }
+
 store OnboardStore {
     state step = 0
     state repo = "storefront"
     state query = ""
     state env = ["DATABASE_URL", "STRIPE_SECRET_KEY", "SESSION_SIGNING_KEY", "NEXT_PUBLIC_CDN"]
 
-    state stepList = [
+    state stepList: [Step] = [
         { id: "repo", label: "Repository", note: "Read once, never written to" },
         { id: "framework", label: "Framework", note: "Detected, override anything" },
         { id: "env", label: "Environment", note: "Encrypted before it leaves the browser" },
         { id: "review", label: "Review", note: "The project is created here" }
     ]
-    state repoList = [
+    state repoList: [Repo] = [
         { id: "storefront", full: "company/storefront", lang: "TypeScript", meta: "updated 2 hours ago" },
         { id: "storefront-api", full: "company/storefront-api", lang: "TypeScript", meta: "updated yesterday" },
         { id: "design-system", full: "company/design-system", lang: "CSS", meta: "updated 3 days ago" },
         { id: "marketing-site", full: "company/marketing-site", lang: "Astro", meta: "updated last week" },
         { id: "internal-tools", full: "company/internal-tools", lang: "Python", meta: "updated last month" }
     ]
-    state envList = [
+    state envList: [EnvVar] = [
         { k: "DATABASE_URL", v: "postgres://••••••@db.internal:5432/store", secret: true },
         { k: "STRIPE_SECRET_KEY", v: "sk_live_••••••••••••", secret: true },
         { k: "SESSION_SIGNING_KEY", v: "••••••••••••••••", secret: true },

@@ -1,6 +1,14 @@
 // One build per hash: the pipeline stages, the output per stage, the diff,
 // the artifacts and the attestation. The page opens a hash from the URL;
 // an unknown hash is an empty state, not a crash.
+/// A pipeline stage. `state` is "done" or "active" — the one field name
+/// the language keeps for itself, so it stays a map key here.
+type Artifact { path: String, type: String, size: String, digest: String }
+
+/// A file the build changed, and one line of the unified diff.
+type ChangedFile { name: String, add: Number, del: Number }
+type DiffLine { n: String, kind: String, text: String }
+
 store BuildStore {
     state hash = "8f2c41"
     state stage = "compile"
@@ -45,13 +53,13 @@ store BuildStore {
     derived isArtifacts = tab == "artifacts"
     derived isAttestation = tab == "attestation"
 
-    state fileList = [
+    state fileList: [ChangedFile] = [
         { name: "routes.halyard.ts", add: 18, del: 4 }, { name: "src/api/cart.ts", add: 6, del: 2 },
         { name: "src/lib/session.ts", add: 0, del: 22 }, { name: "halyard.config.ts", add: 3, del: 1 }
     ]
     derived files = fileList.map(f => { name: f.name, add: "+" + f.add, del: "−" + f.del, current: file == f.name })
     derived diffFile = file
-    state diff = [
+    state diff: [DiffLine] = [
         { n: "12", kind: "ctx", text: "export default defineRoutes([" },
         { n: "13", kind: "ctx", text: "  { match: { path: '/assets/*' }, immutable: true }," },
         { n: "14", kind: "del", text: "  { match: { cookie: { ht_beta: '1' } }, build: 'current' }," },
@@ -64,7 +72,7 @@ store BuildStore {
     ]
     derived diffLines = diff.map(l => { n: l.n, kind: l.kind, text: l.text, sign: if l.kind == "add" { "+" } else if l.kind == "del" { "−" } else { " " }, bg: if l.kind == "add" { "var(--success-soft)" } else if l.kind == "del" { "var(--danger-soft)" } else { "transparent" }, fg: if l.kind == "add" { "var(--text-success)" } else if l.kind == "del" { "var(--text-danger)" } else { "var(--text-secondary)" } })
 
-    state artifacts = [
+    state artifacts: [Artifact] = [
         { path: "edge/bundle.js", type: "application/javascript", size: "1.84 MB", digest: "e91c…44" },
         { path: "edge/bundle.js.map", type: "application/json", size: "3.12 MB", digest: "77af…09" },
         { path: "static/app.css", type: "text/css", size: "82.4 kB", digest: "2b10…d3" },

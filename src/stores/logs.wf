@@ -2,8 +2,18 @@
 // the severity facets, follow, and the selected trace. There is no
 // try/catch in the language, so a pattern is scanned for the mistakes a
 // RegExp would reject before one is built from it.
+/// A log line as the seed holds it: the clock, the severity, where it was
+/// served, what was asked for and what came back.
+type Line {
+    t: String, lv: String, rg: String, rt: String, st: String,
+    ms: Number, msg: String, b: String
+}
+
+/// One span of a trace, placed along the waterfall by percentage.
+type Span { name: String, left: String, width: String, color: String, ms: String }
+
 store LogStore {
-    state all = [
+    state all: [Line] = [
         { t: "14:02:41.118", lv: "info", rg: "fra1", rt: "GET /", st: "200", ms: 24, msg: "request completed", b: "8f2c41" },
         { t: "14:02:41.102", lv: "info", rg: "iad1", rt: "POST /api/cart", st: "201", ms: 61, msg: "cart item added, sku HL-2201", b: "8f2c41" },
         { t: "14:02:40.984", lv: "warn", rg: "gru1", rt: "GET /api/stock", st: "200", ms: 1840, msg: "upstream slow, served stale for 12 s", b: "8f2c41" },
@@ -44,7 +54,7 @@ store LogStore {
     derived hasSelection = picked.length > 0
     derived current = if hasSelection { shape(picked[0]) } else { shape(all[0]) }
     derived trace = "tr_" + current.time.split(":").join("").split(".").join("")
-    state spans = [
+    state spans: [Span] = [
         { name: "edge accept", left: "0%", width: "1.5%", color: "var(--viz-1)", ms: "2 ms" },
         { name: "route match", left: "0.9%", width: "1.5%", color: "var(--viz-3)", ms: "2 ms" },
         { name: "kv read stock", left: "1.9%", width: "8.5%", color: "var(--viz-2)", ms: "18 ms" },
@@ -57,7 +67,7 @@ store LogStore {
         { k: "x-halyard-region", v: current.region }, { k: "x-halyard-build", v: current.build }, { k: "x-halyard-rule", v: "3" }
     ]
 
-    action inQuery(r: Map) {
+    action inQuery(r: Line) {
         if query == "" { return true }
         let hay = r.rt + " " + r.msg + " " + r.rg + " " + r.st
         if regex {
@@ -67,7 +77,7 @@ store LogStore {
         return hay.toLowerCase().indexOf(q) > -1
     }
 
-    action shape(r: Map) {
+    action shape(r: Line) {
         let first = r.st.charAt(0)
         return {
             time: r.t, level: r.lv, levelWord: levelLabel[r.lv], color: levelColor[r.lv], region: r.rg, route: r.rt, status: r.st,

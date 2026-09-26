@@ -1,6 +1,10 @@
 // Project settings: the open section, the general form with its live
 // validation, the domains form, the variables with per-row reveal, the
 // team, and the delete confirmation.
+/// A domain attached to the project, and a member of the team.
+type Domain { host: String, role: String, tone: String, env: String, cert: String }
+type Member { initials: String, name: String, email: String, role: String }
+
 store SettingsStore {
     state section = "general"
     state name = "storefront-edge"
@@ -40,7 +44,7 @@ store SettingsStore {
 
     derived domainHelp = if domainBad { "" } else { domainMsg }
     derived domainError = if domainBad { domainMsg } else { "" }
-    state domains = [
+    state domains: [Domain] = [
         { host: "storefront.example.com", role: "Primary", tone: "success", env: "production", cert: "Valid until 12 Dec" },
         { host: "www.example.com", role: "Redirect", tone: "info", env: "production", cert: "Redirects to storefront.example.com" },
         { host: "preview.example.com", role: "Wildcard", tone: "success", env: "preview", cert: "Valid until 12 Dec" },
@@ -57,7 +61,7 @@ store SettingsStore {
     ]
     derived varRows = vars.map(v => { key: v.k, scope: v.s, secret: v.secret, open: revealed.indexOf(v.k) > -1, shown: if v.secret && revealed.indexOf(v.k) < 0 { v.v } else { v.real }, lockColor: if v.secret { "var(--text-brass)" } else { "var(--text-disabled)" }, revealLabel: (if revealed.indexOf(v.k) > -1 { "Hide" } else { "Reveal" }) + " the value of " + v.k, revealIcon: if revealed.indexOf(v.k) > -1 { "close" } else { "eye" }, deleteLabel: "Delete " + v.k })
 
-    state members = [
+    state members: [Member] = [
         { initials: "YN", name: "[YOUR NAME]", email: "you@company.com", role: "Owner" },
         { initials: "AK", name: "[TEAMMATE 1]", email: "ak@company.com", role: "Admin" },
         { initials: "MR", name: "[TEAMMATE 2]", email: "mr@company.com", role: "Developer" },

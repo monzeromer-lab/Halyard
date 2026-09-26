@@ -1,6 +1,10 @@
 // The query builder: saved queries, the source, filter rows that can be
 // added and removed, the generated HQL, and the result view. Rows are
 // replaced, never mutated, so the list re-renders.
+/// A saved query in the rail, and a row of the result.
+type SavedQuery { id: String, name: String, meta: String }
+type Result { region: String, route: String, n: Number, p50: Number, p99: Number, share: String }
+
 store ExplorerStore {
     state saved = "slow-gru"
     state source = "traces"
@@ -14,7 +18,7 @@ store ExplorerStore {
     state fields = { "1": "region", "2": "duration_ms", "3": "status" }
     state ops = { "1": "is", "2": ">", "3": "is not" }
     state values = { "1": "gru1", "2": "500", "3": "404" }
-    state savedList = [
+    state savedList: [SavedQuery] = [
         { id: "slow-gru", name: "Slow requests in gru1", meta: "traces · last 24h · 3 filters" },
         { id: "5xx-route", name: "5xx by route", meta: "traces · last 7d · 1 filter" },
         { id: "cold", name: "Cold starts after a deploy", meta: "traces · last 1h · 2 filters" },
@@ -31,7 +35,7 @@ store ExplorerStore {
     derived isTable = view == "table"
     derived isChart = view == "chart"
 
-    state results = [
+    state results: [Result] = [
         { region: "gru1", route: "GET /api/stock", n: 412, p50: 1840, p99: 9412, share: "18.4" },
         { region: "sin1", route: "GET /p/:sku", n: 286, p50: 112, p99: 940, share: "12.8" },
         { region: "bom1", route: "GET /api/stock", n: 204, p50: 96, p99: 812, share: "9.1" },

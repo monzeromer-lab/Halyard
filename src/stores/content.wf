@@ -1,10 +1,14 @@
 // Marketing content: the landing page's panels, code samples and FAQ, the
 // plans, the changelog and the docs tree. All of it is the design's seed
 // data; nothing here is invented.
+/// A release in the changelog, and a feature or add-on card.
+type Release { id: String, date: String, title: String, tags: [String], current: Bool }
+type Feature { tone: String, icon: String, title: String, body: String }
+
 store ContentStore {
     state regions = ["fra1", "iad1", "cdg1", "sfo1", "gru1", "hnd1", "syd1", "bom1", "jnb1", "arn1", "dub1", "sin1", "yyz1", "icn1", "cpt1", "lhr1", "ams1", "nrt1", "pdx1"]
 
-    state features = [
+    state features: [Feature] = [
         { tone: "var(--text-brand)", icon: "upload", title: "Atomic global deploys", body: "Every build lands in all 19 regions in the same second. There is no region flag to set and no staged rollout to configure, because there is no staged rollout." },
         { tone: "var(--text-accent)", icon: "check", title: "Signed, reproducible builds", body: "Each build is content-addressed and signed at the end of the pipeline. Rebuild the same commit next year and the hash matches or the deploy is refused." },
         { tone: "var(--text-brass)", icon: "filter", title: "Request-level routing", body: "Route on header, cookie, geo or a value you compute in a 2 ms middleware. Rules are versioned with the deploy, not with a dashboard toggle." },
@@ -134,7 +138,7 @@ store ContentStore {
 
     // Changelog: ten releases, newest first. Tag tones: added → success,
     // changed → info, fixed → warning, security → brand.
-    state releases = [
+    state releases: [Release] = [
         { id: "v9.4", date: "18 Sep", title: "Routing rules ship with the build", tags: ["added", "changed"], current: true },
         { id: "v9.3", date: "04 Sep", title: "Queues leave preview", tags: ["added"], current: false },
         { id: "v9.2", date: "27 Aug", title: "Cold start cut to 8.1 ms", tags: ["changed"], current: false },

@@ -1,7 +1,24 @@
 // Deployments: the 12 rows the table shows (of a pretended 128), the search,
 // the status facets, the sort, the selection, the density and the page.
+
+/// A deployment as the seed holds it: the hash, what shipped, where, and
+/// how long it took. `age` orders them; `dur` and `reg` are 0 while a
+/// build is still running.
+type Deploy {
+    h: String, msg: String, br: String, env: String, st: String,
+    dur: Number, reg: Number, when: String, age: Number
+}
+
+/// The same deployment as a row of the table: every number already a
+/// string, the status as a word and a tone, and what the row is doing.
+type DeployRow {
+    h: String, msg: String, br: String, env: String, st: String, when: String,
+    status: String, tone: String, duration: String, regions: String,
+    selected: Bool, menuOpen: Bool
+}
+
 store DeployStore {
-    state all = [
+    state all: [Deploy] = [
         { h: "8f2c41", msg: "Pin beta cohort to a known build", br: "main", env: "production", st: "ready", dur: 22.4, reg: 19, when: "2 min ago", age: 0 },
         { h: "7c91de", msg: "Bump edge runtime to v9.4", br: "main", env: "production", st: "ready", dur: 24.1, reg: 19, when: "4 h ago", age: 1 },
         { h: "5a04bb", msg: "Trim trailing spaces in cookie rules", br: "fix/cookie-trim", env: "preview", st: "building", dur: 0, reg: 0, when: "4 h ago", age: 2 },
@@ -45,7 +62,7 @@ store DeployStore {
 
     action countOf(st: String) { return all.filter(r => r.st == st).length }
 
-    action shape(r: Map) {
+    action shape(r: Deploy) {
         return {
             h: r.h, msg: r.msg, br: r.br, env: r.env, st: r.st, when: r.when,
             status: statusWord(r.st), tone: statusTone(r.st),
@@ -70,7 +87,7 @@ store DeployStore {
         return "neutral"
     }
 
-    action sortRows(list: [Any]) {
+    action sortRows(list: [Deploy]) {
         let copy = list.slice()
         dir = if sortDir == "asc" { 1 } else { -1 }
         if sortKey == "created" {
@@ -92,7 +109,7 @@ store DeployStore {
         return "reg"
     }
 
-    action compareBy(a: Map, b: Map, key: String) {
+    action compareBy(a: Deploy, b: Deploy, key: String) {
         let x = a[key]
         let y = b[key]
         if Number.isFinite(x) && Number.isFinite(y) { return x - y }
