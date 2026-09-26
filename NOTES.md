@@ -365,6 +365,23 @@ source because of it.
   the language still has no way to call `focus()` after a render. The
   browser's own focus trap now keeps the tab order inside the dialog.
 
+## The project file
+
+`webfluent.app.json` carries what 4 added that this site has a use for:
+
+- `build.csp: true` — the site is static files, so it ships the strict
+  policy and a `_headers` file. The policy widens itself by exactly the
+  Google Fonts origins `meta.fonts` declares; no page reports a violation.
+- `build.budget` — `app.js` and `styles.css` have a size to stay under,
+  checked against the gzipped output on every build. It reports; it never
+  fails the build.
+- `meta.favicon` — `public/favicon.svg`, the artboards' own mark: two
+  rotated squares, the one asset the site ships.
+
+`i18n`, `env`, `offline` and `motion` are left out on purpose: the site is
+one language, has no backend, and says what it wants of motion at each
+element that moves.
+
 ## Compiler changes this move needed
 
 One commit each in the WebFluent repository, with tests:

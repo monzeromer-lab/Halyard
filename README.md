@@ -40,6 +40,9 @@ Everything is fully responsive down to 375px; under 768px the product rail
 becomes the Mobile artboard's bottom tab bar and tables become card lists.
 
 ```
+webfluent.app.json the project: the theme, a static build with a strict CSP,
+                   a size budget, and what a link preview says
+public/favicon.svg the brand mark, the one asset the site ships
 src/
   App.wf           the router, 18 routes
   Theme.wf         Fluant Ink as 94 theme tokens (→ CSS custom properties)
