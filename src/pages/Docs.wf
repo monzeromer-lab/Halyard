@@ -47,11 +47,11 @@ page Docs(path: "/docs", title: "Routing rules", description: "A routing rule de
         Stack(role: "navigation", aria-label: "Documentation") {
             style { width: 272px; flex: none; border-right: 1px solid $line-hairline; padding: 32px 20px 64px 80px; gap: 0; position: sticky; top: 120px
                     @media (max-width: 1024px) { width: 100%; position: static; border-right: 0; border-bottom: 1px solid $line-hairline; padding: 24px 32px }  @media (max-width: 768px) { padding: 16px } }
-            TreeSection(name: "Start", count: "4", open: openStart, items: ContentStore.docsTree[0].items, current: "Routing rules") { on click { openStart = !openStart } }
-            TreeSection(name: "Runtime", count: "6", open: openRuntime, items: ContentStore.docsTree[1].items, current: "Routing rules") { on click { openRuntime = !openRuntime } }
-            TreeSection(name: "Builds", count: "4", open: openBuilds, items: ContentStore.docsTree[2].items, current: "Routing rules") { on click { openBuilds = !openBuilds } }
-            TreeSection(name: "Operate", count: "4", open: openOperate, items: ContentStore.docsTree[3].items, current: "Routing rules") { on click { openOperate = !openOperate } }
-            TreeSection(name: "Reference", count: "4", open: openReference, items: ContentStore.docsTree[4].items, current: "Routing rules") { on click { openReference = !openReference } }
+            TreeSection(name: "Start", count: "4", open: openStart, items: ContentStore.docsTree[0]?.items ?? [], current: "Routing rules") { on click { openStart = !openStart } }
+            TreeSection(name: "Runtime", count: "6", open: openRuntime, items: ContentStore.docsTree[1]?.items ?? [], current: "Routing rules") { on click { openRuntime = !openRuntime } }
+            TreeSection(name: "Builds", count: "4", open: openBuilds, items: ContentStore.docsTree[2]?.items ?? [], current: "Routing rules") { on click { openBuilds = !openBuilds } }
+            TreeSection(name: "Operate", count: "4", open: openOperate, items: ContentStore.docsTree[3]?.items ?? [], current: "Routing rules") { on click { openOperate = !openOperate } }
+            TreeSection(name: "Reference", count: "4", open: openReference, items: ContentStore.docsTree[4]?.items ?? [], current: "Routing rules") { on click { openReference = !openReference } }
         }
 
         // Prose

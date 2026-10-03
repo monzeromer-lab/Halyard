@@ -94,7 +94,7 @@ store DeployStore {
             copy.sort((a, b) => (b.age - a.age) * dir)
             return copy
         }
-        key = sortField(sortKey)
+        let key = sortField(sortKey)
         copy.sort((a, b) => compareBy(a, b, key) * dir)
         return copy
     }

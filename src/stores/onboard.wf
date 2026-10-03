@@ -39,7 +39,7 @@ store OnboardStore {
     derived noRepos = repos.length == 0
     derived picked = repoList.filter(r => r.id == repo)
     derived hasRepo = picked.length > 0
-    derived repoName = if hasRepo { picked[0].full } else { "—" }
+    derived repoName = picked.first()?.full ?? "—"
     derived envs = envList.map(e => { key: e.k, value: e.v, kind: if e.secret { "Secret" } else { "Plain" }, tone: if e.secret { "brass" } else { "neutral" }, checked: env.indexOf(e.k) > -1, label: (if env.indexOf(e.k) > -1 { "Do not import " } else { "Import " }) + e.k })
     derived envCount = env.length
     derived allOn = env.length == envList.length

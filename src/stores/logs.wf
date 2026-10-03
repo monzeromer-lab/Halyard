@@ -52,7 +52,7 @@ store LogStore {
     derived liveLabel = if follow { "Following" } else { "Paused" }
     derived picked = all.filter(r => r.t == sel)
     derived hasSelection = picked.length > 0
-    derived current = if hasSelection { shape(picked[0]) } else { shape(all[0]) }
+    derived current = shape(picked.first() ?? all.first() ?? Line(t: "00:00:00.000", lv: "info", rg: "", rt: "", st: "", ms: 0, msg: "", b: ""))
     derived trace = "tr_" + current.time.split(":").join("").split(".").join("")
     state spans: [Span] = [
         { name: "edge accept", left: "0%", width: "1.5%", color: "var(--viz-1)", ms: "2 ms" },

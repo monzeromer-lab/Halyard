@@ -10,7 +10,7 @@ component CommandPalette {
     Modal(visible: UiStore.paletteOpen, title: "Command palette", class: "hl-palette") {
         Row(align: .center) { style { gap: 12px; padding: 14px 18px; border-bottom: 1px solid $line-hairline; flex-wrap: nowrap }
             Icon("search") { style { color: $text-tertiary; display: inline-flex; font-size: 16px } }
-            Input(bind: q, id: "cp-q", placeholder: "Search commands, builds, domains", aria-label: "Search commands", autofocus: "true").search {
+            Input(bind: q, placeholder: "Search commands, builds, domains", aria-label: "Search commands", autofocus: "true").search {
                 style { flex-grow: 1; background: none; border: 0; outline: none; color: $text-primary; font: 400 16px/1.2 $font-sans; padding: 0; height: auto; &::placeholder { color: $text-tertiary } }
                 on input { UiStore.setQuery(q) } }
             Kbd(text: "esc") }
