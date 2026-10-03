@@ -59,24 +59,18 @@ AGENTS.md          the WebFluent language reference the build was written agains
 
 ## Building it
 
-The site is written in WebFluent 4. Install the compiler:
+The site is written in WebFluent 5. Install the compiler (5.0 or later):
 
 ```bash
 cargo install webfluent
 ```
 
-It relies on fixes made while this site was built, so if `wf build`
-complains, build the compiler from source instead:
-
-```bash
-git clone https://github.com/monzeromer-lab/WebFluent.git
-cd WebFluent && cargo install --path .
-```
-
 Then, in this repository:
 
 ```bash
+wf check     # every finding, nothing written — there are none
 wf build
+wf verify    # every route in a headless Chrome
 ```
 
 ```bash
@@ -111,4 +105,7 @@ by hand for everything the new language does better — typed seed data,
 keyed lists, pages framed by a `layout:`, labelled controls that wrap
 themselves in a field, overlays that are native `<dialog>`s with the
 browser's own focus trap, and the two animations the design always wanted.
-The last section of [NOTES.md](NOTES.md) is the full account.
+Then to WebFluent 5, whose checker found the reads of a list's first item
+that nothing guarded and a store action that assigned a name it never
+declared. The last two sections of [NOTES.md](NOTES.md) are the full
+account.

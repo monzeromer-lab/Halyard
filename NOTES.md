@@ -400,3 +400,33 @@ One commit each in the WebFluent repository, with tests:
 - an animation the page never painted settles at its end, not its start —
   a mount animation in a background tab left the element invisible for
   good.
+
+---
+
+# The move to WebFluent 5
+
+5.0 refuses what used to compile and then fail in the browser. `wf check`
+on this site found thirteen errors and one warning; each is fixed in the
+source rather than lowered or allowed, and `wf check` now reports nothing.
+
+| Where | What 5.0 said | What it was, and the change |
+|---|---|---|
+| `pages/Docs.wf` ×5 | `T04` — `ContentStore.docsTree[0]` may be null | The tree is seed data, read by position. A section that is not there is now an empty one: `docsTree[0]?.items ?? []`. |
+| `stores/deploys.wf` | `T13` — nothing declares `key` | `sortRows` assigned `key` without `let`. It ran — a store action declares such a name as a local — but only by accident. Now `let key = …`. |
+| `stores/graph.wf` ×3 | `T04` — `picked` may be null | The selected hop came from `filter(…)[0]`, nothing if `sel` named no hop. Now `hops.find(…)`, and `current` has an `if let` with a blank hop for the case. |
+| `stores/graph.wf` | `T04` — `hops.filter(…)[0]` may be null | A neighbour's label, read the same way. Now `hops.find(…)?.label ?? id`. |
+| `stores/logs.wf` | `T01` — `shape` wants a `Line`, given `Line?` | `if hasSelection { shape(picked[0]) } else { shape(all[0]) }`: the guard was a derived alias of `picked.length > 0`, which the checker does not see through, and `all[0]` had none. Now `shape(picked.first() ?? all.first() ?? Line(…))` — the selected line, else the newest, else a line of blanks. |
+| `stores/onboard.wf` | `T04` — `picked[0]` may be null | The same alias pattern. Now `picked.first()?.full ?? "—"`. |
+| `components/CommandPalette.wf` | `A16` — one id in a component placed twice | `id: "cp-q"` on the search field; nothing referred to it, and two pages place the palette. Removed. |
+
+Checked after the change: `wf build` (inside both budgets; `app.js` grew
+1.6 kB gzipped, the runtime's new guards), and `wf verify
+--returning-visitor` — all 17 routes, on a first visit and again with
+stored values, with no problems. By hand, in a browser: sorting the
+deployments table by each direction, picking a hop in the graph, selecting
+a log line (its trace id follows), choosing a repository in onboarding, and
+the docs tree's five sections.
+
+`wf fmt --check` lists 22 files the formatter would change; that was true
+under 4 as well, and is left for its own commit.
+
