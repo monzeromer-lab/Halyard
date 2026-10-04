@@ -1,9 +1,10 @@
 # NOTES — what the design does that WebFluent could not, and what was done instead
 
 This file is a deliverable of the build brief (`HALYARD_BUILD.md` §1.7, now in
-the history). Every adaptation is listed here, with the compiler change that removed the need where one was made. The
-compiler lives in the user's WebFluent repository; the changes are its own
-commits (`git log` there, from `refactor(codegen): share element_tag…` on).
+the history). Every adaptation is listed here, with the compiler change that
+removed the need where one was made. The compiler lives in the user's
+WebFluent repository; the changes are its own commits (`git log` there, from
+`refactor(codegen): share element_tag…` on).
 
 ## §0 — the five unknowns, answered from the compiler source
 
