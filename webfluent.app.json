@@ -7,9 +7,10 @@
     "builtin": "structural"
   },
   "build": {
-    "output": "./docs",
+    "output": "./build",
     "minify": true,
     "ssg": true,
+    "base_path": "/Halyard",
     "csp": true,
     "budget": {
       "app.js": "60 kB",
@@ -22,7 +23,7 @@
   "meta": {
     "title": "Halyard",
     "favicon": "/favicon.svg",
-    "site_url": "https://halyard.example.com",
+    "site_url": "https://monzeromer-lab.github.io/Halyard",
     "site_name": "Halyard",
     "description": "An edge runtime that treats a deploy as a routing change.",
     "lang": "en",

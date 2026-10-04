@@ -1,0 +1,46 @@
+# Build the site with WebFluent and publish it to GitHub Pages, on every
+# push to main (and by hand from the Actions tab).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push does not cancel one already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Pinned, so a WebFluent release cannot change a deploy under us.
+      - name: Install wf
+        run: curl -sSL https://raw.githubusercontent.com/monzeromer-lab/WebFluent/master/install.sh | WF_VERSION=v5.1.1 bash
+      - name: Build
+        run: ~/.webfluent/bin/wf build
+      # Every route in a headless Chrome: an error, a failed request or an
+      # empty page stops the deploy.
+      - name: Verify
+        run: ~/.webfluent/bin/wf verify
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

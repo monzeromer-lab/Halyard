@@ -82,6 +82,16 @@ wf serve
 routes) and should finish with zero warnings. `wf serve` serves it on
 port 3000.
 
+## Deploying it
+
+Every push to `main` builds the site, checks every route in a headless
+Chrome, and publishes it to GitHub Pages at
+<https://monzeromer-lab.github.io/Halyard/>
+([`.github/workflows/pages.yml`](.github/workflows/pages.yml)). The build
+output is not committed. Because a project site lives under `/Halyard/`, the
+config sets `"base_path": "/Halyard"`, and every link, script and asset is
+written under it.
+
 ## How it was built
 
 Two tracks, in order, one commit per step:
