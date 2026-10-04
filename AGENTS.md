@@ -1,4 +1,4 @@
-<!-- The WebFluent 5.0.1 language reference, written by `wf init`. A newer wf brings a newer one: https://github.com/monzeromer-lab/WebFluent/blob/master/AGENTS.md -->
+<!-- The WebFluent 5.1.0 language reference, written by `wf init`. A newer wf brings a newer one: https://github.com/monzeromer-lab/WebFluent/blob/master/AGENTS.md -->
 
 # WebFluent — Agent Role File
 
@@ -2705,6 +2705,7 @@ paint alike.
 | `E115` | A project script the compiler could not read (still linked; its names are not in scope) |
 | `V08` | An icon the runtime does not draw |
 | `V09` | A handler for an event the element does not fire |
+| `V10` | A `Host(tag: …)` it does not make — it makes `div`, `span`, `canvas`, `svg`, `section`, `figure`, `pre`, `p`, `ul`, `table`; any other is a `div` |
 
 The heading-outline rules (`A11`, `A12`) do not apply to `Presentation` or
 `Document` output, where an `h1` per slide or per section is correct.
