@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       # Pinned, so a WebFluent release cannot change a deploy under us.
       - name: Install wf
-        run: curl -sSL https://raw.githubusercontent.com/monzeromer-lab/WebFluent/master/install.sh | WF_VERSION=v5.1.1 bash
+        run: curl -sSL https://raw.githubusercontent.com/monzeromer-lab/WebFluent/master/install.sh | WF_VERSION=v5.2.0 bash
       - name: Build
         run: ~/.webfluent/bin/wf build
       # Every route in a headless Chrome: an error, a failed request or an
