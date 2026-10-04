@@ -18,8 +18,11 @@ does, the gap is written down in [NOTES.md](NOTES.md), together with what was
 done instead — and, in most cases, the compiler commit that closed it.
 
 The design itself — the 19 artboards, their HTML previews and the canvas —
-lived in `design/` while the app was built, and was removed once it was
-done. It is in the history: `git checkout efe1d97 -- design` brings it back.
+lived in `design/` while the app was built, beside the brief it was built
+from, `HALYARD_BUILD.md` (routes, seed data, page specs, milestones). Both
+were removed once the build was done, and both are in the history:
+`git checkout efe1d97 -- design` and `git checkout dff8c88 -- HALYARD_BUILD.md`
+bring them back.
 
 ## What is in here
 
@@ -57,7 +60,6 @@ src/
   pages/           one file per route
   components/      the Fluant Ink library in .wf
   stores/          14 stores: typed seed data and all the logic
-HALYARD_BUILD.md   the build spec: routes, seed data, page specs, milestones
 NOTES.md           every adaptation, every compiler change, every remaining gap
 AGENTS.md          the WebFluent language reference the build was written against
 ```
@@ -105,7 +107,7 @@ Two tracks, in order, one commit per step:
    the design needs that the language does not do, fix it there with tests.
    Fifty-odd commits: documented-but-broken behaviour first, then small
    features.
-2. **The app.** Milestones 0–13 from `HALYARD_BUILD.md` — config and theme,
+2. **The app.** Milestones 0–13 from the build brief — config and theme,
    the component library, each page in turn, then polish — each verified in
    a browser at 1440, 768 and 375px and committed as
    `halyard: <milestone> — <what changed>`.
