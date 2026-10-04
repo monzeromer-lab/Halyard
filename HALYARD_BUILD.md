@@ -1,5 +1,10 @@
 # Halyard — build spec for a WebFluent port
 
+> **The design files are no longer in the repository.** This is the brief the
+> app was built from, and it points at `design/` throughout. That folder was
+> removed once the build was done; `git checkout efe1d97 -- design` brings it
+> back.
+
 You are building **Halyard**, a fictional edge deploy platform, as a real WebFluent
 application in this repository. A complete visual design exists as 19 artboards and
 **it is in this repo at `design/`** — read `design/README.md` before you start.

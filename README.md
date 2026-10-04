@@ -1,5 +1,7 @@
 # Halyard — a WebFluent demo
 
+**Live: <https://monzeromer-lab.github.io/Halyard/>**
+
 **Halyard is not a real product.** It is a demo application for the
 [WebFluent](https://github.com/monzeromer-lab/WebFluent) language: a
 fictional edge-deploy platform ("an edge runtime that treats a deploy as a
@@ -14,6 +16,10 @@ escaping to hand-written HTML, CSS or JavaScript? Every page, component, store
 and style in `src/` is `.wf`. Where the language could not do what the design
 does, the gap is written down in [NOTES.md](NOTES.md), together with what was
 done instead — and, in most cases, the compiler commit that closed it.
+
+The design itself — the 19 artboards, their HTML previews and the canvas —
+lived in `design/` while the app was built, and was removed once it was
+done. It is in the history: `git checkout efe1d97 -- design` brings it back.
 
 ## What is in here
 
@@ -51,7 +57,6 @@ src/
   pages/           one file per route
   components/      the Fluant Ink library in .wf
   stores/          14 stores: typed seed data and all the logic
-design/            the artboards (authoritative), previews, canvas
 HALYARD_BUILD.md   the build spec: routes, seed data, page specs, milestones
 NOTES.md           every adaptation, every compiler change, every remaining gap
 AGENTS.md          the WebFluent language reference the build was written against

@@ -1,4 +1,5 @@
-// Fluant Ink — every token from design/artboards/Patterns.dc.html :root, plus
+// Fluant Ink — every token from design/artboards/Patterns.dc.html :root
+// (removed after the build; `git checkout efe1d97 -- design`), plus
 // the baseline names the structural stylesheet still reads (focus ring, overlay
 // fills, fonts, radii). Reference from any style block as "var(--surface-raised)".
 theme FluantInk {
