@@ -1,4 +1,4 @@
-<!-- The WebFluent 5.1.0 language reference, written by `wf init`. A newer wf brings a newer one: https://github.com/monzeromer-lab/WebFluent/blob/master/AGENTS.md -->
+<!-- The WebFluent 5.1.1 language reference, written by `wf init`. A newer wf brings a newer one: https://github.com/monzeromer-lab/WebFluent/blob/master/AGENTS.md -->
 
 # WebFluent — Agent Role File
 
