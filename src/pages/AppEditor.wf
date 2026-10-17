@@ -14,14 +14,14 @@ page AppEditor(path: "/app/editor", title: "Routing rules", description: "Edit r
                     Container { style { flex-grow: 1; padding: 0; width: auto }  Overline(text: "EXPLORER") }
                     IconBtn(icon: "plus", label: "New file", size: 26) }
                 Stack(role: "group", aria-label: "Files") { style { gap: 0; padding: 8px 6px; flex-grow: 1; @media (max-width: 1024px) { flex-direction: row; flex-wrap: wrap; gap: 2px } }
-                    for t in EditorStore.tree by t.name { TreeItem(name: t.name, indent: t.indent, isDir: t.isDir, openable: t.openable, current: t.current, problem: t.problem, problemColor: t.problemColor) { on click { EditorStore.open(t.file) } } } }
+                    for node in EditorStore.tree by node.name { TreeItem(name: node.name, indent: node.indent, isDir: node.isDir, openable: node.openable, current: node.current, problem: node.problem, problemColor: node.problemColor) { on click { EditorStore.open(node.file) } } } }
             }
 
             // Editor column
             Stack { style { flex-grow: 1; min-width: 0; gap: 0; flex-basis: 0; @media (max-width: 1024px) { flex-basis: 100% } }
                 Row(role: "tablist", aria-label: "Open files") { style { height: 38px; gap: 0; border-bottom: 1px solid $line-hairline; background: $surface-sunken; flex-wrap: nowrap; overflow-x: auto }
-                    for t in EditorStore.tabs by t.name {
-                        CodeTab(label: t.name, selected: t.selected, dot: t.dot, worst: t.worst) { on click { EditorStore.open(t.name) } }
+                    for tab in EditorStore.tabs by tab.name {
+                        CodeTab(label: tab.name, selected: tab.selected, dot: tab.dot, worst: tab.worst) { on click { EditorStore.open(tab.name) } }
                     } }
                 Stack(role: "region", aria-label: "{EditorStore.file}") { style { gap: 0; padding: 14px 0; font: 400 13px/1.7 $font-mono; flex-grow: 1; overflow-x: auto; min-height: 280px }
                     for l in EditorStore.lines {

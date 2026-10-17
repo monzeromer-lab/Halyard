@@ -32,7 +32,7 @@ store DeployStore {
         { h: "3ab5f1", msg: "Rollback: restore 0b92ef", br: "main", env: "production", st: "ready", dur: 0.4, reg: 19, when: "5 d ago", age: 10 },
         { h: "9c0e64", msg: "Instrument the checkout trace", br: "main", env: "production", st: "ready", dur: 22.0, reg: 19, when: "6 d ago", age: 11 }
     ]
-    state query = ""
+    state search = ""
     state facets = []
     state sortKey = "created"
     state sortDir = "desc"
@@ -42,7 +42,7 @@ store DeployStore {
     state page = 1
     state pages = 11
 
-    derived q = query.toLowerCase()
+    derived q = search.toLowerCase()
     derived matched = all.filter(r => (q == "" || (r.h + " " + r.msg + " " + r.br).toLowerCase().indexOf(q) > -1) && (facets.length == 0 || facets.indexOf(r.st) > -1))
     derived sorted = sortRows(matched)
     derived rows = sorted.map(r => shape(r))
@@ -128,7 +128,7 @@ store DeployStore {
         menu = ""
     }
 
-    action setQuery(v: String) { query = v  page = 1  menu = "" }
+    action setQuery(v: String) { search = v  page = 1  menu = "" }
     action toggleFacet(id: String) {
         if facets.indexOf(id) > -1 { facets = facets.filter(f => f != id) } else { facets = facets.concat([id]) }
         menu = ""
@@ -148,5 +148,5 @@ store DeployStore {
     action goTo(n: Number) { page = n  menu = "" }
     action prevPage() { page = Math.max(1, page - 1) }
     action nextPage() { page = Math.min(pages, page + 1) }
-    action reset() { query = ""  facets = []  page = 1 }
+    action reset() { search = ""  facets = []  page = 1 }
 }

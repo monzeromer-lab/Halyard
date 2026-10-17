@@ -10,7 +10,7 @@ type ChangedFile { name: String, add: Number, del: Number }
 type DiffLine { n: String, kind: String, text: String }
 
 store BuildStore {
-    state hash = "8f2c41"
+    state sha = "8f2c41"
     state stage = "compile"
     state tab = "output"
     state file = "routes.halyard.ts"
@@ -19,8 +19,8 @@ store BuildStore {
         "7c91de": { hash: "7c91de", status: "Ready", tone: "success", env: "production", traffic: "0% of traffic", commit: "d20b7e1", branch: "main", author: "[YOUR NAME]", trigger: "push", duration: "24.1 s", regions: "19/19" },
         "5a04bb": { hash: "5a04bb", status: "Building", tone: "info", env: "preview", traffic: "not routed", commit: "0c4e9a7", branch: "fix/cookie-trim", author: "[YOUR NAME]", trigger: "push", duration: "—", regions: "0/19" }
     }
-    derived known = builds[hash] != undefined
-    derived build = if known { builds[hash] } else { builds["8f2c41"] }
+    derived known = builds[sha] != undefined
+    derived build = if known { builds[sha] } else { builds["8f2c41"] }
 
     state stageList = [
         { id: "resolve", label: "Resolve", dur: "0.9 s", state: "done", note: "412 modules from the lockfile" },
@@ -47,7 +47,7 @@ store BuildStore {
     derived tabs = [
         { id: "output", label: "Output", count: "" }, { id: "diff", label: "Diff", count: "4" },
         { id: "artifacts", label: "Artifacts", count: "5" }, { id: "attestation", label: "Attestation", count: "" }
-    ].map(t => { id: t.id, label: t.label, count: t.count, selected: tab == t.id })
+    ].map(entry => { id: entry.id, label: entry.label, count: entry.count, selected: tab == entry.id })
     derived isOutput = tab == "output"
     derived isDiff = tab == "diff"
     derived isArtifacts = tab == "artifacts"
@@ -80,7 +80,7 @@ store BuildStore {
         { path: "attestation.intoto.jsonl", type: "application/jsonl", size: "4.1 kB", digest: "8f2c…a7" }
     ]
 
-    action open(h: String) { hash = h }
+    action open(h: String) { sha = h }
     action pickStage(id: String) { stage = id  tab = "output" }
     action pickTab(id: String) { tab = id }
     action pickFile(name: String) { file = name }

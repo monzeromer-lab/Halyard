@@ -31,7 +31,7 @@ store LogStore {
         { t: "14:02:38.401", lv: "info", rg: "dub1", rt: "GET /", st: "200", ms: 31, msg: "request completed", b: "8f2c41" },
         { t: "14:02:38.120", lv: "warn", rg: "cpt1", rt: "GET /api/stock", st: "200", ms: 640, msg: "kv read crossed region, leader fra1", b: "8f2c41" }
     ]
-    state query = ""
+    state search = ""
     state regex = false
     state levels = []
     state sel = ""
@@ -39,9 +39,9 @@ store LogStore {
     state levelColor = { error: "var(--danger)", warn: "var(--warning)", info: "var(--info)", debug: "var(--text-tertiary)" }
     state levelLabel = { error: "Error", warn: "Warn", info: "Info", debug: "Debug" }
 
-    derived badRegex = regex && query != "" && !patternOk(query)
-    derived pattern = if regex && query != "" && !badRegex { RegExp(query, "i") } else { null }
-    derived q = query.toLowerCase()
+    derived badRegex = regex && search != "" && !patternOk(search)
+    derived pattern = if regex && search != "" && !badRegex { RegExp(search, "i") } else { null }
+    derived q = search.toLowerCase()
     derived matched = all.filter(r => inQuery(r) && (levels.length == 0 || levels.indexOf(r.lv) > -1))
     derived rows = matched.map(r => shape(r))
     derived shown = rows.length
@@ -68,7 +68,7 @@ store LogStore {
     ]
 
     action inQuery(r: Line) {
-        if query == "" { return true }
+        if search == "" { return true }
         let hay = r.rt + " " + r.msg + " " + r.rg + " " + r.st
         if regex {
             if pattern == null { return true }
@@ -122,15 +122,15 @@ store LogStore {
         return { esc: false, cls: false, depth: st.depth, atom: true, lazy: false, bad: false }
     }
 
-    action setQuery(v: String) { query = v }
+    action setQuery(v: String) { search = v }
     action toggleRegex() { regex = !regex }
     action toggleLevel(id: String) {
         if levels.indexOf(id) > -1 { levels = levels.filter(l => l != id) } else { levels = levels.concat([id]) }
     }
     action toggleFollow() { follow = !follow }
-    action pick(t: String) { if sel == t { sel = "" } else { sel = t } }
+    action pick(time: String) { if sel == time { sel = "" } else { sel = time } }
     action close() { sel = "" }
-    action reset() { query = ""  levels = []  regex = false }
+    action reset() { search = ""  levels = []  regex = false }
     action move(step: Number) {
         let keys = rows.map(r => r.time)
         if keys.length == 0 { return }

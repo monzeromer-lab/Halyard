@@ -18,7 +18,7 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
             Select.Option("All 19 regions", value: "all")  Select.Option("fra1", value: "fra1")  Select.Option("iad1", value: "iad1")  Select.Option("sin1", value: "sin1")  Select.Option("gru1", value: "gru1")
         }
         Text("Environment", id: "obs-env-label") { style { margin: 0; font: 600 12px/1.2 $font-sans; color: $text-secondary } }
-        Select(id: "obs-env", value: MetricsStore.env, aria-labelledby: "obs-env-label") {
+        Select(id: "obs-env", value: MetricsStore.target, aria-labelledby: "obs-env-label") {
             style { width: 148px; height: 30px; font: 400 13px/1.2 $font-sans; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 10px; @media (max-width: 480px) { width: 100% } }
             on change(event) { MetricsStore.setEnv(event.target.value) }
             Select.Option("production", value: "production")  Select.Option("preview", value: "preview")
@@ -61,11 +61,11 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                     Stack(role: "status").fadeIn.fast {
                         style { position: absolute; left: {MetricsStore.tipLeft}; top: 10px; min-width: 150px; gap: 4px; background: $surface-overlay; border: 1px solid $line-strong; border-radius: $radius-sm; padding: 10px 12px; box-shadow: $shadow-md; pointer-events: none; z-index: 600 }
                         Container { style { padding: 0 0 4px; width: auto }  Overline(text: MetricsStore.tipTime) }
-                        for t in MetricsStore.tipRows by t.name {
+                        for tip in MetricsStore.tipRows by tip.name {
                             Row(align: .center) { style { gap: 8px; flex-wrap: nowrap }
-                                Container { style { width: 8px; height: 8px; border-radius: 2px; background: {t.color}; flex: none; padding: 0; margin: 0 } }
-                                Text(t.name) { style { margin: 0; flex-grow: 1; font-size: 12px; color: $text-secondary } }
-                                Num(text: t.value, size: "12px", color: "var(--text-primary)", weight: "500") }
+                                Container { style { width: 8px; height: 8px; border-radius: 2px; background: {tip.color}; flex: none; padding: 0; margin: 0 } }
+                                Text(tip.name) { style { margin: 0; flex-grow: 1; font-size: 12px; color: $text-secondary } }
+                                Num(text: tip.value, size: "12px", color: "var(--text-primary)", weight: "500") }
                         }
                     }
                 }

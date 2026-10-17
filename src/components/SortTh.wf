@@ -3,9 +3,9 @@
 component SortTh(label: String, key: String, numeric: Bool = false, width: String = "auto") {
     use DeployStore
     derived sort = DeployStore.sortState(key)
-    derived on = DeployStore.sortKey == key
-    derived arrowOpacity = if on { "1" } else { "0" }
-    derived arrowRot = if on && DeployStore.sortDir == "desc" { "rotate(180deg)" } else { "rotate(0deg)" }
+    derived sorted = DeployStore.sortKey == key
+    derived arrowOpacity = if sorted { "1" } else { "0" }
+    derived arrowRot = if sorted && DeployStore.sortDir == "desc" { "rotate(180deg)" } else { "rotate(0deg)" }
     derived align = if numeric { "right" } else { "left" }
     derived justify = if numeric { "flex-end" } else { "flex-start" }
     Table.Cell("", aria-sort: sort, data-numeric: numeric).header {

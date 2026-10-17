@@ -1,5 +1,5 @@
 component FacetChip(label: String, id: String, color: String, count: Number) {
     use DeployStore
-    derived on = DeployStore.facets.indexOf(id) > -1
-    Chip(label: label, pressed: on, count: "{count}") { on click { DeployStore.toggleFacet(id) } }
+    derived selected = DeployStore.facets.indexOf(id) > -1
+    Chip(label: label, pressed: selected, count: "{count}") { on click { DeployStore.toggleFacet(id) } }
 }

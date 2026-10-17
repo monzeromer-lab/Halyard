@@ -1,8 +1,8 @@
-page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", description: "One build: its pipeline, diff, artifacts and attestation.", noindex: true, layout: AppShell(crumb: "Build {hash}")) {
+page AppBuild(path: "/app/builds/:sha", sha: String, title: "Build", description: "One build: its pipeline, diff, artifacts and attestation.", noindex: true, layout: AppShell(crumb: "Build {sha}")) {
     use BuildStore
-    BuildStore.open(hash)
+    BuildStore.open(sha)
 
-    SrTitle(text: "Build {hash}")
+    SrTitle(text: "Build {sha}")
     if BuildStore.known {
         // Header: hash, badges, actions
         Stack { style { gap: 14px; padding: 20px 28px 16px; border-bottom: 1px solid $line-hairline; @media (max-width: 768px) { padding: 16px } }
@@ -41,10 +41,10 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
         // Tabs
         Row(align: .end, role: "tablist", aria-label: "Build detail") {
             style { padding: 0 28px; border-bottom: 1px solid $line-hairline; gap: 26px; flex-wrap: wrap; align-items: flex-end; @media (max-width: 768px) { padding: 0 16px; gap: 18px } }
-            for t in BuildStore.tabs by t.id {
+            for tab in BuildStore.tabs by tab.id {
                 Container { style { padding: 14px 0 0; width: auto; margin: 0; flex: none; display: flex; align-items: baseline; gap: 7px }
-                    TabButton(label: t.label, selected: t.selected) { on click { BuildStore.pickTab(t.id) } }
-                    if t.count != "" { Num(text: t.count, size: "13px", color: "var(--text-disabled)", weight: "500") } }
+                    TabButton(label: tab.label, selected: tab.selected) { on click { BuildStore.pickTab(tab.id) } }
+                    if tab.count != "" { Num(text: tab.count, size: "13px", color: "var(--text-disabled)", weight: "500") } }
             }
         }
 
@@ -111,7 +111,7 @@ page AppBuild(path: "/app/builds/:hash", hash: String, title: "Build", descripti
         }
     } else {
         Container { style { padding: 48px 28px; width: 100%; max-width: 100% }
-            EmptyState(title: "No build {hash}", body: "That hash is not a build of storefront-edge. It may belong to another project, or it was pruned.") {
+            EmptyState(title: "No build {sha}", body: "That hash is not a build of storefront-edge. It may belong to another project, or it was pruned.") {
                 FlButton(label: "See all deployments", variant: "secondary", size: "sm", to: "/app/deployments")
             } }
     }

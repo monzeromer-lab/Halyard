@@ -8,7 +8,7 @@ page AppOverview(path: "/app", title: "Overview", description: "The live release
             Row(align: .center) { style { flex-wrap: wrap; gap: 12px }
                 Heading("{ProjectStore.name}").h1 { style { margin: 0; font-size: 34px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; @media (max-width: 768px) { font-size: 26px } } }
                 StatusBadge(label: "Ready", tone: "success")
-                StatusBadge(label: ProjectStore.env, tone: "neutral", dot: false) }
+                StatusBadge(label: ProjectStore.stage, tone: "neutral", dot: false) }
             Row(align: .center) { style { flex-wrap: wrap; gap: 14px; font-size: 13px; color: $text-tertiary }
                 Num(text: ProjectStore.release, size: "13px", color: "var(--text-tertiary)", weight: "400")
                 Text("·") { style { margin: 0; color: $text-tertiary } }
@@ -27,8 +27,8 @@ page AppOverview(path: "/app", title: "Overview", description: "The live release
 
     Grid(columns: 4) {
         style { gap: 16px; padding: 20px 28px; @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)) }  @media (max-width: 768px) { padding: 16px }  @media (max-width: 480px) { grid-template-columns: 1fr } }
-        for t in MetricsStore.tiles by t.label {
-            StatTile(label: t.label, value: t.value, unit: t.unit, delta: t.delta, tone: t.tone, note: t.note, bars: t.bars, color: t.color)
+        for tile in MetricsStore.tiles by tile.label {
+            StatTile(label: tile.label, value: tile.value, unit: tile.unit, delta: tile.delta, tone: tile.tone, note: tile.note, bars: tile.bars, color: tile.color)
         }
     }
 

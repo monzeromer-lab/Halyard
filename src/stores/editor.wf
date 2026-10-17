@@ -66,7 +66,7 @@ store EditorStore {
     }
 
     derived tabs = openFiles.map(n => { name: n, selected: file == n, dot: markColor(worstOf(n)), worst: worstOf(n) })
-    derived tree = treeList.map(t => { name: t.n, indent: "{10 + t.d * 14}px", isDir: t.k == "dir", openable: t.f != "", file: t.f, current: t.f != "" && t.f == file, problem: worstOf(t.f), problemColor: markColor(worstOf(t.f)) })
+    derived tree = treeList.map(entry => { name: entry.n, indent: "{10 + entry.d * 14}px", isDir: entry.k == "dir", openable: entry.f != "", file: entry.f, current: entry.f != "" && entry.f == file, problem: worstOf(entry.f), problemColor: markColor(worstOf(entry.f)) })
     derived src = files[file]
     derived lines = src.map((l, n) => { n: "{n + 1}", mark: l.m, text: l.t, bg: if l.m == "error" { "var(--danger-soft)" } else if l.m == "warn" { "var(--warning-soft)" } else { "transparent" }, edge: markColor(l.m) })
     derived problems = problemsOf[file].map(p => { message: p.m, where: p.f + ":" + p.l, code: p.code, tone: if p.k == "error" { "danger" } else { "warning" }, color: markColor(p.k), icon: if p.k == "error" { "close" } else { "warning" } })

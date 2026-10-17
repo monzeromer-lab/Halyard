@@ -146,11 +146,11 @@ page Docs(path: "/docs", title: "Routing rules", description: "A routing rule de
             style { width: 232px; flex: none; padding: 40px 80px 64px 0; gap: 12px; position: sticky; top: 120px; @media (max-width: 1024px) { display: none } }
             Overline(text: "ON THIS PAGE")
             Stack { style { gap: 0 }
-                for t in ContentStore.docsToc {
-                    if toc == t.id {
-                        Link(t.label, to: "/docs", aria-current: "true") { style { display: block; padding: 5px 0 5px 14px; border-left: 2px solid $brand; font: 400 13px/1.45 $font-sans; color: $text-primary; text-decoration: none } on click { toc = t.id } }
+                for entry in ContentStore.docsToc {
+                    if toc == entry.id {
+                        Link(entry.label, to: "/docs", aria-current: "true") { style { display: block; padding: 5px 0 5px 14px; border-left: 2px solid $brand; font: 400 13px/1.45 $font-sans; color: $text-primary; text-decoration: none } on click { toc = entry.id } }
                     } else {
-                        Link(t.label, to: "/docs") { style { display: block; padding: 5px 0 5px 14px; border-left: 2px solid $line-hairline; font: 400 13px/1.45 $font-sans; color: $text-tertiary; text-decoration: none; &:hover { color: $text-primary; border-color: $line-strong } } on click { toc = t.id } }
+                        Link(entry.label, to: "/docs") { style { display: block; padding: 5px 0 5px 14px; border-left: 2px solid $line-hairline; font: 400 13px/1.45 $font-sans; color: $text-tertiary; text-decoration: none; &:hover { color: $text-primary; border-color: $line-strong } } on click { toc = entry.id } }
                     }
                 }
             }

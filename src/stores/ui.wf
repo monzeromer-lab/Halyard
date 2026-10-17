@@ -9,7 +9,7 @@ store UiStore {
     state drawerOpen = false
     state menuOpen = false
     state popoverOpen = false
-    state query = ""
+    state search = ""
     state toasts = []
     state nextToast = 1
     state chips = ["5xx"]
@@ -22,7 +22,7 @@ store UiStore {
         { name: "Actions", items: [{ label: "Deploy the current branch", hint: "⌘ ⇧ D", to: "" }, { label: "Roll back to the previous build", hint: "", to: "" }, { label: "Invite a team member", hint: "", to: "/app/settings" }, { label: "Open the routing rules", hint: "", to: "/app/editor" }] },
         { name: "Recent", items: [{ label: "Build 8f2c41", hint: "", to: "/app/builds/8f2c41" }, { label: "Trace tr_140241118", hint: "", to: "/app/logs" }, { label: "Domain storefront.example.com", hint: "", to: "/app/settings" }] }
     ]
-    derived q = query.toLowerCase()
+    derived q = search.toLowerCase()
     derived groups = groupList.map(g => { name: g.name, items: g.items.filter(it => q == "" || it.label.toLowerCase().indexOf(q) > -1) }).filter(g => g.items.length > 0)
     derived paletteCount = groups.reduce((n, g) => n + g.items.length, 0)
     derived paletteEmpty = paletteCount == 0
@@ -31,7 +31,7 @@ store UiStore {
     state classes = ["2xx", "3xx", "4xx", "5xx"]
     derived drawerChips = classes.map(c => { label: c, pressed: chips.indexOf(c) > -1 })
 
-    derived toastRows = toasts.map(t => { id: t.id, title: t.title, body: t.body, color: toneColor(t.kind), edge: toneEdge(t.kind), dismissLabel: "Dismiss: " + t.title })
+    derived toastRows = toasts.map(item => { id: item.id, title: item.title, body: item.body, color: toneColor(item.kind), edge: toneEdge(item.kind), dismissLabel: "Dismiss: " + item.title })
 
     action toneColor(k: String) {
         if k == "success" { return "var(--success)" }
@@ -53,10 +53,10 @@ store UiStore {
         drawerOpen = name == "drawer"
         menuOpen = name == "menu"
         popoverOpen = name == "popover"
-        query = ""
+        search = ""
     }
     action close() { open("") }
-    action setQuery(v: String) { query = v }
+    action setQuery(v: String) { search = v }
     action toggleChip(c: String) {
         if chips.indexOf(c) > -1 { chips = chips.filter(x => x != c) } else { chips = chips.concat([c]) }
     }
@@ -69,6 +69,6 @@ store UiStore {
         toasts = next.concat([{ id: nextToast, kind: kind, title: title, body: body }])
         nextToast = nextToast + 1
     }
-    action dismiss(id: Number) { toasts = toasts.filter(t => t.id != id) }
+    action dismiss(id: Number) { toasts = toasts.filter(item => item.id != id) }
     action clearToasts() { toasts = [] }
 }

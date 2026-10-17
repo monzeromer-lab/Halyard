@@ -12,7 +12,7 @@ page AppSettings(path: "/app/settings", title: "Settings", description: "Project
         Stack { style { width: 232px; flex: none; gap: 0; border-right: 1px solid $line-hairline; padding: 20px 12px; @media (max-width: 768px) { width: 100%; border-right: 0; border-bottom: 1px solid $line-hairline; padding: 12px 16px } }
             Container { style { padding: 0 12px 10px; width: auto; margin: 0; @media (max-width: 768px) { display: none } }  Overline(text: "PROJECT SETTINGS") }
             Stack(role: "group", aria-label: "Settings sections") { style { gap: 2px; @media (max-width: 768px) { flex-direction: row; overflow-x: auto; gap: 4px } }
-                for t in SettingsStore.tabs by t.id { SubNavLink(label: t.label, icon: t.icon, current: t.current, danger: t.danger) { on click { SettingsStore.pick(t.id) } } } }
+                for tab in SettingsStore.tabs by tab.id { SubNavLink(label: tab.label, icon: tab.icon, current: tab.current, danger: tab.danger) { on click { SettingsStore.pick(tab.id) } } } }
             Container { style { margin: 18px 0; width: auto; padding: 0; @media (max-width: 768px) { display: none } }  Rule }
             Text("Organisation-wide settings, including SSO and the audit log, live one level up.") { style { margin: 0; padding: 0 12px; font-size: 12px; line-height: 1.6; color: $text-tertiary; @media (max-width: 768px) { display: none } } }
         }

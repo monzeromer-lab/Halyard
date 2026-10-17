@@ -31,7 +31,7 @@ component AppShell(crumb: String) {
                 Text("HL") { style { width: 24px; height: 24px; border-radius: 6px; background: $brand-soft; color: $text-brand; display: inline-flex; align-items: center; justify-content: center; font: 700 11px/1 $font-mono; flex: none; margin: 0 } }
                 Stack { style { flex-grow: 1; min-width: 0; gap: 2px }
                     Text("{ProjectStore.name}") { style { margin: 0; font: 600 13px/1.2 $font-sans; color: $text-primary; white-space: nowrap; overflow: hidden; text-overflow: ellipsis } }
-                    Text("{ProjectStore.id} · {ProjectStore.env}") { style { margin: 0; font: 400 11px/1.2 $font-mono; color: $text-tertiary } } }
+                    Text("{ProjectStore.id} · {ProjectStore.stage}") { style { margin: 0; font: 400 11px/1.2 $font-mono; color: $text-tertiary } } }
                 Icon("chevron-down") { style { color: $text-tertiary; display: inline-flex; font-size: 14px } }
             }
             Container { style { padding: 0 10px 8px; width: auto }  Overline(text: "PROJECT") }

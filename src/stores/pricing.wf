@@ -41,9 +41,9 @@ store PricingStore {
     derived recommend = if plan == "Hobby" { "That volume fits inside the free tier. Nothing to pay until you pass it." } else if plan == "Team" { "Team pools this volume across every project, so one busy service does not push the others over." } else { "Past this point a negotiated commitment is cheaper than the list rate. Talk to us." }
     derived seatPrice = if annual { "[YOUR PRICE − 20%]" } else { "[YOUR PRICE]" }
 
-    action pctOf(part: Number) {
+    action pctOf(share: Number) {
         if total == 0 { return 0 }
-        return Math.round(part / total * 100)
+        return Math.round(share / total * 100)
     }
 
     action setPeriod(p: String) { period = p }

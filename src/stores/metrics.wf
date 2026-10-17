@@ -13,7 +13,7 @@ store MetricsStore {
     state range = "24h"
     state off = []
     state region = "all"
-    state env = "production"
+    state target = "production"
     state table = false
 
     // Overview tiles: [p95 ms, error %, median build s, cold start ms] per range.
@@ -112,7 +112,7 @@ store MetricsStore {
 
     action setRange(r: String) { range = r  hover = -1 }
     action setRegion(r: String) { region = r }
-    action setEnv(e: String) { env = e }
+    action setEnv(e: String) { target = e }
     action toggleTable() { table = !table }
     action toggleSeries(name: String) {
         if off.indexOf(name) > -1 { off = off.filter(n => n != name) } else { off = off.concat([name]) }

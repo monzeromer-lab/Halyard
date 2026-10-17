@@ -1,7 +1,7 @@
 page AppDeployments(path: "/app/deployments", title: "Deployments", description: "Every deployment of storefront-edge, newest first.", noindex: true, layout: AppShell(crumb: "Deployments")) {
     use DeployStore
     on key("Escape") { DeployStore.closeMenu() }
-    state query = ""
+    state search = ""
 
     SrTitle(text: "Deployments")
     // Toolbar
@@ -9,10 +9,10 @@ page AppDeployments(path: "/app/deployments", title: "Deployments", description:
         style { padding: 16px 28px; flex-wrap: nowrap; gap: 12px; border-bottom: 1px solid $line-hairline; @media (max-width: 1024px) { flex-wrap: wrap }  @media (max-width: 768px) { padding: 12px 16px } }
         Container { style { position: relative; width: 300px; flex: none; padding: 0; @media (max-width: 768px) { width: 100% } }
             Icon("search") { style { position: absolute; left: 11px; top: 11px; color: $text-tertiary; pointer-events: none; display: inline-flex; font-size: 16px; z-index: 1 } }
-            Input(bind: query, id: "dep-q", placeholder: "Hash, message or branch", aria-label: "Search deployments").search {
+            Input(bind: search, id: "dep-q", placeholder: "Hash, message or branch", aria-label: "Search deployments").search {
                 style { height: 38px; width: 100%; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 12px 0 34px; font: 400 14px/1.2 $font-sans
                         &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring } }
-                on input { DeployStore.setQuery(query) }
+                on input { DeployStore.setQuery(search) }
             } }
         Row { style { gap: 8px; flex-grow: 1 }
             FacetChip(label: "Ready", id: "ready", color: "var(--success)", count: DeployStore.counts.ready)
@@ -83,7 +83,7 @@ page AppDeployments(path: "/app/deployments", title: "Deployments", description:
                     Icon("search") { style { color: $text-disabled; font-size: 22px; display: inline-flex } }
                     Text("No deployments match") { style { margin: 0; font: 700 17px/1.3 $font-sans } }
                     Text("Nothing in the last 128 deployments matches that search and those filters. Clear them to see the full list again.") { style { margin: 0; font-size: 14px; color: $text-tertiary; max-width: 46ch } }
-                    FlButton(label: "Clear filters", variant: "secondary", size: "sm") { on click { DeployStore.reset()  query = "" } } }
+                    FlButton(label: "Clear filters", variant: "secondary", size: "sm") { on click { DeployStore.reset()  search = "" } } }
             }
         }
 
@@ -106,7 +106,7 @@ page AppDeployments(path: "/app/deployments", title: "Deployments", description:
             }
             if DeployStore.empty {
                 EmptyState(title: "No deployments match", body: "Nothing in the last 128 deployments matches that search and those filters.") {
-                    FlButton(label: "Clear filters", variant: "secondary", size: "sm") { on click { DeployStore.reset()  query = "" } } }
+                    FlButton(label: "Clear filters", variant: "secondary", size: "sm") { on click { DeployStore.reset()  search = "" } } }
             }
         }
     }
