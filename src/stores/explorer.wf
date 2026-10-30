@@ -55,7 +55,7 @@ store ExplorerStore {
     action setSource(v: String) { source = v  ran = false }
     action fieldOf(id: Number) { return fields[id] }
     action opOf(id: Number) { return ops[id] }
-    action valueOf(id: Number) { return values[id] }
+    action valueAt(id: Number) { return values[id] }
     action withKey(m: Map, id: Number, v: String) {
         let copy = Object.assign({}, m)
         copy[id] = v
