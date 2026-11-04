@@ -23,7 +23,7 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
                     Overline(text: "EDGE RUNTIME · 19 REGIONS · ONE ARTIFACT")
                     Heading("Ship to every region at once.").h1.slideUp {
                         style { margin: 0; font-family: $font-display; font-size: 96px; line-height: 0.92; letter-spacing: -0.03em; font-weight: 600; max-width: 12ch
-                                @media (max-width: 1024px) { font-size: 64px }  @media (max-width: 768px) { font-size: 44px } }
+                            @media (max-width: 1024px) { font-size: 64px }  @media (max-width: 768px) { font-size: 44px } }
                     }
                     Lead(text: "Halyard builds your app once, signs the artifact, and switches routing in all 19 regions in the same second. No region flags, no staged rollout to configure, no cache to warm afterwards.")
                     Row(align: .center) {
@@ -64,10 +64,10 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
             // nineteen names once.
             Row(align: .center, aria-label: "Regions Halyard deploys to") {
                 style { margin-top: 64px; border-top: 1px solid $line-hairline; border-bottom: 1px solid $line-hairline; padding: 18px 0; gap: 0; overflow: hidden; flex-wrap: nowrap
-                        mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent) }
+                    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent) }
                 Row(align: .center) {
                     style { gap: 0; flex-wrap: nowrap; width: max-content; animation: Marquee 42s linear infinite
-                            @media (prefers-reduced-motion: reduce) { animation: none } }
+                        @media (prefers-reduced-motion: reduce) { animation: none } }
                     Row(align: .center) {
                         style { gap: 0; flex-wrap: nowrap }
                         for r in ContentStore.regions by r {
@@ -241,7 +241,7 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
                     Stack { style { gap: 0; border-bottom: 1px solid $line-hairline }
                         Button("", type: "button", aria-expanded: faq == f.id) {
                             style { width: 100%; background: none; border: 0; padding: 20px 0; display: flex; align-items: center; gap: 16px; cursor: pointer; color: $text-primary; font: 700 20px/1.3 $font-sans; text-align: left; letter-spacing: -0.01em
-                                    &:hover { color: $text-brand }  @media (max-width: 768px) { font-size: 17px } }
+                                &:hover { color: $text-brand }  @media (max-width: 768px) { font-size: 17px } }
                             on click { if faq == f.id { faq = "" } else { faq = f.id } }
                             Text(f.q) { style { margin: 0; flex-grow: 1; font: inherit; color: inherit } }
                             if faq == f.id { Icon("chevron-down") { style { color: $text-tertiary; display: inline-flex; transform: rotate(180deg); transition: transform $d-base $ease-standard } } }
@@ -260,7 +260,7 @@ page Home(path: "/", title: "Ship to every region at once", description: "Halyar
     Wrap {
         Row(align: .center) {
             style { position: relative; overflow: hidden; border-radius: $radius-2xl; border: 1px solid $line-default; background: $surface-raised; padding: 72px 64px; gap: 48px; flex-wrap: nowrap
-                    @media (max-width: 1024px) { flex-wrap: wrap; padding: 40px 24px } }
+                @media (max-width: 1024px) { flex-wrap: wrap; padding: 40px 24px } }
             Container { style { position: absolute; right: -100px; bottom: -240px; width: 620px; height: 620px; border-radius: 50%; background: radial-gradient(circle, rgba(255,106,43,.26), rgba(11,12,14,0) 66%); pointer-events: none; padding: 0; margin: 0; max-width: none } }
             Stack { style { position: relative; flex-grow: 1; gap: 16px }
                 DisplayHeading(text: "Your first deploy takes about four minutes.", size: "lg")
