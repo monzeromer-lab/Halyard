@@ -6,7 +6,7 @@ component TreeSection(name: String, count: String, open: Bool, items: [Any], cur
         style { gap: 0; margin-bottom: 8px }
         Button("", type: "button", aria-expanded: open) {
             style { width: 100%; background: none; border: 0; display: flex; align-items: center; gap: 8px; padding: 8px; color: $text-primary
-                    font: 700 12px/1.2 $font-sans; letter-spacing: 0.06em; cursor: pointer; text-transform: uppercase; border-radius: 6px; &:hover { background: $surface-hover } }
+                font: 700 12px/1.2 $font-sans; letter-spacing: 0.06em; cursor: pointer; text-transform: uppercase; border-radius: 6px; &:hover { background: $surface-hover } }
             Icon("chevron-right") { style { color: $text-tertiary; transform: {rot}; display: inline-flex; transition: transform $d-fast $ease-standard; font-size: 13px } }
             Text(name) { style { margin: 0; flex-grow: 1; text-align: left; font: inherit; color: inherit } }
             Num(text: count, size: "11px", color: "var(--text-disabled)")

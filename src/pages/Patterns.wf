@@ -54,7 +54,7 @@ page Patterns(path: "/patterns", title: "Design reference", description: "The Fl
             Overline(text: "FLUANT INK · PORTING REFERENCE")
             Heading("The contract, component by component.").h1 {
                 style { margin: 0; max-width: 20ch; font-family: $font-display; font-size: 72px; line-height: 0.94; letter-spacing: -0.025em; font-weight: 600
-                        @media (max-width: 768px) { font-size: 40px } }
+                    @media (max-width: 768px) { font-size: 40px } }
             }
             Text("Every board on this canvas is built from what is on this page. Emit the same element, the same attributes and the same tokens and the stylesheet carries the design — that is the whole porting story.") {
                 style { margin: 0; max-width: 72ch; font-size: 18px; line-height: 1.6; color: $text-secondary }
@@ -173,8 +173,8 @@ page Patterns(path: "/patterns", title: "Design reference", description: "The Fl
                     Table(caption: "Example deployment rows") {
                         style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans }
                         Table.Head { Table.Row {
-                            Th(text: "Build")  Th(text: "Branch")  Th(text: "Status")  Th(text: "Duration", numeric: true)  Th(text: "Regions", numeric: true)
-                        } }
+                                Th(text: "Build")  Th(text: "Branch")  Th(text: "Status")  Th(text: "Duration", numeric: true)  Th(text: "Regions", numeric: true)
+                            } }
                         Table.Body {
                             Table.Row { style { &:hover { background: $surface-hover } }
                                 Td(text: "8f2c41", mono: true)  Td(text: "main")  Table.Cell("") { style { padding: 12px; border-bottom: 1px solid $line-hairline }  StatusBadge(label: "Ready", tone: "success") }  Td(text: "22.4", numeric: true)  Td(text: "19/19", numeric: true) }

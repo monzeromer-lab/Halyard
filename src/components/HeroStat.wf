@@ -1,8 +1,8 @@
 component HeroStat(label: String, value: String, unit: String, note: String, noteColor: String, bars: [Any], color: String) {
     Stack(data-interactive: "true") {
         style { gap: 12px; padding: 20px; background: $surface-raised; border: 1px solid $line-default; border-radius: $radius-md
-                transition: border-color $d-base $ease-standard, box-shadow $d-base $ease-standard, transform $d-base $ease-standard
-                &:hover { border-color: $line-strong; box-shadow: $shadow-md; transform: translateY(-2px) } }
+            transition: border-color $d-base $ease-standard, box-shadow $d-base $ease-standard, transform $d-base $ease-standard
+            &:hover { border-color: $line-strong; box-shadow: $shadow-md; transform: translateY(-2px) } }
         Overline(text: label)
         Row(align: .baseline) { style { flex-wrap: nowrap; gap: 8px }
             Num(text: value, size: "34px", weight: "500")

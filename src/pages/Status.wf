@@ -2,7 +2,6 @@ page Status(path: "/status", title: "Halyard status", description: "Live status 
     use StatusStore
     state email = ""
 
-
     // The status page has its own minimal header.
     Row(align: .center, role: "banner") {
         style { height: 68px; flex-wrap: nowrap; gap: 16px; padding: 0 64px; border-bottom: 1px solid $line-hairline; max-width: 1200px; margin: 0 auto; width: 100%; @media (max-width: 768px) { padding: 0 16px; gap: 12px } }
@@ -103,7 +102,7 @@ page Status(path: "/status", title: "Halyard status", description: "Live status 
                     SubscribeForm(id: "st-sub", label: "Email", help: StatusStore.helpText, helpColor: StatusStore.helpColor, button: StatusStore.subLabel) {
                         Input(bind: email, id: "st-sub", placeholder: "you@company.com", aria-labelledby: "st-sub-label", aria-invalid: StatusStore.invalid).email {
                             style { height: 38px; flex-grow: 1; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 12px; font: 400 14px/1.2 $font-sans
-                                    &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
+                                &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
                             on input { StatusStore.setEmail(email) }
                         }
                     }

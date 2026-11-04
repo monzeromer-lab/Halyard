@@ -4,6 +4,6 @@ component TabButton(label: String, selected: Bool) {
     derived line = if selected { "var(--brand)" } else { "transparent" }
     Button(label, type: "button", role: "tab", aria-selected: selected) {
         style { background: none; border: 0; border-bottom: 2px solid var(--line); --line: {line}; padding: 0 2px 12px; margin-bottom: -1px; color: {fg}; font: 600 14px/1.2 $font-sans; cursor: pointer
-                transition: color $d-fast $ease-standard; &:hover { color: $text-secondary } }
+            transition: color $d-fast $ease-standard; &:hover { color: $text-secondary } }
     }
 }

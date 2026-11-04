@@ -18,13 +18,13 @@ component AppShell(crumb: String) {
         // Rail
         Stack(role: "navigation", aria-label: "Project") {
             style { width: 236px; flex: none; background: $surface-sunken; border-right: 1px solid $line-hairline; padding: 16px 12px; gap: 0; position: sticky; top: 0; height: 100vh; overflow: auto
-                    @media (max-width: 768px) { display: none } }
+                @media (max-width: 768px) { display: none } }
             Link(to: "/") { style { display: flex; align-items: center; gap: 9px; padding: 4px 8px 16px; color: $text-primary; text-decoration: none }
                 Mark(size: 22)
                 Text("Halyard") { style { margin: 0; font: 700 16px/1 $font-sans; letter-spacing: -0.02em; color: $text-primary } } }
             Button("", type: "button", aria-label: "HL {ProjectStore.name}, switch project") {
                 style { display: flex; align-items: center; gap: 10px; width: 100%; height: 44px; padding: 0 10px; margin-bottom: 18px; background: $surface-inset; border: 1px solid $line-default; border-radius: $radius-sm; cursor: pointer; text-align: left; color: $text-primary
-                        &:hover { border-color: $line-strong } }
+                    &:hover { border-color: $line-strong } }
                 on click {
                     UiStore.open("menu")
                 }
@@ -64,14 +64,14 @@ component AppShell(crumb: String) {
             style { flex-grow: 1; min-width: 0; gap: 0; @media (max-width: 768px) { padding-bottom: 64px } }
             Row(align: .center, role: "banner") {
                 style { height: 60px; flex: none; flex-wrap: nowrap; gap: 14px; padding: 0 28px; border-bottom: 1px solid $line-hairline; background: $surface-canvas; position: sticky; top: 0; z-index: 50
-                        @media (max-width: 768px) { padding: 0 16px; height: 56px } }
+                    @media (max-width: 768px) { padding: 0 16px; height: 56px } }
                 Row(align: .center, role: "navigation", aria-label: "Breadcrumb") { style { flex-wrap: nowrap; gap: 8px; font-size: 13px; flex-grow: 1 }
                     Link("{ProjectStore.name}", to: "/app") { style { color: $text-tertiary; text-decoration: none; font-size: 13px; &:hover { color: $text-primary } } }
                     Icon("chevron-right") { style { color: $line-strong; display: inline-flex; font-size: 13px } }
                     Text(crumb, aria-current: "page") { style { margin: 0; color: $text-primary; font-weight: 600; font-size: 13px } } }
                 Button("", type: "button", aria-label: "Search, command palette, ⌘K") {
                     style { display: inline-flex; align-items: center; gap: 10px; height: 30px; padding: 0 12px; border-radius: $radius-sm; border: 1px solid transparent; background: transparent; color: $text-secondary; cursor: pointer
-                            &:hover { background: $surface-hover; color: $text-primary } }
+                        &:hover { background: $surface-hover; color: $text-primary } }
                     on click {
                         UiStore.open("palette")
                     }
@@ -92,7 +92,7 @@ component AppShell(crumb: String) {
         // Phone tab bar
         Row(role: "navigation", aria-label: "Sections") {
             style { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; flex-wrap: nowrap; gap: 0; border-top: 1px solid $line-hairline; background: $surface-sunken; padding-bottom: 6px
-                    @media (max-width: 768px) { display: flex } }
+                @media (max-width: 768px) { display: flex } }
             TabBarLink(label: "Overview", to: "/app", icon: "home")
             TabBarLink(label: "Deploys", to: "/app/deployments", icon: "upload")
             TabBarLink(label: "Logs", to: "/app/logs", icon: "menu")

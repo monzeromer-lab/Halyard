@@ -10,7 +10,7 @@ page AppLogs(path: "/app/logs", title: "Logs", description: "Request logs across
             Icon("search") { style { position: absolute; left: 11px; top: 11px; color: $text-tertiary; pointer-events: none; display: inline-flex; font-size: 16px; z-index: 1 } }
             Input(bind: q, id: "log-q", placeholder: LogStore.placeholder, aria-label: "Filter log lines", aria-invalid: LogStore.badRegex).search {
                 style { height: 38px; width: 100%; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 12px 0 34px; font: 400 13px/1.2 $font-mono
-                        &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
+                    &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
                 on input { LogStore.setQuery(q) }
             } }
         Chip(label: ".*", pressed: LogStore.regex) { on click { LogStore.toggleRegex() } }

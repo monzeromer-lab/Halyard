@@ -74,7 +74,7 @@ page AppOverview(path: "/app", title: "Overview", description: "The live release
                 for r in ProjectStore.regionHealth {
                     Link(to: "/app/observability", aria-label: "{r.code}, {r.p95} ms, {r.word}") {
                         style { display: flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: $radius-sm; background: $surface-inset; border: 1px solid $line-hairline; text-decoration: none
-                                transition: border-color $d-fast $ease-standard; &:hover { border-color: $line-strong } }
+                            transition: border-color $d-fast $ease-standard; &:hover { border-color: $line-strong } }
                         Dot(color: r.color, size: 6)
                         Text(r.code) { style { margin: 0; font-family: $font-mono; font-size: 11px; color: $text-secondary; flex-grow: 1 } }
                         Num(text: "{r.p95}", size: "11px", color: "var(--text-tertiary)")

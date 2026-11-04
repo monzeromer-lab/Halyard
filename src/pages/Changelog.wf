@@ -116,7 +116,7 @@ page Changelog(path: "/changelog", title: "Changelog", description: "Every chang
                 SubscribeForm(id: "sub", label: "Work email", help: helpText, helpColor: helpColor, button: subLabel) {
                     Input(bind: email, id: "sub", placeholder: "you@company.com", aria-labelledby: "sub-label", aria-invalid: invalid).email {
                         style { height: 38px; flex-grow: 1; background: $surface-inset; border: 1px solid $border-control; border-radius: $radius-sm; color: $text-primary; padding: 0 12px; font: 400 14px/1.2 $font-sans
-                                &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
+                            &:hover { border-color: #8a929e }  &::placeholder { color: $text-tertiary }  &:focus-visible { border-color: $focus-ring }  &[aria-invalid="true"] { border-color: $danger } }
                         on input { invalid = false  sent = false }
                     }
                 }

@@ -163,8 +163,8 @@ page AppObservability(path: "/app/observability", title: "Observability", descri
                 Table(aria-labelledby: "p95-caption") {
                     style { width: 100%; border-collapse: collapse; font: 400 14px/1.55 $font-sans }
                     Table.Head { Table.Row {
-                        Th(text: "Hour")
-                        for l in MetricsStore.legend by l.name { Th(text: l.name, numeric: true) } } }
+                            Th(text: "Hour")
+                            for l in MetricsStore.legend by l.name { Th(text: l.name, numeric: true) } } }
                     Table.Body {
                         for row in MetricsStore.tableRows by row.hour {
                             Table.Row {

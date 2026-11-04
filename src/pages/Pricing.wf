@@ -63,7 +63,7 @@ page Pricing(path: "/pricing", title: "Pricing", description: "Pay for requests,
             }
             Stack {
                 style { width: 400px; flex: none; background: $surface-sunken; border-left: 1px solid $line-hairline; padding: 40px 36px; gap: 20px
-                        @media (max-width: 1024px) { width: 100%; border-left: 0; border-top: 1px solid $line-hairline }  @media (max-width: 768px) { padding: 24px 20px } }
+                    @media (max-width: 1024px) { width: 100%; border-left: 0; border-top: 1px solid $line-hairline }  @media (max-width: 768px) { padding: 24px 20px } }
                 Overline(text: "ESTIMATED MONTHLY")
                 Row(align: .baseline) { style { flex-wrap: nowrap; gap: 10px }
                     Num(text: PricingStore.totalText, size: "56px", color: "var(--text-brand)")
